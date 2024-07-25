@@ -1,6 +1,4 @@
-<%@ page import="java.util.List" %>
-<%@ page import="model.FoodInventory" %>
-<%@ page import="dataaccesslayer.FoodInventoryDAO" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,18 +10,16 @@
 <body>
 <nav>
     <div class="nav-left">
-        <div><a href="food_inventory.jsp">Food Inventory</a></div>
-        <div><a href="food_items.jsp">Food Items</a></div>
+        <div class="link"><a href="food_inventory.jsp">Food Inventory</a></div>
+        <div class="link"><a href="food_items.jsp">Food Items</a></div>
     </div>
     <div class="nav-right">
-        <div><a href="logout.jsp" class="button button-logout">Log Out</a></div>
+        <div class="link"><a href="logout.jsp" class="button button-logout">Log Out</a></div>
     </div>
 </nav>
-
 <h1>Food Inventory</h1>
-<div class="container">
-    <a href="add_food_inventory.jsp" class="button button-add">Add New Inventory</a>
-
+<div class="container card">
+    <button class="button-primary">Add New Inventory</button>
     <table>
         <thead>
         <tr>
@@ -31,47 +27,28 @@
             <th>Description</th>
             <th>Standard Price</th>
             <th>Quantity</th>
-            <th>Last Modified</th>
             <th>Average Rating</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <%
-            // Example: Fetch the list of food inventory items from DAO
-            FoodInventoryDAO dao = new FoodInventoryDAO();
-            List<FoodInventory> inventoryList = dao.getAllFoodInventory();
-
-            for (FoodInventory item : inventoryList) {
-        %>
-        <tr>
-            <td><%= item.getId() %>
-            </td>
-            <td><%= item.getDescription() %>
-            </td>
-            <td><%= item.getStandardPrice() %>
-            </td>
-            <td><%= item.getQuantity() %>
-            </td>
-            <td><%= item.getStrLastModified() %>
-            </td>
-            <td><%= item.getAverageRating() %>
-            </td>
-            <td>
-                <a href="edit_food_inventory.jsp?id=<%= item.getId() %>" class="button button-edit">Edit</a>
-                <a href="delete_food_inventory.jsp?id=<%= item.getId() %>" class="button button-delete"
-                   onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
-            </td>
-        </tr>
-        <%
-            }
-        %>
+        <c:forEach var="item" items="${requestScope.list}">
+            <tr>
+                <td>${item.id}</td>
+                <td>${item.description}</td>
+                <td>${item.standardPrice}</td>
+                <td>${item.averageRating}</td>
+                <td>${item.quantity}</td>
+                <td>
+                    <button class="button-warning">Edit</button>
+                    <button class="button-error">Delete</button>
+                </td>
+            </tr>
+        </c:forEach>
         </tbody>
     </table>
 </div>
-
-<footer>
-    &copy; 2024 Food Waste Reduction Platform. All rights reserved.
-</footer>
+<!-- Footer -->
+<%@ include file="/utility/footer.jsp" %>
 </body>
 </html>

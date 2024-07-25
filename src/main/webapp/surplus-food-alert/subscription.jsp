@@ -287,9 +287,7 @@
 </div>
 
 <!-- Footer -->
-<footer>
-    &copy; 2024 Food Waste Reduction Platform. All rights reserved.
-</footer>
+<%@ include file="/utility/footer.jsp" %>
 
 <script>
     const provinceSelect = $('#province');
