@@ -11,6 +11,7 @@ import java.sql.SQLException;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import businesslayer.FoodInventoryManager;
 import model.FoodInventory;
 
@@ -20,13 +21,10 @@ public class FoodInventoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         FoodInventoryManager manager = new FoodInventoryManager();
-        List<FoodInventory> list = new ArrayList<>();
 
-        try {
-            list.addAll(manager.getAllFoodInventory());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        List<FoodInventory> list = new ArrayList<>(manager.getAllFoodInventory());
+
         request.setAttribute("list", list);
         RequestDispatcher dispatcher = request.getRequestDispatcher("retailer/food-inventory.jsp");
         dispatcher.forward(request, response);

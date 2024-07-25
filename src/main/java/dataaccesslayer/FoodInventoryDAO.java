@@ -19,14 +19,8 @@ public class FoodInventoryDAO {
             try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM foodinventory")) {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        FoodInventory item = new FoodInventory();
-                        item.setId(rs.getInt("id"));
-                        item.setDescription(rs.getString("description"));
-                        item.setStandardPrice(rs.getDouble("standard_price"));
-                        item.setQuantity(rs.getInt("quantity"));
-                        item.setAverageRating(rs.getDouble("average_rating"));
-                        item.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
-                        list.add(item);
+                        FoodInventory inventory = makeFoodInventory(rs);
+                        list.add(inventory);
                     }
                 }
             }
@@ -36,5 +30,33 @@ public class FoodInventoryDAO {
         return list;
     }
 
+
+    public FoodInventory getFoodInventoryById(int foodInventoryId) {
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM FoodInventory WHERE id = ?");) {
+                stmt.setInt(1, foodInventoryId);
+                try (ResultSet rs = stmt.executeQuery();) {
+                    if (rs.next()) {
+                        return makeFoodInventory(rs);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private FoodInventory makeFoodInventory(ResultSet rs) throws SQLException{
+        FoodInventory inventory = new FoodInventory();
+        inventory.setId(rs.getInt("id"));
+        inventory.setDescription(rs.getString("description"));
+        inventory.setStandardPrice(rs.getDouble("standard_price"));
+        inventory.setQuantity(rs.getInt("quantity"));
+        inventory.setAverageRating(rs.getDouble("average_rating"));
+        inventory.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
+        return inventory;
+    }
 }
 
