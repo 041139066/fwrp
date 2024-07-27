@@ -6,24 +6,30 @@ import dataaccesslayer.SubscriptionDAO;
 import model.FoodInventory;
 import model.Subscription;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SubscriptionService {
 
     private final SubscriptionDAO subsDao;
     private final FoodPreferencesDAO prefsDao;
+    private final FoodInventoryDAO invDao;
 
-    public SubscriptionService(){
+    public SubscriptionService() {
         subsDao = new SubscriptionDAO();
         prefsDao = new FoodPreferencesDAO();
+        invDao = new FoodInventoryDAO();
     }
+
     public Subscription getSubscription(int userId) {
         return subsDao.getSubscriptionByConsumerId(userId);
     }
 
-    public List<Integer> getFoodPreferences(int userId) {
-        return prefsDao.getFoodPreferencesByUserId(userId);
+    public List<FoodInventory> getFoodPreferences(int userId) {
+        List<Integer> ids = prefsDao.getFoodPreferencesByUserId(userId);
+        List<FoodInventory> foodInventory = invDao.getAllFoodInventory();
+        return foodInventory.stream()
+                .filter(item -> ids.contains(item.getId()))
+                .toList();
     }
 
 

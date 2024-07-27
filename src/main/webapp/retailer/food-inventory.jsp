@@ -14,7 +14,7 @@
         <div class="link"><a href="food_items.jsp">Food Items</a></div>
     </div>
     <div class="nav-right">
-        <div class="link"><a href="logout.jsp" class="button button-logout">Log Out</a></div>
+        <div class="link"><a href="logout.jsp">Log Out</a></div>
     </div>
 </nav>
 <h1>Food Inventory</h1>

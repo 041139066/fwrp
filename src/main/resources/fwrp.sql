@@ -334,7 +334,8 @@ VALUES ('Apples', 1.50, 100, 4.5),
        ('Beans', 1.80, 70, 4.3),
        ('Cereal', 3.00, 60, 4.4),
        ('Juice', 2.50, 75, 4.3),
-       ('Frozen Vegetables', 2.00, 40, 4.2);
+       ('Frozen Vegetables', 2.00, 40, 4.2),
+       ('Apples', 1.50, 100, 4.5);
 
 INSERT INTO FoodItems (expiration_date, price, status, retailer_id, food_inventory_id)
 VALUES ('2024-08-01 12:00:00', 1.50, 'stock', 1, 1),

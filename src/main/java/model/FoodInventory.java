@@ -1,5 +1,7 @@
 package model;
 
+import utilities.MyGson;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -76,5 +78,8 @@ public class FoodInventory implements Serializable {
                 ", lastModified=" + getStrLastModified() +
                 ", averageRating=" + averageRating +
                 '}';
+    }
+    public String toJson() {
+        return MyGson.getMyGson().toJson(this);
     }
 }

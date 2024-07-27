@@ -14,26 +14,28 @@ import businesslayer.LocationService;
 import businesslayer.SubscriptionService;
 import businesslayer.FoodInventoryManager;
 import model.*;
+import utilities.MyGson;
 
 public class SubscriptionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Gson gson = MyGson.getMyGson();
 //        int id = (Integer) request.getSession().getAttribute("id");
         int userId = 3;
 
         LocationService locationService = new LocationService();
         List<Province> provinces = locationService.getAllProvinces();
         request.setAttribute("provinces", provinces);
-        String cities = new Gson().toJson(locationService.getAllCities());
+        String cities = gson.toJson(locationService.getAllCities());
         request.setAttribute("cities", cities);
 
         SubscriptionService subscriptionService = new SubscriptionService();
         Subscription subscription = subscriptionService.getSubscription(userId);
         request.setAttribute("subscription", subscription);
 
-        List<Integer> foodPreferences = subscriptionService.getFoodPreferences(userId);
+        String foodPreferences = gson.toJson(subscriptionService.getFoodPreferences(userId));
         request.setAttribute("foodPreferences", foodPreferences);
 
         FoodInventoryManager foodInventoryManager = new FoodInventoryManager();
