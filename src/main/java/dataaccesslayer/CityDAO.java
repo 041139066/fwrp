@@ -8,12 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.City;
-import model.User;
-import model.UserType;
 
 public class CityDAO {
     public List<City> getAllCities() {
-        List<City> list = new ArrayList<City>();
+        List<City> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cities")) {
@@ -33,7 +31,7 @@ public class CityDAO {
     }
 
     public List<City> getCitiesByProvinceId(String provinceId) {
-        List<City> list = new ArrayList<City>();
+        List<City> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cities WHERE province_id = ?")) {
@@ -48,6 +46,25 @@ public class CityDAO {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public City getCityByIds(String cityId, String provinceId) {
+        City city = null;
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM cities WHERE city = ? AND province_id = ? ")) {
+                stmt.setString(1, cityId);
+                stmt.setString(2, provinceId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        city = mapRowToCity(rs);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return city;
     }
 
     private City mapRowToCity(ResultSet resultSet) throws SQLException {

@@ -5,10 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-import model.FoodInventory;
 import model.User;
 import model.UserType;
 
@@ -22,7 +19,7 @@ public class UserDAO {
             Connection connection = Database.getConnection();
             try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE id = ?")) {
                 preparedStatement.setInt(1, id);
-                try (ResultSet resultSet = preparedStatement.executeQuery();) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         user = makeUser(resultSet);
                     }
@@ -39,8 +36,7 @@ public class UserDAO {
         user.setId(resultSet.getInt("id"));
         user.setName(resultSet.getString("name"));
         user.setEmail(resultSet.getString("email"));
-        user.setPhone(resultSet.getString("phone"));
-        user.setType(UserType.valueOf(resultSet.getString("type").toUpperCase()));
+        user.setType(UserType.valueOf(resultSet.getString("type")));
         return user;
     }
 

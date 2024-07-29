@@ -5,7 +5,6 @@ public class User {
     private int id;
     private String name;
     private String email;
-    private String phone;
     private UserType type; // Using the UserType enum
 
     // Getter and Setter methods
@@ -33,14 +32,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public UserType getType() {
         return type;
     }
@@ -53,10 +44,9 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + name + "'" +
-                ", email='" + email + "'" +
-                ", phone='" + phone + "'" +
-                ", type=" + type +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", type=" + type.name() +
                 '}';
     }
 }

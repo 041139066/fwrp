@@ -4,6 +4,11 @@ public class FoodPreference {
     private int consumerId;
     private int foodInventoryId;
 
+    public FoodPreference(int consumerId, int foodInventoryId) {
+        this.consumerId = consumerId;
+        this.foodInventoryId = foodInventoryId;
+    }
+
     public int getConsumerId() {
         return consumerId;
     }

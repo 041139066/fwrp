@@ -42,6 +42,7 @@ public class FoodPreferencesDAO {
         }
         return affectedRows;
     }
+
     public int deleteFoodPreference(FoodPreference foodPreference) {
         int affectedRows = 0;
         try {

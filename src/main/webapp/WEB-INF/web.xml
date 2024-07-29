@@ -28,7 +28,7 @@
 
   <servlet-mapping>
     <servlet-name>SubscriptionServlet</servlet-name>
-    <url-pattern>/subscription</url-pattern>
+    <url-pattern>/subscription/*</url-pattern>
   </servlet-mapping>
 
   <session-config>

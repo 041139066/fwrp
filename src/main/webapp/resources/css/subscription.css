@@ -1,5 +1,13 @@
 @import url("base.css");
 
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
 .form-buttons {
     text-align: right;
 }
@@ -26,4 +34,68 @@
     resize: vertical;
     font-family: inherit;
 }
+
+.form-field {
+    margin-bottom: 24px;
+}
+
+.error-message {
+    color: var(--error-button);
+    font-size: 0.75em;
+    display: block;
+    margin-left: 6px;
+    margin-bottom: -19.2px;
+}
+
+.info-button {
+    align-self: center;
+    margin: 36px auto;
+    background-color: var(--primary);
+    transition: all 0.3s ease-in-out;
+}
+.info-button:hover, .info-button:active {
+    background-color: var(--primary-lighter);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.5);
+}
+.info-card {
+    justify-self: center;
+    align-self: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    width: 100%;
+    max-width: 500px;
+    transition: all 0.3s ease-in-out;
+}
+
+.info-card.active {
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.info-card h3 {
+    width: 100%;
+    text-align: center;
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.info-card p {
+    margin: 12px auto;
+}
+
+.info-card strong {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--primary);
+}
+
+.info-card span {
+    color: var(--regular-text);
+}
+
+
 
