@@ -23,7 +23,16 @@
 <h1>Food Inventory</h1>
 <div class="container">
     <a href="add_food_inventory.jsp" class="button button-add">Add New Inventory</a>
-
+    <%
+        try {
+            FoodInventoryDAO dao = new FoodInventoryDAO();
+            List<FoodInventory> foodInventoryList = dao.getAllFoodInventory();
+            if (foodInventoryList.isEmpty()) {
+    %>
+    <p>No food inventory items found.</p>
+    <%
+    } else {
+    %>
     <table>
         <thead>
         <tr>
@@ -38,44 +47,32 @@
         </thead>
         <tbody>
         <%
-            // Example: Fetch the list of food inventory items from DAO
-            FoodInventoryDAO dao = new FoodInventoryDAO();
-            List<FoodInventory> inventoryList = dao.getAllFoodInventory();
-
-            if (inventoryList.isEmpty()) {
+            for (FoodInventory item : foodInventoryList) {
         %>
         <tr>
-            <td colspan="7">No food inventory items found.</td>
-        </tr>
-        <%
-        } else {
-            for (FoodInventory item : inventoryList) {
-        %>
-        <tr>
-            <td><%= item.getId() %>
-            </td>
-            <td><%= item.getDescription() %>
-            </td>
-            <td><%= item.getStandardPrice() %>
-            </td>
-            <td><%= item.getQuantity() %>
-            </td>
+            <td><%= item.getId() %></td>
+            <td><%= item.getDescription() %></td>
+            <td><%= item.getStandardPrice() %></td>
+            <td><%= item.getQuantity() %></td>
             <td><%= item.getLastModified() != null ? item.getLastModified().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "" %></td>
-            </td>
-            <td><%= item.getAverageRating() %>
-            </td>
+            <td><%= item.getAverageRating() %></td>
             <td>
                 <a href="edit_food_inventory.jsp?id=<%= item.getId() %>" class="button button-edit">Edit</a>
-                <a href="delete_food_inventory.jsp?id=<%= item.getId() %>" class="button button-delete"
-                   onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                <a href="delete_food_inventory.jsp?id=<%= item.getId() %>" class="button button-delete" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
             </td>
         </tr>
         <%
-            }
             }
         %>
         </tbody>
     </table>
+    <%
+            }
+        } catch (Exception e) {
+            out.println("<p>Error: " + e.getMessage() + "</p>");
+            e.printStackTrace();
+        }
+    %>
 </div>
 
 <footer>

@@ -1,5 +1,7 @@
 package model;
 
+//import utilities.MyGson;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +14,28 @@ public class FoodInventory implements Serializable {
     private int quantity;
     private double averageRating;
     private LocalDateTime lastModified;
+
+    public FoodInventory(int id,
+                         String description,
+                         double standardPrice,
+                         int quantity,
+                         double averageRating,
+                         LocalDateTime lastModified){
+        this.id=id;
+        this.description = description;
+        this.standardPrice=standardPrice;
+        this.quantity=quantity;
+        this.averageRating=averageRating;
+        this.lastModified=lastModified;
+    }
+
+    public FoodInventory(String description, double standardPrice, int quantity, double averageRating, LocalDateTime lastModified) {
+        this.description = description;
+        this.standardPrice = standardPrice;
+        this.quantity = quantity;
+        this.averageRating = averageRating;
+        this.lastModified = lastModified;
+    }
 
     public int getId() {
         return id;
@@ -77,4 +101,8 @@ public class FoodInventory implements Serializable {
                 ", averageRating=" + averageRating +
                 '}';
     }
+   // public String toJson() {
+     //   return MyGson.getMyGson().toJson(this);
+    //}
 }
+

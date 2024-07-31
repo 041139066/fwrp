@@ -63,7 +63,7 @@
         LocalDateTime lastModified = LocalDateTime.parse(lastModifiedStr);
 
         // Create a new FoodInventory item
-        FoodInventory item = new FoodInventory();
+        FoodInventory item = new FoodInventory(description,standardPrice,quantity,averageRating,lastModified);
         item.setDescription(description);
         item.setStandardPrice(standardPrice);
         item.setQuantity(quantity);

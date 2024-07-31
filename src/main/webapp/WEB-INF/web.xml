@@ -12,13 +12,13 @@
   </welcome-file-list>
 
   <servlet>
-    <servlet-name>foodInventoryServlet</servlet-name>
+    <servlet-name>FoodInventoryServlet</servlet-name>
     <servlet-class>controllers.FoodInventoryServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>foodInventoryServlet</servlet-name>
-    <url-pattern>/food-inventory</url-pattern>
+    <servlet-name>FoodInventoryServlet</servlet-name>
+    <url-pattern>/FoodInventoryServlet</url-pattern>
   </servlet-mapping>
 
   <session-config>

@@ -71,13 +71,13 @@
             LocalDateTime lastModified = LocalDateTime.parse(lastModifiedStr);
 
             // Update the FoodInventory item
-            item = new FoodInventory();
-            item.setId(id);
-            item.setDescription(description);
-            item.setStandardPrice(standardPrice);
-            item.setQuantity(quantity);
-            item.setAverageRating(averageRating);
-            item.setLastModified(lastModified);
+            item = new FoodInventory(id,description,standardPrice,quantity,averageRating,lastModified);
+           // item.setId(id);
+           // item.setDescription(description);
+           // item.setStandardPrice(standardPrice);
+           // item.setQuantity(quantity);
+           // item.setAverageRating(averageRating);
+           // item.setLastModified(lastModified);
 
             dao.updateFoodInventory(item);
 

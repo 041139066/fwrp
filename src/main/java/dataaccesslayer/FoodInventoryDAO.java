@@ -24,18 +24,22 @@ public class FoodInventoryDAO {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        FoodInventory item = new FoodInventory();
-                        item.setId(rs.getInt("id"));
-                        item.setDescription(rs.getString("description"));
-                        item.setStandardPrice(rs.getDouble("standard_price"));
-                        item.setQuantity(rs.getInt("quantity"));
-                        item.setAverageRating(rs.getDouble("average_rating"));
-                        item.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
+                        FoodInventory item = new FoodInventory(rs.getInt("id"),  // Assuming your constructor includes id
+                                rs.getString("description"),
+                                rs.getDouble("standard_price"),
+                                rs.getInt("quantity"),
+                                rs.getDouble("average_rating"),
+                                rs.getTimestamp("last_modified").toLocalDateTime());
+                        //item.setId(rs.getInt("id"));
+                        //item.setDescription(rs.getString("description"));
+                        //item.setStandardPrice(rs.getDouble("standard_price"));
+                       // item.setQuantity(rs.getInt("quantity"));
+                        //item.setAverageRating(rs.getDouble("average_rating"));
+                        //item.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
                         list.add(item);
                     }
                 }
             }
-            System.out.println("Query executed successfully.");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -46,18 +50,22 @@ public class FoodInventoryDAO {
     public FoodInventory getFoodInventoryById(int id) {
         FoodInventory inventory = null;
         String sql = "SELECT * FROM FoodInventory WHERE id = ?";
-       // String sql = "SELECT * FROM fwrp.foodinventory WHERE id = ?";
         try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    inventory = new FoodInventory();
-                    inventory.setId(rs.getInt("id"));
-                    inventory.setDescription(rs.getString("description"));
-                    inventory.setQuantity(rs.getInt("quantity"));
-                    inventory.setAverageRating(rs.getDouble("averageRating"));
-                    inventory.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
-
+                    inventory = new FoodInventory(rs.getInt("id"),  // Assuming your constructor includes id
+                            rs.getString("description"),
+                            rs.getDouble("standard_price"),
+                            rs.getInt("quantity"),
+                            rs.getDouble("average_rating"),
+                            rs.getTimestamp("last_modified").toLocalDateTime());
+                   // inventory.setId(rs.getInt("id"));
+                   // inventory.setDescription(rs.getString("description"));
+                   // inventory.setQuantity(rs.getInt("quantity"));
+                   // inventory.setStandardPrice(rs.getDouble("standard_price"));
+                   // inventory.setAverageRating(rs.getDouble("average_rating"));
+                    //inventory.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
 
                 }
             }
@@ -98,12 +106,14 @@ public class FoodInventoryDAO {
     }
 
     public void updateFoodInventory(FoodInventory inventory) {
-        String sql = "UPDATE FoodInventory SET description = ?, quantity = ?, average_rating = ? WHERE id = ?";
+        String sql = "UPDATE FoodInventory SET description = ?, standard_price= ?,quantity = ?, average_rating = ?, last_modified = ? WHERE id = ?";
         try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, inventory.getDescription());
-            pstmt.setInt(2, inventory.getQuantity());
-            pstmt.setDouble(3, inventory.getAverageRating());
-            pstmt.setInt(4, inventory.getId());
+            pstmt.setDouble(2, inventory.getStandardPrice());
+            pstmt.setInt(3, inventory.getQuantity());
+            pstmt.setDouble(4, inventory.getAverageRating());
+            pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(inventory.getLastModified()));
+            pstmt.setInt(6, inventory.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
