@@ -4,6 +4,9 @@
     <option name="state">
       <map>
         <entry key="file://$PROJECT_DIR$/src/main/webapp/register.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/retailer/add_food_inventory.jsp" value="file://$PROJECT_DIR$/src/main/webapp/retailer" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/retailer/delete_food_inventory.jsp" value="file://$PROJECT_DIR$/src/main/webapp/retailer" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/retailer/food-inventory.jsp" value="file://$PROJECT_DIR$/src/main/webapp/retailer" />
       </map>
     </option>
   </component>

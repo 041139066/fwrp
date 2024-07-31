@@ -56,6 +56,7 @@ public class FoodInventoryDAO {
                     inventory.setDescription(rs.getString("description"));
                     inventory.setQuantity(rs.getInt("quantity"));
                     inventory.setAverageRating(rs.getDouble("averageRating"));
+                    inventory.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
 
 
                 }
@@ -64,6 +65,23 @@ public class FoodInventoryDAO {
             e.printStackTrace();
         }
         return inventory;
+    }
+
+    public void addFoodInventory(FoodInventory item) {
+        String sql = "INSERT INTO FoodInventory (description, standard_price, quantity, average_rating, last_modified) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection con = Database.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setString(1, item.getDescription());
+            stmt.setDouble(2, item.getStandardPrice());
+            stmt.setInt(3, item.getQuantity());
+            stmt.setDouble(4, item.getAverageRating());
+            stmt.setTimestamp(5, java.sql.Timestamp.valueOf(item.getLastModified()));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void createFoodInventory(FoodInventory inventory) {
@@ -109,6 +127,20 @@ public class FoodInventoryDAO {
             pstmt.setDouble(1, rating);
             pstmt.setInt(2, id);
             pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void deleteFoodInventory(int id) {
+        String sql = "DELETE FROM FoodInventory WHERE id = ?";
+
+        try (Connection con = Database.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

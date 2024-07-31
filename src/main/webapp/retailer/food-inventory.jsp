@@ -7,12 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Inventory</title>
-    <link rel="stylesheet" href="resources/css/main-page.css">
+    <link rel="stylesheet" type="text/css" href="../resources/css/base.css">
 </head>
 <body>
 <nav>
     <div class="nav-left">
-        <div><a href="food_inventory.jsp">Food Inventory</a></div>
+        <div><a href="food-inventory.jsp">Food Inventory</a></div>
         <div><a href="food_items.jsp">Food Items</a></div>
     </div>
     <div class="nav-right">
@@ -42,6 +42,13 @@
             FoodInventoryDAO dao = new FoodInventoryDAO();
             List<FoodInventory> inventoryList = dao.getAllFoodInventory();
 
+            if (inventoryList.isEmpty()) {
+        %>
+        <tr>
+            <td colspan="7">No food inventory items found.</td>
+        </tr>
+        <%
+        } else {
             for (FoodInventory item : inventoryList) {
         %>
         <tr>
@@ -53,7 +60,7 @@
             </td>
             <td><%= item.getQuantity() %>
             </td>
-            <td><%= item.getStrLastModified() %>
+            <td><%= item.getLastModified() != null ? item.getLastModified().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "" %></td>
             </td>
             <td><%= item.getAverageRating() %>
             </td>
@@ -64,6 +71,7 @@
             </td>
         </tr>
         <%
+            }
             }
         %>
         </tbody>
