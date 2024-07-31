@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="fwrp.sql" type="DatabaseScript" editBeforeRun="true" singleton="false" nameIsGenerated="true">
+    <script-file value="$PROJECT_DIR$/src/main/resources/fwrp.sql" />
+    <script-mode>FILE</script-mode>
+    <data-source id="f5c56dc9-d1cc-4f54-9dca-9ff914207451" />
+    <method v="2" />
+  </configuration>
+</component>
