@@ -59,16 +59,16 @@
         double standardPrice = Double.parseDouble(request.getParameter("standard_price"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         double averageRating = Double.parseDouble(request.getParameter("average_rating"));
-        String lastModifiedStr = request.getParameter("last_modified");
-        LocalDateTime lastModified = LocalDateTime.parse(lastModifiedStr);
+        String expirationDateStr = request.getParameter("expirationDate");
+        LocalDateTime expirationDate = LocalDateTime.parse(expirationDateStr);
 
         // Create a new FoodInventory item
-        FoodInventory item = new FoodInventory(description,standardPrice,quantity,averageRating,lastModified);
+        FoodInventory item = new FoodInventory(description,standardPrice,quantity,averageRating,expirationDate);
         item.setDescription(description);
         item.setStandardPrice(standardPrice);
         item.setQuantity(quantity);
         item.setAverageRating(averageRating);
-        item.setLastModified(lastModified);
+        item.setExpirationDate(expirationDate);
 
         // Add the item to the database
         FoodInventoryDAO dao = new FoodInventoryDAO();
@@ -88,8 +88,8 @@
     <input type="number" id="quantity" name="quantity" required><br><br>
     <label for="average_rating">Average Rating:</label>
     <input type="text" id="average_rating" name="average_rating" required><br><br>
-    <label for="last_modified">Last Modified:</label>
-    <input type="datetime-local" id="last_modified" name="last_modified" required><br><br>
+    <label for="expirationDate">ExpirationDate:</label>
+    <input type="datetime-local" id="expirationDate" name="expirationDate" required><br><br>
     <button type="submit">Add Inventory</button>
 </form>
 <%

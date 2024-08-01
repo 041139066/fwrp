@@ -1,10 +1,9 @@
 package dataaccesslayer;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +28,12 @@ public class FoodInventoryDAO {
                                 rs.getDouble("standard_price"),
                                 rs.getInt("quantity"),
                                 rs.getDouble("average_rating"),
-                                rs.getTimestamp("last_modified").toLocalDateTime());
-                        //item.setId(rs.getInt("id"));
-                        //item.setDescription(rs.getString("description"));
-                        //item.setStandardPrice(rs.getDouble("standard_price"));
-                       // item.setQuantity(rs.getInt("quantity"));
-                        //item.setAverageRating(rs.getDouble("average_rating"));
-                        //item.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
-                        list.add(item);
+                                rs.getTimestamp("expirationDate").toLocalDateTime(),
+                                rs.getBoolean("is_surplus"),
+                                rs.getBoolean("isForDonation"),
+                                rs.getBoolean("isForSale"));
+
+                       list.add(item);
                     }
                 }
             }
@@ -59,13 +56,10 @@ public class FoodInventoryDAO {
                             rs.getDouble("standard_price"),
                             rs.getInt("quantity"),
                             rs.getDouble("average_rating"),
-                            rs.getTimestamp("last_modified").toLocalDateTime());
-                   // inventory.setId(rs.getInt("id"));
-                   // inventory.setDescription(rs.getString("description"));
-                   // inventory.setQuantity(rs.getInt("quantity"));
-                   // inventory.setStandardPrice(rs.getDouble("standard_price"));
-                   // inventory.setAverageRating(rs.getDouble("average_rating"));
-                    //inventory.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
+                            rs.getTimestamp("expirationDate").toLocalDateTime(),
+                            rs.getBoolean("is_surplus"),
+                            rs.getBoolean("isForDonation"),
+                            rs.getBoolean("isForSale"));
 
                 }
             }
@@ -76,7 +70,7 @@ public class FoodInventoryDAO {
     }
 
     public void addFoodInventory(FoodInventory item) {
-        String sql = "INSERT INTO FoodInventory (description, standard_price, quantity, average_rating, last_modified) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO FoodInventory (description, standard_price, quantity, average_rating, expirationDate) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = Database.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -85,7 +79,7 @@ public class FoodInventoryDAO {
             stmt.setDouble(2, item.getStandardPrice());
             stmt.setInt(3, item.getQuantity());
             stmt.setDouble(4, item.getAverageRating());
-            stmt.setTimestamp(5, java.sql.Timestamp.valueOf(item.getLastModified()));
+            stmt.setTimestamp(5, java.sql.Timestamp.valueOf(item.getExpirationDate()));
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,7 +87,7 @@ public class FoodInventoryDAO {
     }
 
     public void createFoodInventory(FoodInventory inventory) {
-        String sql = "INSERT INTO FoodInventory (description, quantity, foodinventory.average_rating, standard_price) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO FoodInventory (description, quantity, average_rating, standard_price) VALUES (?, ?, ?)";
         try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, inventory.getDescription());
             pstmt.setInt(2, inventory.getQuantity());
@@ -106,14 +100,22 @@ public class FoodInventoryDAO {
     }
 
     public void updateFoodInventory(FoodInventory inventory) {
-        String sql = "UPDATE FoodInventory SET description = ?, standard_price= ?,quantity = ?, average_rating = ?, last_modified = ? WHERE id = ?";
+
+        LocalDateTime now = LocalDateTime.now();
+        boolean isSurplus = inventory.getExpirationDate().isBefore(now.plus(1, ChronoUnit.WEEKS));
+
+
+        String sql = "UPDATE FoodInventory SET description = ?, standard_price= ?,quantity = ?, average_rating = ?, expirationDate = ?, is_surplus = ?, foodinventory.isForDonation = ?, isForSale = ? WHERE id = ?";
         try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, inventory.getDescription());
             pstmt.setDouble(2, inventory.getStandardPrice());
             pstmt.setInt(3, inventory.getQuantity());
             pstmt.setDouble(4, inventory.getAverageRating());
-            pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(inventory.getLastModified()));
-            pstmt.setInt(6, inventory.getId());
+            pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(inventory.getExpirationDate()));
+            pstmt.setBoolean(6, isSurplus);
+            pstmt.setBoolean(7, inventory.getIsForDonation());
+            pstmt.setBoolean(8, inventory.getIsForSale());
+            pstmt.setInt(9, inventory.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -154,6 +156,43 @@ public class FoodInventoryDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateSurplusStatus() throws SQLException {
+        String sql = "UPDATE FoodInventory SET is_surplus = TRUE WHERE expirationDate <= DATE_ADD(NOW(), INTERVAL 1 WEEK)";
+        try (Connection connection = Database.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public List<FoodInventory> getSurplusFoodInventory() throws SQLException {
+        List<FoodInventory> surplusFoodItems = new ArrayList<>();
+        LocalDateTime oneWeekFromNow = LocalDateTime.now().plusWeeks(1);
+        String sql = "SELECT * FROM FoodInventory WHERE expirationDate <= ?";
+
+        try (Connection connection = Database.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setTimestamp(1, Timestamp.valueOf(oneWeekFromNow));
+                    try (ResultSet rs = preparedStatement.executeQuery()) {
+
+                        while (rs.next()) {
+                            int id = rs.getInt("id");
+                            String description = rs.getString("description");
+                            double standardPrice = rs.getDouble("standard_price");
+                            int quantity = rs.getInt("quantity");
+                            LocalDateTime expirationDate = rs.getTimestamp("expirationDate").toLocalDateTime();
+                            double averageRating = rs.getFloat("average_rating");
+                            boolean isSurplus = rs.getBoolean("is_surplus");
+                            boolean isForDonation = rs.getBoolean("is_for_donation");
+                            boolean isForSale = rs.getBoolean("is_for_sale");
+
+                            FoodInventory foodInventory = new FoodInventory(id, description, standardPrice, quantity, averageRating, expirationDate, isSurplus, isForDonation, isForSale);
+                            surplusFoodItems.add(foodInventory);
+                        }
+            }
+        }
+        return surplusFoodItems;
     }
 
 }

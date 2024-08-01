@@ -42,10 +42,13 @@ CREATE TABLE FoodInventory
     description   VARCHAR(255) NOT NULL,
     standard_price DOUBLE(6,2) NOT NULL,
     quantity      INT(5) NOT NULL,
-    last_modified TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    expirationDate TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     average_rating DOUBLE(2,1) NULL
 );
 
+ALTER TABLE FoodInventory ADD COLUMN is_surplus BOOLEAN DEFAULT FALSE;
+ALTER TABLE FoodInventory ADD COLUMN isForDonation BOOLEAN DEFAULT FALSE;
+ALTER TABLE FoodInventory ADD COLUMN isForSale BOOLEAN DEFAULT FALSE;
 
 -- -----------------------------------------------------
 -- Table FoodItems

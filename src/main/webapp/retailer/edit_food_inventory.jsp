@@ -67,11 +67,11 @@
             double standardPrice = Double.parseDouble(request.getParameter("standard_price"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             double averageRating = Double.parseDouble(request.getParameter("average_rating"));
-            String lastModifiedStr = request.getParameter("last_modified");
-            LocalDateTime lastModified = LocalDateTime.parse(lastModifiedStr);
+            String expirationDateStr = request.getParameter("expirationDate");
+            LocalDateTime expirationDate = LocalDateTime.parse(expirationDateStr);
 
             // Update the FoodInventory item
-            item = new FoodInventory(id,description,standardPrice,quantity,averageRating,lastModified);
+            item = new FoodInventory(id,description,standardPrice,quantity,averageRating,expirationDate);
            // item.setId(id);
            // item.setDescription(description);
            // item.setStandardPrice(standardPrice);
@@ -113,8 +113,14 @@
     <input type="number" id="quantity" name="quantity" value="<%= item.getQuantity() %>" required><br><br>
     <label for="average_rating">Average Rating:</label>
     <input type="text" id="average_rating" name="average_rating" value="<%= item.getAverageRating() %>" required><br><br>
-    <label for="last_modified">Last Modified:</label>
-    <input type="datetime-local" id="last_modified" name="last_modified" value="<%= item.getLastModified() != null ? item.getLastModified().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "" %>" required><br><br>
+    <label for="expirationDate">ExpirationDate:</label>
+    <input type="datetime-local" id="expirationDate" name="expirationDate" value="<%= item.getExpirationDate() != null ? item.getExpirationDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "" %>" required><br><br>
+    <label for="isForDonation">For Donation:</label>
+    <input type="checkbox" id="isForDonation" name="isForDonation" <%= item.getIsForDonation() ? "checked" : "" %>><br><br>
+
+    <label for="isForSale">For Sale:</label>
+    <input type="checkbox" id="isForSale" name="isForSale" <%= item.getIsForSale() ? "checked" : "" %>><br><br>
+
     <button type="submit">Update Inventory</button>
 </form>
 <%

@@ -13,7 +13,7 @@ public class FoodInventoryManager {
     //private FoodInventoryValidator validator;
 
     public FoodInventoryManager() {
-        dao = new FoodInventoryDAO();
+        this.dao = new FoodInventoryDAO();
     }
 
     public List<FoodInventory> getAllFoodInventory() {
@@ -37,4 +37,13 @@ public class FoodInventoryManager {
         dao.deleteFoodInventory(id);
 
     }
+
+    //public FoodInventory getFoodInventory(int id) throws SQLException {
+      //  return dao.getAllFoodInventory(id);
+   // }
+
+    public List<FoodInventory> getSurplusFoodInventory() throws SQLException {
+        return dao.getSurplusFoodInventory();
+    }
+
 }
