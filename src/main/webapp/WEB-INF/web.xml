@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+  <display-name>Food Waste Reduction Platform</display-name>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+
+  <servlet>
+    <servlet-name>foodInventoryServlet</servlet-name>
+    <servlet-class>controllers.FoodInventoryServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>claimFoodServlet</servlet-name>
+    <servlet-class>controllers.ClaimFoodServletList</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>purchaseFoodListServlet</servlet-name>
+    <servlet-class>controllers.PurchaseFoodListServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>purchaseFoodServlet</servlet-name>
+    <servlet-class>controllers.PurchaseFoodServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>getFoodByIdServlet</servlet-name>
+    <servlet-class>controllers.GetFoodByIdServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>myClaimedFoodServlet</servlet-name>
+    <servlet-class>controllers.MyClaimedFoodServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>foodInventoryServlet</servlet-name>
+    <url-pattern>/food-inventory</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>claimFoodServlet</servlet-name>
+    <url-pattern>/claim-food</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>purchaseFoodListServlet</servlet-name>
+    <url-pattern>/available-food-list</url-pattern>
+  </servlet-mapping><!--
+  <servlet-mapping>
+    <servlet-name>purchaseFoodServlet</servlet-name>
+    <url-pattern>/purchase-food</url-pattern>
+  </servlet-mapping>-->
+  <servlet-mapping>
+    <servlet-name>getFoodByIdServlet</servlet-name>
+    <url-pattern>/purchase-food</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>myClaimedFoodServlet</servlet-name>
+    <url-pattern>/my-claim-food</url-pattern>
+  </servlet-mapping>
+
+  <session-config>
+    <session-timeout>60</session-timeout>
+  </session-config>
+</web-app>
