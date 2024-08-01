@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Inventory</title>
     <link rel="stylesheet" href="resources/css/main-page.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 <nav>
@@ -37,8 +39,11 @@
                 <td>${item.id}</td>
                 <td>${item.description}</td>
                 <td>${item.standardPrice}</td>
-                <td>${item.averageRating}</td>
                 <td>${item.quantity}</td>
+                <td>
+                    <button class="link-button" onclick="window.location='rating?foodInventoryId=${item.id}'">${item.averageRating}</button>
+                    <button class="icon-button" onclick='handleRating(${item.toJson()})'><i class="fa-regular fa-pen-to-square"></i></button>
+                </td>
                 <td>
                     <button class="button-warning">Edit</button>
                     <button class="button-error">Delete</button>
@@ -50,5 +55,17 @@
 </div>
 <!-- Footer -->
 <%@ include file="/utility/footer.jsp" %>
+<%@ include file="/food-rating/rating-modal.jsp" %>
+<script>
+    function handleRating(foodInventory){
+        const consumerRatingList = ${requestScope.consumerRatingList};
+        const rating = consumerRatingList.find(itm=>itm.foodInventoryId === foodInventory.id);
+        if(rating){
+            openUpdateModal(rating);
+        } else {
+            openCreateModal(foodInventory)
+        }
+    }
+</script>
 </body>
 </html>

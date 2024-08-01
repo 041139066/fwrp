@@ -1,7 +1,6 @@
 package businesslayer;
 
 import java.util.List;
-import java.sql.SQLException;
 
 import dataaccesslayer.FoodInventoryDAO;
 import model.FoodInventory;
@@ -16,6 +15,10 @@ public class FoodInventoryManager {
 
     public List<FoodInventory> getAllFoodInventory() {
         return dao.getAllFoodInventory();
+    }
+
+    public FoodInventory getFoodInventoryById(int foodInventoryID) {
+        return dao.getFoodInventoryById(foodInventoryID);
     }
 
 }

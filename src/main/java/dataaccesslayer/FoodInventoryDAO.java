@@ -34,9 +34,9 @@ public class FoodInventoryDAO {
     public FoodInventory getFoodInventoryById(int foodInventoryId) {
         try {
             Connection con = Database.getConnection();
-            try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM FoodInventory WHERE id = ?");) {
+            try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM FoodInventory WHERE id = ?")) {
                 stmt.setInt(1, foodInventoryId);
-                try (ResultSet rs = stmt.executeQuery();) {
+                try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
                         return makeFoodInventory(rs);
                     }
@@ -57,6 +57,22 @@ public class FoodInventoryDAO {
         inventory.setAverageRating(rs.getDouble("average_rating"));
         inventory.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
         return inventory;
+    }
+
+    public int updateAverageRating(int id, double averageRating) {
+        int affectedRows = 0;
+        String sql =  "UPDATE Foodinventory SET average_rating = ? WHERE id = ?";
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setDouble(1, averageRating);
+                stmt.setInt(2, id);
+                affectedRows = stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return affectedRows;
     }
 }
 

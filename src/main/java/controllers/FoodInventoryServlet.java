@@ -7,13 +7,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import businesslayer.FoodInventoryManager;
+import businesslayer.RatingService;
 import model.FoodInventory;
+import model.Rating;
+import utilities.MyGson;
 
 public class FoodInventoryServlet extends HttpServlet {
 
@@ -21,11 +23,13 @@ public class FoodInventoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         FoodInventoryManager manager = new FoodInventoryManager();
-
-
         List<FoodInventory> list = new ArrayList<>(manager.getAllFoodInventory());
-
         request.setAttribute("list", list);
+        int consumerId = 3;
+        RatingService service = new RatingService();
+        List<Rating> consumerRatingList = service.getAllRatingsByConsumerId(consumerId);
+        request.setAttribute("consumerRatingList", MyGson.getMyGson().toJson(consumerRatingList));
+
         RequestDispatcher dispatcher = request.getRequestDispatcher("retailer/food-inventory.jsp");
         dispatcher.forward(request, response);
     }

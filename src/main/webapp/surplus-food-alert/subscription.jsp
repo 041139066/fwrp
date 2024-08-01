@@ -8,8 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subscription Form</title>
     <link rel="stylesheet" href="resources/css/subscription.css">
-    <style>
-    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -303,7 +301,7 @@
                     alert('Subscribe successfully!');
                     window.location.reload();
                 } else {
-                    alert('Failed to subscribe: ' + res?.messsage + '. Please try again.');
+                    alert('Failed to subscribe: ' + res?.message + '. Please try again.');
                 }
             },
             error: function (xhr, status, error) {
@@ -337,7 +335,7 @@
                     alert('Subscription updated successfully!');
                     window.location.reload();
                 } else {
-                    alert('Failed to update subscription: ' + res?.messsage + '. Please try again.');
+                    alert('Failed to update subscription: ' + res?.message + '. Please try again.');
                 }
             },
             error: function (xhr, status, error) {
@@ -357,7 +355,7 @@
                     alert('Unsubscribe successfully!');
                     window.location.reload();
                 } else {
-                    alert('Failed to unsubscribe: ' + res?.messsage + '. Please try again.');
+                    alert('Failed to unsubscribe: ' + res?.message + '. Please try again.');
                 }
             },
             error: function (xhr, status, error) {
@@ -377,7 +375,7 @@
                     alert('Reactivate successfully!');
                     window.location.reload();
                 } else {
-                    alert('Failed to reactivate: ' + res?.messsage + '. Please try again.');
+                    alert('Failed to reactivate: ' + res?.message + '. Please try again.');
                 }
             },
             error: function (xhr, status, error) {
