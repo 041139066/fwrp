@@ -85,7 +85,9 @@ public class FoodInventoryServlet extends HttpServlet {
         double standardPrice = Double.parseDouble(request.getParameter("standardPrice"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         double averageRating = Double.parseDouble(request.getParameter("averageRating"));
-        LocalDateTime expirationDate = LocalDateTime.now();
+        //LocalDateTime expirationDate = LocalDateTime.now();
+        LocalDateTime expirationDate = LocalDateTime.parse(request.getParameter("expirationDate"));
+
 
         boolean isForDonation = request.getParameter("isForDonation") != null;
         boolean isForSale = request.getParameter("isForSale") != null;
@@ -107,14 +109,17 @@ public class FoodInventoryServlet extends HttpServlet {
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         double averageRating = Double.parseDouble(request.getParameter("averageRating"));
         //String  lastModified = String.valueOf(LocalDateTime.now());
-        LocalDateTime expirationDate = LocalDateTime.now();
+       // LocalDateTime expirationDate = LocalDateTime.now();
+        LocalDateTime expirationDate = LocalDateTime.parse(request.getParameter("expirationDate"));
+
         //boolean is_surplus;
 
         boolean isForDonation = request.getParameter("isForDonation") != null;
         boolean isForSale = request.getParameter("isForSale") != null;
 
 
-        FoodInventory updatedFood = new FoodInventory(id, description,standardPrice,quantity,averageRating,expirationDate);
+        FoodInventory updatedFood = new FoodInventory(id, description,standardPrice,quantity,averageRating,expirationDate,
+                false,isForDonation,isForSale);
         manager.updateFoodInventory(updatedFood);
         response.sendRedirect("FoodInventoryServlet?action=list");
 
@@ -144,7 +149,7 @@ public class FoodInventoryServlet extends HttpServlet {
 
     private void listSurplusFoodInventory(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
             throws SQLException, IOException, ServletException {
-        List<FoodInventory> list = new ArrayList<>(manager.getAllFoodInventory());
+        List<FoodInventory> list = manager.getAllFoodInventory();
         List<FoodInventory> surplusFoodItems = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
         for (FoodInventory item : list) {
@@ -153,7 +158,7 @@ public class FoodInventoryServlet extends HttpServlet {
             }
         }
         request.setAttribute("foodInventoryList", surplusFoodItems);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("../retailer/food-inventory.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("../retailer/surplus-food-inventory.jsp");
         dispatcher.forward(request, response);
     }
 

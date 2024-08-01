@@ -69,12 +69,27 @@ public class FoodInventory implements Serializable {
     }
 
 
-    public FoodInventory(String description, double standardPrice, int quantity, double averageRating, LocalDateTime expirationDate) {
+    public FoodInventory(String description, double standardPrice, int quantity, double averageRating, LocalDateTime expirationDate,
+                         boolean isForSale, boolean isForDonation) {
         this.description = description;
         this.standardPrice = standardPrice;
         this.quantity = quantity;
         this.averageRating = averageRating;
         this.expirationDate = expirationDate;
+        this.isForSale = isForSale;
+        this.isForDonation = isForDonation;
+    }
+
+
+    public FoodInventory(int id, String description, double standardPrice, int quantity, double averageRating, LocalDateTime expirationDate, boolean isForDonation, boolean isForSale) {
+        this.id = id;
+        this.description = description;
+        this.standardPrice = standardPrice;
+        this.quantity = quantity;
+        this.averageRating = averageRating;
+        this.expirationDate = expirationDate;
+        this.isForDonation = isForDonation;
+        this.isForSale = isForSale;
     }
 
     public int getId() {
@@ -129,7 +144,7 @@ public class FoodInventory implements Serializable {
     public void setExpirationDate(LocalDateTime expirationDate) {
         this.expirationDate = expirationDate;
     }
-    public boolean getIsSurplus() {
+    public Boolean getIsSurplus() {
         return is_surplus;
     }
    public void setIsSurplus(boolean is_surplus) {

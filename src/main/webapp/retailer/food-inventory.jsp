@@ -33,6 +33,8 @@
 <nav>
     <div class="nav-left">
         <div><a href="food-inventory.jsp">Food Inventory</a></div>
+        <div><a href="surplus-food-inventory.jsp">Surplus Food</a></div>
+
         <!--<div><a href="food_items.jsp">Food Items</a></div>-->
     </div>
     <div class="nav-right">
@@ -109,74 +111,6 @@
 
 
 
-<h2>Surplus Food Items</h2>
-<div class="container">
-    <%
-        try {
-            List<FoodInventory> foodInventoryList = (List<FoodInventory>) request.getAttribute("foodInventoryList");
-            if (foodInventoryList == null || foodInventoryList.isEmpty()) {
-    %>
-    <p>No surplus food items found.</p>
-    <%
-
-        List<FoodInventory> surplusFoodItems = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        for (FoodInventory item : foodInventoryList) {
-            if (item.getExpirationDate().isBefore(now.plusWeeks(1))) {
-                surplusFoodItems.add(item);
-            }
-        }
-
-        if (surplusFoodItems.isEmpty()) {
-    %>
-    <p>No surplus food items found.</p>
-    <%
-
-    } else {
-    %>
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Standard Price</th>
-            <th>Quantity</th>
-            <th>Expiration Date</th>
-            <th>Average Rating</th>
-            <th>Surplus</th>
-            <th>For Donation</th>
-            <th>For Sale</th>
-        </tr>
-        </thead>
-        <tbody>
-        <%
-            for (FoodInventory item : surplusFoodItems) {
-        %>
-        <tr>
-            <td><%= item.getId() %></td>
-            <td><%= item.getDescription() %></td>
-            <td><%= item.getStandardPrice() %></td>
-            <td><%= item.getQuantity() %></td>
-            <td><%= item.getExpirationDate() != null ? item.getExpirationDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "" %></td>
-            <td><%= item.getAverageRating() %></td>
-            <td>Yes</td>
-            <td><%= item.getIsForDonation() ? "Yes" : "No" %></td>
-            <td><%= item.getIsForSale() ? "Yes" : "No" %></td>
-        </tr>
-        <%
-            }
-        %>
-        </tbody>
-    </table>
-    <%
-                }
-            }
-        } catch (Exception e) {
-            out.println("<p>Error: " + e.getMessage() + "</p>");
-            e.printStackTrace();
-        }
-    %>
-</div>
 
 
 

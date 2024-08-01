@@ -61,14 +61,19 @@
         double averageRating = Double.parseDouble(request.getParameter("average_rating"));
         String expirationDateStr = request.getParameter("expirationDate");
         LocalDateTime expirationDate = LocalDateTime.parse(expirationDateStr);
+        boolean isForDonation = "on".equalsIgnoreCase(request.getParameter("isForDonation"));
+        boolean isForSale = "on".equalsIgnoreCase(request.getParameter("isForSale"));
 
         // Create a new FoodInventory item
-        FoodInventory item = new FoodInventory(description,standardPrice,quantity,averageRating,expirationDate);
+        FoodInventory item = new FoodInventory(description,standardPrice,quantity,averageRating,expirationDate,isForDonation,isForSale);
         item.setDescription(description);
         item.setStandardPrice(standardPrice);
         item.setQuantity(quantity);
         item.setAverageRating(averageRating);
         item.setExpirationDate(expirationDate);
+        item.setIsForDonation(isForDonation); // Set isForDonation
+        item.setIsForSale(isForSale);
+
 
         // Add the item to the database
         FoodInventoryDAO dao = new FoodInventoryDAO();

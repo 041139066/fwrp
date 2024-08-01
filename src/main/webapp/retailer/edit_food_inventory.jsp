@@ -70,8 +70,13 @@
             String expirationDateStr = request.getParameter("expirationDate");
             LocalDateTime expirationDate = LocalDateTime.parse(expirationDateStr);
 
+            // Retrieve checkbox values
+            boolean isForDonation = request.getParameter("isForDonation") != null;
+            boolean isForSale = request.getParameter("isForSale") != null;
+
+
             // Update the FoodInventory item
-            item = new FoodInventory(id,description,standardPrice,quantity,averageRating,expirationDate);
+            item = new FoodInventory(id,description,standardPrice,quantity,averageRating,expirationDate,isForDonation,isForSale);
            // item.setId(id);
            // item.setDescription(description);
            // item.setStandardPrice(standardPrice);
