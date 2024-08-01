@@ -3,25 +3,30 @@ package businesslayer;
 import dataaccesslayer.FoodInventoryDAO;
 import dataaccesslayer.FoodPreferencesDAO;
 import dataaccesslayer.SubscriptionDAO;
+import dataaccesslayer.UserDAO;
 import model.FoodInventory;
 import model.FoodPreference;
 import model.Subscription;
+import model.User;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 public class SubscriptionService {
 
     private final SubscriptionDAO subsDao;
     private final FoodPreferencesDAO prefDao;
     private final FoodInventoryDAO invDao;
+    private final UserDAO userDAO;
 
     public SubscriptionService() {
         subsDao = new SubscriptionDAO();
         prefDao = new FoodPreferencesDAO();
         invDao = new FoodInventoryDAO();
+        userDAO = new UserDAO();
     }
 
     public Subscription getSubscription(int userId) {
@@ -31,6 +36,7 @@ public class SubscriptionService {
     public int createSubscription(Subscription subscription) {
         return subsDao.createSubscriptionByconsumerId(subscription);
     }
+
     public int updateSubscription(Subscription subscription) {
         return subsDao.updateSubscriptionByConsumerId(subscription);
     }
@@ -80,8 +86,8 @@ public class SubscriptionService {
             }
         }
         if (newId != oldId) {
-           prefDao.addFoodPreference(new FoodPreference(consumerId, newId));
-           prefDao.deleteFoodPreference(new FoodPreference(consumerId, oldId));
+            prefDao.addFoodPreference(new FoodPreference(consumerId, newId));
+            prefDao.deleteFoodPreference(new FoodPreference(consumerId, oldId));
         }
         while (newIterator.hasNext()) {
             newId = newIterator.next();
@@ -93,4 +99,30 @@ public class SubscriptionService {
         }
     }
 
+    public void alert(User retailer, List<FoodInventory> foodInventoryList) {
+        String city = retailer.getCity();
+        String province = retailer.getProvince();
+        List<User> users = userDAO.getUserByLocation(city, province);
+        Iterator<User> iterator = users.iterator();
+        while (iterator.hasNext()) {
+            User user = iterator.next();
+            List<FoodInventory> foodPreferences = getFoodPreferences(user.getId());
+            List<FoodInventory> list = findCommonFoodItems(foodInventoryList, foodPreferences);
+            if(user.getMethod() == MethodType.email) {
+                Notification notification = new EmailNotification();
+                notification.send(list);
+            }
+            if(user.getMethod() == MethodType.sms) {
+                Notification notification = new SMSNotification();
+                notification.send(list);
+
+            }
+        }
+    }
+
+    private List<FoodInventory> findCommonFoodItems(List<FoodInventory> foodInventoryList, List<FoodInventory> foodPreferences) {
+        return foodInventoryList.stream()
+                .filter(itemA -> foodPreferences.stream().anyMatch(itemB -> itemA.getId() == itemB.getId()))
+                .collect(Collectors.toList());
+    }
 }
