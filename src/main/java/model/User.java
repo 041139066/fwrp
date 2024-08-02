@@ -8,12 +8,17 @@ public class User {
     private String name;
     private String email;
     private UserType type;
+    private String password;
     private boolean subscription;
     private String city;
     private String province;
     private MethodType method;// Using the UserType enum
     private String contactEmail;
     private String contactPhone;
+
+    public User() {
+
+    }
 
     public int getId() {
         return id;
@@ -37,6 +42,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public UserType getType() {

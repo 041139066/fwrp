@@ -19,7 +19,7 @@
     </div>
     <div class="right-section">
         <h2>Register</h2>
-        <form action="" method="post">
+        <form action="Register-servlet" method="post">
             <div class="form-field">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>

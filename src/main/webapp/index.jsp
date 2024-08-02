@@ -1,3 +1,4 @@
+<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -21,7 +22,7 @@
         </div>
         <div class="right-section">
             <h2 class="form-header">Login</h2>
-            <form action="" method="post">
+            <form action="LoginServlet" method="post">
                 <div class="form-field">
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
@@ -33,6 +34,10 @@
                 <div class="form-buttons">
                     <button type="submit">Login</button>
                 </div>
+<%--                <c:if test = "${param.error != null}">--%>
+<%--                    <div>${param.error} ${param.msg}</div>--%>
+<%--                </c:if>--%>
+
                 <div class="form-footer">
                     Don't have an account? <a href="register.jsp">Register</a>
                 </div>
@@ -42,7 +47,8 @@
 </div>
 <!-- Footer -->
 <%@ include file="/utility/footer.jsp" %>
-</body>
+
+
 <script type="text/javascript" src="JS/jquery-3.7.1.js"></script>
 
 <script type="text/javascript">
@@ -73,5 +79,6 @@
         return false;
     }
 </script>
+</body>>
 </html>
 
