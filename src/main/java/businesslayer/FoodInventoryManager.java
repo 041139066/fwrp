@@ -14,6 +14,7 @@ import model.FoodInventory;
 public class FoodInventoryManager {
 
     private final FoodInventoryDAO dao;
+    //private FoodInventoryValidator validator;
 
     public FoodInventoryManager() {
         dao = new FoodInventoryDAO();
