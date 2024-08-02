@@ -21,7 +21,7 @@
         </div>
         <div class="right-section">
             <h2 class="form-header">Login</h2>
-            <form action="" method="post">
+            <form action="/login" method="post" id = loginForm>
                 <div class="form-field">
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
@@ -30,8 +30,11 @@
                     <label for="password">Password:</label>
                     <input type="password" id="password" name="password" required>
                 </div>
+                <div>
+                    <span id = "msg" style = "font-size:16px;color: red"></span>
+                </div>
                 <div class="form-buttons">
-                    <button type="submit">Login</button>
+                    <button type="submit" id="loginBtn">Login</button>
                 </div>
                 <div class="form-footer">
                     Don't have an account? <a href="register.jsp">Register</a>
@@ -45,5 +48,35 @@
     <p>&copy; 2024 Food Waste Reduction Platform. All rights reserved.</p>
 </footer>
 </body>
+<script type="text/javascript" src="JS/jquery-3.7.1.js"></script>
+
+<script type="text/javascript">
+    $("#loginBtn").click(function(){
+
+        var uname = $("#email").val();
+        var upwd = $("#password").val();
+
+        if(isEmpty(uname)){
+            $("#msg").html("Email cannot be empty");
+            return;
+        }
+
+        if(isEmpty(upwd)){
+            $("#msg").html("Password cannot be empty");
+            return;
+        }
+
+        $("#loginForm").submit();
+
+         }
+    );
+
+    function isEmpty(str) {
+        if(str == null || str.trim() === ""){
+            return true;
+        }
+        return false;
+    }
+</script>
 </html>
 
