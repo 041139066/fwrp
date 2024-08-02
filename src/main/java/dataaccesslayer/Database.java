@@ -18,38 +18,28 @@ public class Database {
      */
     public static Connection getConnection() {
         try {
-            // Load the MySQL JDBC driver
-            Class.forName(driverString);
-
             // Establish connection if not already initialized
             if (connection == null) {
+                // Load the MySQL JDBC driver
+                Class.forName(driverString);
                 Properties props = new Properties();
-
                 // Load database properties from configuration file
                 try (InputStream input = Database.class.getClassLoader().getResourceAsStream("properties.txt")) {
-                    System.out.println(input);
                     props.load(input);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-
                 // Retrieve connection details from properties and establish connection
-                try {
-                    String url = props.getProperty("db.url");
-                    String username = props.getProperty("db.username");
-                    String password = props.getProperty("db.password");
-                    connection = DriverManager.getConnection(url, username, password);
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                String url = props.getProperty("db.url");
+                String username = props.getProperty("db.username");
+                String password = props.getProperty("db.password");
+                connection = DriverManager.getConnection(url, username, password);
             }
         } catch (ClassNotFoundException e) {
-            System.out.println("MySQL JDBC driver not found.");
-            e.printStackTrace();
+            System.err.println("MySQL JDBC driver not found.");
+        } catch (IOException e) {
+            System.err.println("Failed to load properties file.");
+        } catch (SQLException e) {
+            System.err.println("Failed to connect to database.");
         }
-
         return connection;
     }
-
 }

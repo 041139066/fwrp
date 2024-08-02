@@ -45,11 +45,9 @@ public class RatingServlet extends HttpServlet {
             } else {
                 res.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found");
             }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override

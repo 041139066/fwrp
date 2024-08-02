@@ -24,16 +24,7 @@
 <!-- Container -->
 <div class="container card">
     <c:choose>
-        <%--        <c:when test="${requestScope.subscription == null}">--%>
-        <%--            <div class="information-card" onClick="form.show()">--%>
-        <%--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">--%>
-        <%--                    <path d="M12 5V19M5 12H19" stroke="black" stroke-width="2" stroke-linecap="round"--%>
-        <%--                          stroke-linejoin="round"></path>--%>
-        <%--                </svg>--%>
-        <%--                <div>Add</div>--%>
-        <%--            </div>--%>
-        <%--        </c:when>--%>
-        <c:when test="${requestScope.subscription.status == false}">
+        <c:when test="${requestScope.subscription.subscription == false && requestScope.subscription.method != null}">
             <button class="button-primary info-button" onclick="handleReactivate()">Reactivate</button>
             <!-- Information Card -->
             <div class="info-card" style="display: none">
@@ -51,13 +42,14 @@
             <h2>Subscription Form</h2>
             <form id="subscriptionForm">
                 <div class="form-buttons">
-                    <c:if test="${requestScope.subscription.status == true}">
+                    <c:if test="${requestScope.subscription.method == null}">
+                        <button class="button-primary" type="button" onclick="handleSubscribe()">Subscribe</button>
+                    </c:if>
+                    <c:if test="${requestScope.subscription.subscription == true}">
                         <button class="button-primary" type="button" onclick="handleUpdate()">Update</button>
                         <button class="button-primary" type="button" onclick="handleDeactivate()">Deactivate</button>
                     </c:if>
-                    <c:if test="${requestScope.subscription == null}">
-                        <button class="button-primary" type="button" onclick="handleSubscribe()">Subscribe</button>
-                    </c:if>
+
 
                 </div>
                 <!-- Location Selection -->
@@ -148,12 +140,12 @@
 
 <script>
     <c:choose>
-        <c:when test="${requestScope.subscription == null}">
-            const subscription = {};
-        </c:when>
-        <c:otherwise>
-            const subscription = ${requestScope.subscription.toJson()};
-        </c:otherwise>
+    <c:when test="${requestScope.subscription == null}">
+    const subscription = {};
+    </c:when>
+    <c:otherwise>
+    const subscription = ${requestScope.subscription.toJson()};
+    </c:otherwise>
     </c:choose>
     const cities = ${requestScope.cities};
     let filteredCities = cities;
@@ -168,6 +160,7 @@
     const foodPreferencesSelect = $('#foodPreferences');
 
     function iniCreateForm() {
+        emailInput.val(subscription.email);
         filterCityList(subscription.province);
     }
 
@@ -177,8 +170,8 @@
         citySelect.val(subscription.city);
         methodSelect.val(subscription.method);
         handleMethodChange();
-        emailInput.val(subscription.email); // or user.email
-        phoneInput.val(subscription.phone);
+        emailInput.val(subscription.contactEmail); // or user.email
+        phoneInput.val(subscription.contactPhone);
         updateFoodPreferences();
     }
 
@@ -186,8 +179,8 @@
         $("#info-province").text(subscription.province);
         $("#info-city").text(subscription.city);
         $("#info-method").text(subscription.method.toUpperCase());
-        subscription.method.toLowerCase() === "email" && $("#info-email").text(subscription.email).parent("p").show();
-        subscription.method.toLowerCase() === "sms" && $("#info-phone").text(subscription.phone).parent("p").show();
+        subscription.method.toLowerCase() === "email" && $("#info-email").text(subscription.contactEmail).parent("p").show();
+        subscription.method.toLowerCase() === "sms" && $("#info-phone").text(subscription.contactPhone).parent("p").show();
         $("#info-food-preferences").text(foodPreferences.map(itm => itm.description).join(", ") || "N/A");
         $(".info-card").show();
         $(".info-button").hover(function () {
@@ -287,10 +280,10 @@
             foodPreferences: foodPreferences.map(food => food.id).join(',')
         }
         if (methodSelect.val() === 'email') {
-            data.email = emailInput.val();
+            data.contactEmail = emailInput.val();
         }
         if (methodSelect.val() === 'sms') {
-            data.phone = phoneInput.val();
+            data.contactPhone = phoneInput.val();
         }
         $.ajax({
             url: 'subscription/subscribe',
@@ -321,10 +314,10 @@
             foodPreferences: foodPreferences.map(food => food.id).join(',')
         }
         if (methodSelect.val() === 'email') {
-            data.email = emailInput.val();
+            data.contactEmail = emailInput.val();
         }
         if (methodSelect.val() === 'sms') {
-            data.phone = phoneInput.val();
+            data.contactPhone = phoneInput.val();
         }
         $.ajax({
             url: 'subscription/update',
@@ -433,15 +426,7 @@
     }
 
     $(document).ready(function () {
-        if (!subscription) {
-            iniCreateForm();
-            console.log('#1', foodPreferences);
-        } else if (subscription.status === false) {
-            iniInfoCard();
-        } else {
-            iniUpdateForm();
-        }
-
+        subscription.subscription ? iniUpdateForm() : subscription.method ? iniInfoCard() : iniCreateForm();
     });
 
 </script>

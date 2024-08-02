@@ -1880,30 +1880,19 @@ UNLOCK TABLES;
 -- -----------------------------------------------------
 CREATE TABLE Users
 (
-    id    INT                                         NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name  VARCHAR(127)                                NOT NULL,
-    email VARCHAR(255)                                NOT NULL UNIQUE,
-    type  ENUM ('retailer', 'charitable', 'consumer') NOT NULL
-);
-
--- -----------------------------------------------------
--- Table Subscriptions
--- -----------------------------------------------------
-CREATE TABLE Subscriptions
-(
-    consumer_id INT                   NOT NULL PRIMARY KEY,
-    city        VARCHAR(120)          NOT NULL,
-    province    CHAR(2)               NOT NULL,
-    method      ENUM ('email', 'sms') NOT NULL,
-    email       VARCHAR(255)          NULL,
-    phone       VARCHAR(20)           NULL,
-    status      BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (consumer_id) REFERENCES Users (id)
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION,
-    FOREIGN KEY (city, province) REFERENCES cities (city, province_id)
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION
+    id              INT                                         NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name            VARCHAR(127)                                NOT NULL,
+    email           VARCHAR(255)                                NOT NULL UNIQUE,
+    type            ENUM ('retailer', 'charitable', 'consumer') NOT NULL,
+    subscription    BOOLEAN                                     DEFAULT FALSE,
+    city            VARCHAR(120)                                NULL,
+    province        CHAR(2)                                     NULL,
+    method          ENUM ('email', 'sms')                       NULL,
+    contact_email   VARCHAR(255)                                NULL,
+    contact_phone   VARCHAR(20)                                 NULL,
+    CHECK (subscription = FALSE OR (city IS NOT NULL AND province IS NOT NULL AND method IS NOT NULL AND (contact_email IS NOT NULL OR contact_phone IS NOT NULL))),
+    CHECK (method != 'email' OR contact_email IS NOT NULL),
+    CHECK (method != 'sms' OR contact_phone IS NOT NULL)
 );
 
 -- -----------------------------------------------------
@@ -2018,58 +2007,42 @@ CREATE TABLE Ratings
         ON UPDATE NO ACTION
 );
 
-INSERT INTO Users (name, email, type)
-VALUES ('John Doe', 'john.doe@example.com', 'retailer'),
-       ('Jane Smith', 'jane.smith@example.com', 'charitable'),
-       ('Emily Johnson', 'emily.johnson@example.com', 'consumer'),
-       ('Michael Brown', 'michael.brown@example.com', 'consumer'),
-       ('Alice Green', 'alice.green@example.com', 'retailer'),
-       ('Bob White', 'bob.white@example.com', 'charitable'),
-       ('Catherine Lee', 'catherine.lee@example.com', 'consumer'),
-       ('David Wilson', 'david.wilson@example.com', 'consumer'),
-       ('Eve Black', 'eve.black@example.com', 'retailer'),
-       ('Frank Harris', 'frank.harris@example.com', 'charitable'),
-       ('Grace Adams', 'grace.adams@example.com', 'consumer'),
-       ('Henry Lewis', 'henry.lewis@example.com', 'retailer'),
-       ('Ivy Martinez', 'ivy.martinez@example.com', 'charitable'),
-       ('Jack Robinson', 'jack.robinson@example.com', 'consumer'),
-       ('Karen Walker', 'karen.walker@example.com', 'retailer'),
-       ('Leo Harris', 'leo.harris@example.com', 'charitable'),
-       ('Mia Scott', 'mia.scott@example.com', 'consumer'),
-       ('Nathan Young', 'nathan.young@example.com', 'retailer'),
-       ('Olivia King', 'olivia.king@example.com', 'charitable'),
-       ('Paul Allen', 'paul.allen@example.com', 'consumer'),
-       ('Quincy Wright', 'quincy.wright@example.com', 'retailer'),
-       ('Rachel Hall', 'rachel.hall@example.com', 'charitable'),
-       ('Sam Turner', 'sam.turner@example.com', 'consumer'),
-       ('Tina Evans', 'tina.evans@example.com', 'retailer');
+INSERT INTO Users (name, email, type, subscription, city, province, method, contact_email, contact_phone) VALUES
+-- Retailers
+('Retailer 1', 'retailer1@example.com', 'retailer', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
+('Retailer 2', 'retailer2@example.com', 'retailer', FALSE, 'Montreal', 'QC', NULL, NULL, NULL),
+('Retailer 3', 'retailer3@example.com', 'retailer', FALSE, 'Vancouver', 'BC', NULL, NULL, NULL),
+('Retailer 4', 'retailer4@example.com', 'retailer', FALSE, 'Calgary', 'AB', NULL, NULL, NULL),
+('Retailer 5', 'retailer5@example.com', 'retailer', FALSE, 'Ottawa', 'ON', NULL, NULL, NULL),
+
+-- Charitable organizations
+('Charitable 1', 'charitable1@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 2', 'charitable2@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 3', 'charitable3@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 4', 'charitable4@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 5', 'charitable5@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+
+-- Consumers without subscription
+('Consumer 1', 'consumer1@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 2', 'consumer2@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 3', 'consumer3@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 4', 'consumer4@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 5', 'consumer5@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+
+-- Consumers with subscription
+('Consumer 6', 'consumer6@example.com', 'consumer', TRUE, 'Edmonton', 'AB', 'email', 'consumer6_contact@example.com', NULL),
+('Consumer 7', 'consumer7@example.com', 'consumer', TRUE, 'Winnipeg', 'MB', 'sms', NULL, '1234567890'),
+('Consumer 8', 'consumer8@example.com', 'consumer', TRUE, 'Quebec City', 'QC', 'email', 'consumer8_contact@example.com', NULL),
+('Consumer 9', 'consumer9@example.com', 'consumer', TRUE, 'Hamilton', 'ON', 'sms', NULL, '0987654321'),
+('Consumer 10', 'consumer10@example.com', 'consumer', TRUE, 'Kitchener', 'ON', 'email', 'consumer10_contact@example.com', NULL),
+('Consumer 11', 'consumer11@example.com', 'consumer', TRUE, 'London', 'ON', 'sms', NULL, '2345678901'),
+('Consumer 12', 'consumer12@example.com', 'consumer', TRUE, 'Victoria', 'BC', 'email', 'consumer12_contact@example.com', NULL),
+('Consumer 13', 'consumer13@example.com', 'consumer', TRUE, 'Halifax', 'NS', 'sms', NULL, '3456789012'),
+('Consumer 14', 'consumer14@example.com', 'consumer', TRUE, 'Oshawa', 'ON', 'email', 'consumer14_contact@example.com', NULL),
+('Consumer 15', 'consumer15@example.com', 'consumer', TRUE, 'Windsor', 'ON', 'sms', NULL, '4567890123');
 
 
-INSERT INTO Subscriptions (consumer_id, city, province, method, email, phone, status)
-VALUES (1, 'Ottawa', 'ON', 'email', 'example1@example.com', NULL, TRUE),
-       (2, 'Ottawa', 'ON', 'sms', NULL, '1234567890', FALSE),
-       (3, 'Ottawa', 'ON', 'email', 'example2@example.com', NULL, TRUE),
-       (4, 'Ottawa', 'ON', 'sms', NULL, '2345678901', TRUE),
-       (5, 'Ottawa', 'ON', 'email', 'example3@example.com', NULL, FALSE),
-       (6, 'Ottawa', 'ON', 'sms', NULL, '3456789012', TRUE),
-       (7, 'Ottawa', 'ON', 'email', 'example4@example.com', NULL, TRUE),
-       (8, 'Ottawa', 'ON', 'sms', NULL, '4567890123', FALSE),
-       (9, 'Toronto', 'ON', 'email', 'example5@example.com', NULL, TRUE),
-       (10, 'Montréal', 'QC', 'sms', NULL, '5678901234', FALSE),
-       (11, 'Vancouver', 'BC', 'email', 'example6@example.com', NULL, TRUE),
-       (12, 'Calgary', 'AB', 'sms', NULL, '6789012345', TRUE),
-       (13, 'Edmonton', 'AB', 'email', 'example7@example.com', NULL, FALSE),
-       (14, 'Winnipeg', 'MB', 'email', 'example8@example.com', NULL, TRUE),
-       (15, 'Quebec City', 'QC', 'sms', NULL, '7890123456', TRUE),
-       (16, 'Hamilton', 'ON', 'email', 'example9@example.com', NULL, FALSE),
-       (17, 'Mississauga', 'ON', 'sms', NULL, '8901234567', TRUE),
-       (18, 'Brampton', 'ON', 'email', 'example10@example.com', NULL, TRUE),
-       (19, 'Surrey', 'BC', 'sms', NULL, '9012345678', FALSE),
-       (20, 'Kitchener', 'ON', 'email', 'example11@example.com', NULL, TRUE),
-       (21, 'Halifax', 'NS', 'sms', NULL, '0123456789', TRUE),
-       (22, 'Laval', 'QC', 'email', 'example12@example.com', NULL, FALSE),
-       (23, 'London', 'ON', 'sms', NULL, '1234567890', TRUE),
-       (24, 'Victoria', 'BC', 'email', 'example13@example.com', NULL, TRUE);
+
 
 INSERT INTO FoodInventory (description, standard_price, quantity, average_rating)
 VALUES ('Apples', 1.50, 100, 4.5),

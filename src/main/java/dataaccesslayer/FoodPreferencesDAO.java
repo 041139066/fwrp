@@ -1,5 +1,6 @@
 package dataaccesslayer;
 
+import model.FoodInventory;
 import model.FoodPreference;
 
 import java.sql.Connection;
@@ -28,6 +29,7 @@ public class FoodPreferencesDAO {
         }
         return list;
     }
+
     public int addFoodPreference(FoodPreference foodPreference) {
         int affectedRows = 0;
         try {

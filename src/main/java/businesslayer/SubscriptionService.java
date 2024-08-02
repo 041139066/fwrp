@@ -2,65 +2,53 @@ package businesslayer;
 
 import dataaccesslayer.FoodInventoryDAO;
 import dataaccesslayer.FoodPreferencesDAO;
-import dataaccesslayer.SubscriptionDAO;
 import dataaccesslayer.UserDAO;
 import model.FoodInventory;
 import model.FoodPreference;
-import model.Subscription;
 import model.User;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.stream.Collectors;
+import java.util.List;
 
 public class SubscriptionService {
 
-    private final SubscriptionDAO subsDao;
-    private final FoodPreferencesDAO prefDao;
-    private final FoodInventoryDAO invDao;
     private final UserDAO userDAO;
+    private final FoodInventoryDAO foodDAO;
+    private final FoodPreferencesDAO prefDAO;
 
     public SubscriptionService() {
-        subsDao = new SubscriptionDAO();
-        prefDao = new FoodPreferencesDAO();
-        invDao = new FoodInventoryDAO();
         userDAO = new UserDAO();
+        foodDAO = new FoodInventoryDAO();
+        prefDAO = new FoodPreferencesDAO();
     }
 
-    public Subscription getSubscription(int userId) {
-        return subsDao.getSubscriptionByConsumerId(userId);
+    public User getSubscription(int userId) {
+        return userDAO.getUserById(userId);
     }
 
-    public int createSubscription(Subscription subscription) {
-        return subsDao.createSubscriptionByconsumerId(subscription);
+    public int updateSubscription(User user) {
+        return userDAO.updateSubscription(user);
     }
 
-    public int updateSubscription(Subscription subscription) {
-        return subsDao.updateSubscriptionByConsumerId(subscription);
-    }
-
-    public int unsubscribe(int consumerId) {
-        return subsDao.updateSubscriptionStatusByConsumerId(consumerId, false);
-    }
-
-    public int reactivate(int consumerId) {
-        return subsDao.updateSubscriptionStatusByConsumerId(consumerId, true);
+    public int updateStatus(boolean status, int userId) {
+        return userDAO.updateStatus(status, userId);
     }
 
     public List<FoodInventory> getFoodPreferences(int userId) {
-        List<Integer> ids = prefDao.getFoodPreferencesByUserId(userId);
-        List<FoodInventory> foodInventory = invDao.getAllFoodInventory();
-        return foodInventory.stream()
-                .filter(item -> ids.contains(item.getId()))
-                .toList();
+        List<Integer> ids = prefDAO.getFoodPreferencesByUserId(userId);
+        List<FoodInventory> foodInventoryList = new ArrayList<>();
+        for(Integer id : ids) {
+            foodInventoryList.add(foodDAO.getFoodInventoryById(id));
+        }
+        return foodInventoryList;
     }
 
-    public void updateFoodPreferences(int consumerId, String strIds) {
-        List<Integer> oldIds = prefDao.getFoodPreferencesByUserId(consumerId);
+    public void updateFoodPreferences(int userId, String ids) {
+        List<Integer> oldIds = prefDAO.getFoodPreferencesByUserId(userId);
         List<Integer> newIds = new ArrayList<>();
-        for (String id : strIds.split(",")) {
+        for (String id : ids.split(",")) {
             try {
                 newIds.add(Integer.parseInt(id.trim()));
             } catch (NumberFormatException e) {
@@ -78,51 +66,32 @@ public class SubscriptionService {
                 newId = newIterator.next();
                 oldId = oldIterator.next();
             } else if (newId < oldId) {
-                prefDao.addFoodPreference(new FoodPreference(consumerId, newId));
+                prefDAO.addFoodPreference(new FoodPreference(userId, newId));
                 newId = newIterator.next();
             } else {
-                prefDao.deleteFoodPreference(new FoodPreference(consumerId, oldId));
+                prefDAO.deleteFoodPreference(new FoodPreference(userId, oldId));
                 oldId = oldIterator.next();
             }
         }
         if (newId != oldId) {
-            prefDao.addFoodPreference(new FoodPreference(consumerId, newId));
-            prefDao.deleteFoodPreference(new FoodPreference(consumerId, oldId));
+            prefDAO.addFoodPreference(new FoodPreference(userId, newId));
+            prefDAO.deleteFoodPreference(new FoodPreference(userId, oldId));
         }
         while (newIterator.hasNext()) {
             newId = newIterator.next();
-            prefDao.addFoodPreference(new FoodPreference(consumerId, newId));
+            prefDAO.addFoodPreference(new FoodPreference(userId, newId));
         }
         while (oldIterator.hasNext()) {
             oldId = oldIterator.next();
-            prefDao.deleteFoodPreference(new FoodPreference(consumerId, oldId));
+            prefDAO.deleteFoodPreference(new FoodPreference(userId, oldId));
         }
     }
 
-    public void alert(User retailer, List<FoodInventory> foodInventoryList) {
-        String city = retailer.getCity();
-        String province = retailer.getProvince();
-        List<User> users = userDAO.getUserByLocation(city, province);
-        Iterator<User> iterator = users.iterator();
-        while (iterator.hasNext()) {
-            User user = iterator.next();
-            List<FoodInventory> foodPreferences = getFoodPreferences(user.getId());
-            List<FoodInventory> list = findCommonFoodItems(foodInventoryList, foodPreferences);
-            if(user.getMethod() == MethodType.email) {
-                Notification notification = new EmailNotification();
-                notification.send(list);
-            }
-            if(user.getMethod() == MethodType.sms) {
-                Notification notification = new SMSNotification();
-                notification.send(list);
 
-            }
-        }
-    }
 
-    private List<FoodInventory> findCommonFoodItems(List<FoodInventory> foodInventoryList, List<FoodInventory> foodPreferences) {
-        return foodInventoryList.stream()
-                .filter(itemA -> foodPreferences.stream().anyMatch(itemB -> itemA.getId() == itemB.getId()))
-                .collect(Collectors.toList());
-    }
+
+
+
+
+
 }
