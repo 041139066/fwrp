@@ -1,0 +1,40 @@
+@import url("base.css");
+
+.rating-card {
+    margin: 24px auto;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+.rating-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.card-header .title {
+    color: var(--primary-darker);
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.card-body p {
+    font-size: 0.875rem;
+    color: var(--regular-text);
+    margin: 5px 0;
+}
+
+.card-body p strong {
+    font-weight: 500;
+    color: var(--primary);
+}

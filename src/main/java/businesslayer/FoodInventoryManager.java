@@ -1,12 +1,6 @@
-/* File: AuthorsBusinessLogic.java
- * AuthorDTO: Stanley Pieda
- * Date: 2015
- * Description: Demonstration of DAO Design Pattern with Servlet website
- */
 package businesslayer;
 
 import java.util.List;
-import java.sql.SQLException;
 
 import dataaccesslayer.FoodInventoryDAO;
 import model.FoodInventory;
@@ -20,8 +14,12 @@ public class FoodInventoryManager {
         dao = new FoodInventoryDAO();
     }
 
-    public List<FoodInventory> getAllFoodInventory() throws SQLException {
+    public List<FoodInventory> getAllFoodInventory() {
         return dao.getAllFoodInventory();
+    }
+
+    public FoodInventory getFoodInventoryById(int foodInventoryID) {
+        return dao.getFoodInventoryById(foodInventoryID);
     }
 
 }

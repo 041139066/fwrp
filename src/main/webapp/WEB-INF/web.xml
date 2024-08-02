@@ -21,6 +21,26 @@
     <url-pattern>/food-inventory</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>SubscriptionServlet</servlet-name>
+    <servlet-class>controllers.SubscriptionServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SubscriptionServlet</servlet-name>
+    <url-pattern>/subscription/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>RatingServlet</servlet-name>
+    <servlet-class>controllers.RatingServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>RatingServlet</servlet-name>
+    <url-pattern>/rating/*</url-pattern>
+  </servlet-mapping>
+
   <session-config>
     <session-timeout>60</session-timeout>
   </session-config>
