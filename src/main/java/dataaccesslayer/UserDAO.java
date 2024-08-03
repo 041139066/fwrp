@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.MethodType;
 import model.User;
+import utilities.PasswordHasher;
 
 public class UserDAO {
 
@@ -82,6 +83,7 @@ public class UserDAO {
         user.setId(resultSet.getInt("id"));
         user.setName(resultSet.getString("name"));
         user.setEmail(resultSet.getString("email"));
+        user.setPassword(resultSet.getString("password"));
         user.setType(resultSet.getString("type"));
         user.setSubscription(resultSet.getBoolean("subscription"));
         user.setCity(resultSet.getString("city"));
@@ -96,7 +98,7 @@ public class UserDAO {
         User user = new User();
         user.setName(username);
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(PasswordHasher.hashPassword(password));
         user.setType(type);
 
         PreparedStatement statement = Database.getConnection().prepareStatement(
@@ -108,7 +110,6 @@ public class UserDAO {
         statement.setString(3, user.getPassword());
         statement.setString(4, user.getTypeName());
         statement.executeUpdate();
-
     }
 
     public User auth (String email, String password){
@@ -136,6 +137,24 @@ public class UserDAO {
             return null;
         }
     };
+
+    public User findByEmail(String email) {
+        User user = null;
+        try {
+            Connection connection = Database.getConnection();
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE email = ?")) {
+                preparedStatement.setString(1, email);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        user = makeUser(resultSet);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
 }
 
 

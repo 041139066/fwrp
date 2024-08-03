@@ -1,4 +1,3 @@
-<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -22,22 +21,26 @@
         </div>
         <div class="right-section">
             <h2 class="form-header">Login</h2>
-            <form action="LoginServlet" method="post">
+            <form action="LoginServlet" method="post" id="loginForm">
                 <div class="form-field">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" required value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>">
                 </div>
                 <div class="form-field">
                     <label for="password">Password:</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-                <div class="form-buttons">
-                    <button type="submit">Login</button>
+                <div id="msg" style="color:red;">
+                    <%
+                        String errorMessage = (String)request.getAttribute("errorMessage");
+                        if (errorMessage != null) {
+                            out.print(errorMessage);
+                        }
+                    %>
                 </div>
-<%--                <c:if test = "${param.error != null}">--%>
-<%--                    <div>${param.error} ${param.msg}</div>--%>
-<%--                </c:if>--%>
-
+                <div class="form-buttons">
+                    <button type="submit" id="loginBtn">Login</button>
+                </div>
                 <div class="form-footer">
                     Don't have an account? <a href="register.jsp">Register</a>
                 </div>
@@ -45,40 +48,37 @@
         </div>
     </div>
 </div>
-<!-- Footer -->
-<%@ include file="/utility/footer.jsp" %>
-
 
 <script type="text/javascript" src="JS/jquery-3.7.1.js"></script>
 
 <script type="text/javascript">
-    $("#loginBtn").click(function(){
+    $(document).ready(function() {
+        $("#loginBtn").click(function(event) {
+            var uname = $("#email").val();
+            var upwd = $("#password").val();
 
-        var uname = $("#email").val();
-        var upwd = $("#password").val();
+            if(isEmpty(uname)) {
+                $("#msg").html("Email cannot be empty");
+                event.preventDefault(); // Prevent form submission
+                return;
+            }
 
-        if(isEmpty(uname)){
-            $("#msg").html("Email cannot be empty");
-            return;
+            if(isEmpty(upwd)) {
+                $("#msg").html("Password cannot be empty");
+                event.preventDefault(); // Prevent form submission
+                return;
+            }
+
+            $("#loginForm").submit();
+        });
+
+        function isEmpty(str) {
+            return str == null || str.trim() === "";
         }
-
-        if(isEmpty(upwd)){
-            $("#msg").html("Password cannot be empty");
-            return;
-        }
-
-        $("#loginForm").submit();
-
-         }
-    );
-
-    function isEmpty(str) {
-        if(str == null || str.trim() === ""){
-            return true;
-        }
-        return false;
-    }
+    });
 </script>
-</body>>
-</html>
 
+<!-- Footer -->
+<%@ include file="/utility/footer.jsp" %>
+</body>
+</html>
