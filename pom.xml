@@ -24,6 +24,13 @@
       <version>8.0.33</version>
     </dependency>
 
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- JSTL -->
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -32,24 +39,9 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.glassfish.web</groupId>
-      <artifactId>javax.servlet.jsp.jstl</artifactId>
-      <version>1.2.1</version>
-    </dependency>
-
-    <!-- Jakarta EE API -->
-    <dependency>
-      <groupId>jakarta.platform</groupId>
-      <artifactId>jakarta.jakartaee-api</artifactId>
-      <version>8.0.0</version>
-      <scope>provided</scope>
+      <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+      <version>1.2.6</version>
     </dependency>
 
     <!-- JSON -->
