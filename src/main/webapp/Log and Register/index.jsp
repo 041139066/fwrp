@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Food Waste Reduction Platform</title>
-    <link rel="stylesheet" type="text/css" href="resources/css/authentication.css">
+    <link rel="stylesheet" type="text/css" href="../resources/css/authentication.css">
 </head>
 <body>
 
@@ -49,7 +49,7 @@
     </div>
 </div>
 
-<script type="text/javascript" src="JS/jquery-3.7.1.js"></script>
+<script type="text/javascript" src="../JS/jquery-3.7.1.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function() {
