@@ -1,4 +1,4 @@
-<%@ page import="java.util.List" %>
+<%@ page import="java.util.List, model.FoodInventory" %>
 <%@ page import="model.FoodInventory" %>
 <%@ page import="dataaccesslayer.FoodInventoryDAO" %>
 <%@ page import="java.time.LocalDateTime" %>

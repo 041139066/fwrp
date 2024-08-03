@@ -18,7 +18,7 @@
 
   <servlet-mapping>
     <servlet-name>FoodInventoryServlet</servlet-name>
-    <url-pattern>/FoodInventoryServlet</url-pattern>
+    <url-pattern>/inventory/*</url-pattern>
   </servlet-mapping>
 
   <servlet>
@@ -44,4 +44,7 @@
   <session-config>
     <session-timeout>60</session-timeout>
   </session-config>
+
+
+
 </web-app>
