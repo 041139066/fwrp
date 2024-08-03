@@ -18,28 +18,53 @@ public class Database {
      */
     public static Connection getConnection() {
         try {
+            // Load the MySQL JDBC driver
+            Class.forName(driverString);
+
             // Establish connection if not already initialized
-            if (connection == null) {
-                // Load the MySQL JDBC driver
-                Class.forName(driverString);
+            if (connection == null || connection.isClosed()) {
                 Properties props = new Properties();
+
                 // Load database properties from configuration file
                 try (InputStream input = Database.class.getClassLoader().getResourceAsStream("properties.txt")) {
+                    System.out.println(input);
                     props.load(input);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
                 // Retrieve connection details from properties and establish connection
-                String url = props.getProperty("db.url");
-                String username = props.getProperty("db.username");
-                String password = props.getProperty("db.password");
-                connection = DriverManager.getConnection(url, username, password);
+                try {
+                    String url = props.getProperty("db.url");
+                    String username = props.getProperty("db.username");
+                    String password = props.getProperty("db.password");
+                    connection = DriverManager.getConnection(url, username, password);
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (ClassNotFoundException e) {
-            System.err.println("MySQL JDBC driver not found.");
-        } catch (IOException e) {
-            System.err.println("Failed to load properties file.");
+            System.out.println("MySQL JDBC driver not found.");
+            e.printStackTrace();
         } catch (SQLException e) {
-            System.err.println("Failed to connect to database.");
+            throw new RuntimeException(e);
         }
+
         return connection;
     }
+
+    /**
+     * Closes the database connection.
+     */
+    public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

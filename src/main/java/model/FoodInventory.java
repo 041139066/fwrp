@@ -1,6 +1,6 @@
 package model;
 
-import utilities.MyGson;
+//import utilities.MyGson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,7 +13,84 @@ public class FoodInventory implements Serializable {
     private double standardPrice;
     private int quantity;
     private double averageRating;
-    private LocalDateTime lastModified;
+    private LocalDateTime expirationDate;
+    private boolean is_surplus;
+    private boolean isForDonation;
+    private boolean isForSale;
+
+    public FoodInventory(int id,
+                         String description,
+                         double standardPrice,
+                         int quantity,
+                         double averageRating,
+                         LocalDateTime expirationDate,
+                         boolean is_surplus,
+                         boolean isForDonation, boolean isForSale){
+        this.id=id;
+        this.description = description;
+        this.standardPrice=standardPrice;
+        this.quantity=quantity;
+        this.averageRating=averageRating;
+        this.expirationDate=expirationDate;
+        this.is_surplus=is_surplus;
+        this.isForDonation = isForDonation;
+        this.isForSale = isForSale;
+    }
+
+    public FoodInventory(int id,
+                         String description,
+                         double standardPrice,
+                         int quantity,
+                         double averageRating,
+                         LocalDateTime expirationDate){
+        this.id=id;
+        this.description = description;
+        this.standardPrice=standardPrice;
+        this.quantity=quantity;
+        this.averageRating=averageRating;
+        this.expirationDate=expirationDate;
+    }
+
+    public FoodInventory(String description,
+                         double standardPrice,
+                         int quantity,
+                         double averageRating,
+                         LocalDateTime expirationDate,
+                         boolean is_surplus,
+                         boolean isForDonation, boolean isForSale){
+        this.description = description;
+        this.standardPrice=standardPrice;
+        this.quantity=quantity;
+        this.averageRating=averageRating;
+        this.expirationDate=expirationDate;
+        this.is_surplus=is_surplus;
+        this.isForDonation = isForDonation;
+        this.isForSale = isForSale;
+    }
+
+
+    public FoodInventory(String description, double standardPrice, int quantity, double averageRating, LocalDateTime expirationDate,
+                         boolean isForSale, boolean isForDonation) {
+        this.description = description;
+        this.standardPrice = standardPrice;
+        this.quantity = quantity;
+        this.averageRating = averageRating;
+        this.expirationDate = expirationDate;
+        this.isForSale = isForSale;
+        this.isForDonation = isForDonation;
+    }
+
+
+    public FoodInventory(int id, String description, double standardPrice, int quantity, double averageRating, LocalDateTime expirationDate, boolean isForDonation, boolean isForSale) {
+        this.id = id;
+        this.description = description;
+        this.standardPrice = standardPrice;
+        this.quantity = quantity;
+        this.averageRating = averageRating;
+        this.expirationDate = expirationDate;
+        this.isForDonation = isForDonation;
+        this.isForSale = isForSale;
+    }
 
     public int getId() {
         return id;
@@ -55,19 +132,36 @@ public class FoodInventory implements Serializable {
         this.averageRating = averageRating;
     }
 
-    public LocalDateTime getLastModified() {
-        return lastModified;
+    public LocalDateTime getExpirationDate() {
+        return expirationDate;
     }
 
-    public String getStrLastModified() {
+    public String getStrExpirationDate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss");
-        return lastModified.format(formatter);
+        return expirationDate.format(formatter);
     }
 
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
+    public void setExpirationDate(LocalDateTime expirationDate) {
+        this.expirationDate = expirationDate;
     }
-
+    public Boolean getIsSurplus() {
+        return is_surplus;
+    }
+   public void setIsSurplus(boolean is_surplus) {
+        this.is_surplus = is_surplus;
+   }
+   public boolean getIsForDonation() {
+        return isForDonation;
+   }
+   public void setIsForDonation(boolean isForDonation) {
+        this.isForDonation = isForDonation;
+   }
+   public boolean getIsForSale() {
+        return isForSale;
+   }
+   public void setIsForSale(boolean isForSale) {
+        this.isForSale = isForSale;
+   }
     @Override
     public String toString() {
         return "FoodInventory{" +
@@ -75,11 +169,12 @@ public class FoodInventory implements Serializable {
                 ", description='" + description + "'" +
                 ", standardPrice=" + standardPrice +
                 ", quantity=" + quantity +
-                ", lastModified=" + getStrLastModified() +
+                ", lastModified=" + getStrExpirationDate() +
                 ", averageRating=" + averageRating +
                 '}';
     }
-    public String toJson() {
-        return MyGson.getMyGson().toJson(this);
-    }
+   // public String toJson() {
+     //   return MyGson.getMyGson().toJson(this);
+    //}
 }
+
