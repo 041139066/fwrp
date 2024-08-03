@@ -173,7 +173,7 @@ public class FoodInventoryDAO {
     }
 
     // Update surplus status in the database
-    private void updateSurplusStatusInDatabase(int id, boolean isSurplus) {
+    void updateSurplusStatusInDatabase(int id, boolean isSurplus) {
         try (Connection connection = Database.getConnection()) {
             String updateQuery = "UPDATE FoodInventory SET is_surplus = ? WHERE id = ?";
             PreparedStatement statement = connection.prepareStatement(updateQuery);
