@@ -1880,18 +1880,18 @@ UNLOCK TABLES;
 -- -----------------------------------------------------
 CREATE TABLE Users
 (
-    id            INT                                         NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name          VARCHAR(127)                                NOT NULL,
-    email         VARCHAR(255)                                NOT NULL UNIQUE,
-    type          ENUM ('retailer', 'charitable', 'consumer') NOT NULL,
-    subscription  BOOLEAN DEFAULT FALSE,
-    city          VARCHAR(120)                                NULL,
-    province      CHAR(2)                                     NULL,
-    method        ENUM ('email', 'sms')                       NULL,
-    contact_email VARCHAR(255)                                NULL,
-    contact_phone VARCHAR(20)                                 NULL,
-    CHECK (subscription = FALSE OR (city IS NOT NULL AND province IS NOT NULL AND method IS NOT NULL AND
-                                    (contact_email IS NOT NULL OR contact_phone IS NOT NULL))),
+    id              INT                                         NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name            VARCHAR(127)                                NOT NULL,
+    email           VARCHAR(255)                                NOT NULL UNIQUE,
+    password        VARCHAR(255)                                NOT NULL,
+    type            ENUM ('retailer', 'charitable', 'consumer') NOT NULL,
+    subscription    BOOLEAN                                     DEFAULT FALSE,
+    city            VARCHAR(120)                                NULL,
+    province        CHAR(2)                                     NULL,
+    method          ENUM ('email', 'sms')                       NULL,
+    contact_email   VARCHAR(255)                                NULL,
+    contact_phone   VARCHAR(20)                                 NULL,
+    CHECK (subscription = FALSE OR (city IS NOT NULL AND province IS NOT NULL AND method IS NOT NULL AND (contact_email IS NOT NULL OR contact_phone IS NOT NULL))),
     CHECK (method != 'email' OR contact_email IS NOT NULL),
     CHECK (method != 'sms' OR contact_phone IS NOT NULL)
 );
@@ -1994,45 +1994,39 @@ CREATE TABLE Ratings
         ON UPDATE NO ACTION
 );
 
-INSERT INTO Users (name, email, type, subscription, city, province, method, contact_email, contact_phone)
-VALUES
+INSERT INTO Users (name, email, password, type, subscription, city, province, method, contact_email, contact_phone) VALUES
 -- Retailers
-('Retailer 1', 'retailer1@example.com', 'retailer', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
-('Retailer 2', 'retailer2@example.com', 'retailer', FALSE, 'Montreal', 'QC', NULL, NULL, NULL),
-('Retailer 3', 'retailer3@example.com', 'retailer', FALSE, 'Vancouver', 'BC', NULL, NULL, NULL),
-('Retailer 4', 'retailer4@example.com', 'retailer', FALSE, 'Calgary', 'AB', NULL, NULL, NULL),
-('Retailer 5', 'retailer5@example.com', 'retailer', FALSE, 'Ottawa', 'ON', NULL, NULL, NULL),
+('Retailer 1', 'retailer1@example.com', 'default_password', 'retailer', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
+('Retailer 2', 'retailer2@example.com', 'default_password', 'retailer', FALSE, 'Montreal', 'QC', NULL, NULL, NULL),
+('Retailer 3', 'retailer3@example.com', 'default_password', 'retailer', FALSE, 'Vancouver', 'BC', NULL, NULL, NULL),
+('Retailer 4', 'retailer4@example.com', 'default_password', 'retailer', FALSE, 'Calgary', 'AB', NULL, NULL, NULL),
+('Retailer 5', 'retailer5@example.com', 'default_password', 'retailer', FALSE, 'Ottawa', 'ON', NULL, NULL, NULL),
 
 -- Charitable organizations
-('Charitable 1', 'charitable1@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 2', 'charitable2@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 3', 'charitable3@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 4', 'charitable4@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 5', 'charitable5@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 1', 'charitable1@example.com', 'default_password', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 2', 'charitable2@example.com', 'default_password', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 3', 'charitable3@example.com', 'default_password', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 4', 'charitable4@example.com', 'default_password', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 5', 'charitable5@example.com', 'default_password', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
 
 -- Consumers without subscription
-('Consumer 1', 'consumer1@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 2', 'consumer2@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 3', 'consumer3@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 4', 'consumer4@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 5', 'consumer5@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 1', 'consumer1@example.com', 'default_password', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 2', 'consumer2@example.com', 'default_password', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 3', 'consumer3@example.com', 'default_password', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 4', 'consumer4@example.com', 'default_password', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 5', 'consumer5@example.com', 'default_password', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
 
 -- Consumers with subscription
-('Consumer 6', 'consumer6@example.com', 'consumer', TRUE, 'Edmonton', 'AB', 'email', 'consumer6_contact@example.com',
- NULL),
-('Consumer 7', 'consumer7@example.com', 'consumer', TRUE, 'Winnipeg', 'MB', 'sms', NULL, '1234567890'),
-('Consumer 8', 'consumer8@example.com', 'consumer', TRUE, 'Quebec City', 'QC', 'email', 'consumer8_contact@example.com',
- NULL),
-('Consumer 9', 'consumer9@example.com', 'consumer', TRUE, 'Hamilton', 'ON', 'sms', NULL, '0987654321'),
-('Consumer 10', 'consumer10@example.com', 'consumer', TRUE, 'Kitchener', 'ON', 'email',
- 'consumer10_contact@example.com', NULL),
-('Consumer 11', 'consumer11@example.com', 'consumer', TRUE, 'London', 'ON', 'sms', NULL, '2345678901'),
-('Consumer 12', 'consumer12@example.com', 'consumer', TRUE, 'Victoria', 'BC', 'email', 'consumer12_contact@example.com',
- NULL),
-('Consumer 13', 'consumer13@example.com', 'consumer', TRUE, 'Halifax', 'NS', 'sms', NULL, '3456789012'),
-('Consumer 14', 'consumer14@example.com', 'consumer', TRUE, 'Oshawa', 'ON', 'email', 'consumer14_contact@example.com',
- NULL),
-('Consumer 15', 'consumer15@example.com', 'consumer', TRUE, 'Windsor', 'ON', 'sms', NULL, '4567890123');
+('Consumer 6', 'consumer6@example.com', 'default_password', 'consumer', TRUE, 'Edmonton', 'AB', 'email', 'consumer6_contact@example.com', NULL),
+('Consumer 7', 'consumer7@example.com', 'default_password', 'consumer', TRUE, 'Winnipeg', 'MB', 'sms', NULL, '1234567890'),
+('Consumer 8', 'consumer8@example.com', 'default_password', 'consumer', TRUE, 'Quebec City', 'QC', 'email', 'consumer8_contact@example.com', NULL),
+('Consumer 9', 'consumer9@example.com', 'default_password', 'consumer', TRUE, 'Hamilton', 'ON', 'sms', NULL, '0987654321'),
+('Consumer 10', 'consumer10@example.com', 'default_password', 'consumer', TRUE, 'Kitchener', 'ON', 'email', 'consumer10_contact@example.com', NULL),
+('Consumer 11', 'consumer11@example.com', 'default_password', 'consumer', TRUE, 'London', 'ON', 'sms', NULL, '2345678901'),
+('Consumer 12', 'consumer12@example.com', 'default_password', 'consumer', TRUE, 'Victoria', 'BC', 'email', 'consumer12_contact@example.com', NULL),
+('Consumer 13', 'consumer13@example.com', 'default_password', 'consumer', TRUE, 'Halifax', 'NS', 'sms', NULL, '3456789012'),
+('Consumer 14', 'consumer14@example.com', 'default_password', 'consumer', TRUE, 'Oshawa', 'ON', 'email', 'consumer14_contact@example.com', NULL),
+('Consumer 15', 'consumer15@example.com', 'default_password', 'consumer', TRUE, 'Windsor', 'ON', 'sms', NULL, '4567890123');
 
 
 INSERT INTO FoodInventory (name, price, expiration_date, quantity, average_rating, status, retailer_id)
