@@ -47,6 +47,6 @@ public class RatingService {
 
     private void updateAverageRating(int foodInventoryId){
         Double averageRating = rtDAO.getAverageRating(foodInventoryId);
-        fiDAO.updateAverageRating(foodInventoryId, averageRating);
+        fiDAO.updateFoodInventoryAverageRating(foodInventoryId, averageRating);
     }
 }

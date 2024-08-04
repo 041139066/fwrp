@@ -1,0 +1,13 @@
+@import url("base.css");
+
+table {
+    margin-top: 16px;
+}
+
+.form-field input[type="datetime-local"],
+.form-field input[type="radio"] {
+    width: auto;
+    resize: none;
+}
+
+
