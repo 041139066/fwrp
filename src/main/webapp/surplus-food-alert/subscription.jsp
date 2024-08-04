@@ -125,7 +125,7 @@
                                     onchange="handleCheckboxChange(this, '${fn:escapeXml(food.toJson())}')"
                             />
                         </td>
-                        <td>${food.description}</td>
+                        <td>${food.name}</td>
                     </tr>
                 </c:forEach>
                 </tbody>
