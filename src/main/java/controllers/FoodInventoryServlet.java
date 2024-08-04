@@ -24,131 +24,133 @@ public class FoodInventoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        FoodInventoryManager manager = new FoodInventoryManager();
-        String action = request.getParameter("action");
-
-        if (action == null) {
-            action = "list";
-        }
-
         try {
-            switch (action) {
-                case "delete":
-                    deleteFoodInventory(request, response, manager);
-                    break;
-                case "edit":
-                    showEditForm(request, response, manager);
-                    break;
-                case "listSurplus":
-                    listSurplusFoodInventory(request, response, manager);
-                    break;
-                default:
-                    listFoodInventory(request, response, manager);
-                    break;
+            String pathInfo = request.getPathInfo();
+            if (pathInfo == null || pathInfo.isEmpty()) {
+                displayFoodInventoryList(request, response, false);
+            } else {
+                String[] pathInfoSegments = pathInfo.split("/");
+                if (pathInfoSegments.length >= 2) {
+                    String requestType = pathInfoSegments[1];
+                    switch (requestType) {
+                        case "surplus-food":
+                            displayFoodInventoryList(request, response, true);
+                            break;
+                        case "add":
+                            displayFoodInventoryAddForm(request, response);
+                            break;
+                        case "edit":
+                            displayFoodInventoryEditForm(request, response);
+                            break;
+                        case "delete":
+                            deleteFoodInventory(request, response);
+                            break;
+                        // TODO: handle other paths
+                    }
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/food-inventory");
+                }
             }
-        } catch (SQLException ex) {
-            throw new ServletException(ex);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    private void displayFoodInventoryList(HttpServletRequest request, HttpServletResponse response, boolean isSurplus)
+            throws SQLException, IOException, ServletException {
+        int userId = 1; // TODO: get user id from session, and check the user type to be "retailer"
+        FoodInventoryManager manager = new FoodInventoryManager();
+        List<FoodInventory> list = isSurplus ? manager.getSurplusFoodInventoryByRetailerId(userId) : manager.getAllFoodInventoryByRetailerId(userId);
+        request.setAttribute("foodInventoryList", list);
+        request.setAttribute("isSurplus", isSurplus);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/retailer/food-inventory.jsp");
+        dispatcher.forward(request, response);
+    }
+
+    private void displayFoodInventoryAddForm(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, ServletException, IOException {
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/retailer/add_food_inventory.jsp");
+        dispatcher.forward(request, response);
+    }
+
+    private void displayFoodInventoryEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, ServletException, IOException {
+        FoodInventoryManager manager = new FoodInventoryManager();
+        int id = Integer.parseInt(request.getParameter("id"));
+        FoodInventory foodInventory = manager.getFoodInventoryById(id);
+        request.setAttribute("foodInventory", foodInventory);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/retailer/edit_food_inventory.jsp");
+        dispatcher.forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        FoodInventoryManager manager = new FoodInventoryManager();
-        String action = request.getParameter("action");
-
         try {
-            switch (action) {
-                case "add":
-                    addFoodInventory(request, response, manager);
-                    break;
-                case "update":
-                    updateFoodInventory(request, response, manager);
-                    break;
-                default:
-                    listFoodInventory(request, response, manager);
-                    break;
+            String pathInfo = request.getPathInfo();
+            if (pathInfo == null || pathInfo.isEmpty()) {
+                displayFoodInventoryList(request, response, false);
+            } else {
+                String[] pathInfoSegments = pathInfo.split("/");
+                if (pathInfoSegments.length >= 2) {
+                    String requestType = pathInfoSegments[1];
+                    switch (requestType) {
+                        case "add":
+                            handleFoodInventory(request, response, true);
+                            break;
+                        case "update":
+                            handleFoodInventory(request, response, false);
+                            break;
+                        // TODO: handle other paths
+                    }
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/food-inventory");
+                }
             }
-        } catch (SQLException ex) {
-            throw new ServletException(ex);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void listFoodInventory(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
+    private void handleFoodInventory(HttpServletRequest request, HttpServletResponse response, boolean isAdd)
             throws SQLException, IOException, ServletException {
-        List<FoodInventory> list = new ArrayList<>(manager.getAllFoodInventory());
-        request.setAttribute("foodInventoryList", list);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("../retailer/food-inventory.jsp");
-        dispatcher.forward(request, response);
-    }
 
-    private void addFoodInventory(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
-            throws SQLException, IOException {
-        String description = request.getParameter("description");
-        double standardPrice = Double.parseDouble(request.getParameter("standardPrice"));
+        String name = request.getParameter("name");
+        double price = Double.parseDouble(request.getParameter("price"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
-        double averageRating = Double.parseDouble(request.getParameter("averageRating"));
-        //LocalDateTime expirationDate = LocalDateTime.now();
-        LocalDateTime expirationDate = LocalDateTime.parse(request.getParameter("expirationDate"));
+        String expirationDate = request.getParameter("expirationDate");
+        String status = request.getParameter("status");
 
+        FoodInventory foodInventory = new FoodInventory();
+        foodInventory.setName(name);
+        foodInventory.setPrice(price);
+        foodInventory.setQuantity(quantity);
+        foodInventory.setLocalExpirationDate(expirationDate);
+        foodInventory.setStatus(status);
 
-        boolean isForDonation = request.getParameter("isForDonation") != null;
-        boolean isForSale = request.getParameter("isForSale") != null;
-
-
-        FoodInventory newFood = new FoodInventory( description,standardPrice,quantity,averageRating,expirationDate,
-                false,isForDonation,isForSale);
-
-
-        manager.addFoodInventory(newFood);
-        response.sendRedirect("FoodInventoryServlet?action=list");
+        FoodInventoryManager manager = new FoodInventoryManager();
+        if (isAdd) {
+            int retailerId = 1; // TODO
+            foodInventory.setRetailerId(retailerId);
+            manager.addFoodInventory(foodInventory);
+        } else {
+            int id = Integer.parseInt(request.getParameter("id"));
+            foodInventory.setId(id);
+            manager.updateFoodInventory(foodInventory);
+        }
+        response.sendRedirect(request.getContextPath() + "/food-inventory");
     }
 
-    private void updateFoodInventory(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
-            throws SQLException, IOException, ServletException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        String description = request.getParameter("description");
-        double standardPrice = Double.parseDouble(request.getParameter("standardPrice"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        double averageRating = Double.parseDouble(request.getParameter("averageRating"));
-        //String  lastModified = String.valueOf(LocalDateTime.now());
-       // LocalDateTime expirationDate = LocalDateTime.now();
-        LocalDateTime expirationDate = LocalDateTime.parse(request.getParameter("expirationDate"));
-
-        //boolean is_surplus;
-
-        boolean isForDonation = request.getParameter("isForDonation") != null;
-        boolean isForSale = request.getParameter("isForSale") != null;
-
-
-        FoodInventory updatedFood = new FoodInventory(id, description,standardPrice,quantity,averageRating,expirationDate,
-                false,isForDonation,isForSale);
-        manager.updateFoodInventory(updatedFood);
-        response.sendRedirect("FoodInventoryServlet?action=list");
-
-        //List<FoodInventory> foodList= manager.getAllFoodInventory();
-        //request.setAttribute("foodList", foodList);
-        //RequestDispatcher dispatcher = request.getRequestDispatcher("retailer/food-inventory-list.jsp");
-        //dispatcher.forward(request, response);
-
-    }
-
-    private void deleteFoodInventory(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
+    private void deleteFoodInventory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
+        FoodInventoryManager manager = new FoodInventoryManager();
         int id = Integer.parseInt(request.getParameter("id"));
-
         manager.deleteFoodInventory(id);
-        response.sendRedirect("FoodInventoryServlet?action=list");
+        response.sendRedirect(request.getContextPath() + "/food-inventory");
     }
 
-    private void showEditForm(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
-            throws SQLException, ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        FoodInventory existingFood = manager.getFoodInventory(id);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("retailer/edit_food_inventory.jsp");
-        request.setAttribute("foodInventory", existingFood);
-        dispatcher.forward(request, response);
-    }
 
     private void listSurplusFoodInventory(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
             throws SQLException, IOException, ServletException {

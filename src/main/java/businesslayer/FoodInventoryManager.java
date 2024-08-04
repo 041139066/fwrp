@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 import dataaccesslayer.FoodInventoryDAO;
 import model.FoodInventory;
+import model.FoodStatus;
 
 public class FoodInventoryManager {
 
@@ -20,38 +21,43 @@ public class FoodInventoryManager {
         this.dao = new FoodInventoryDAO();
     }
 
-    public List<FoodInventory> getAllFoodInventory() throws SQLException {
+    public List<FoodInventory> getAllFoodInventory() {
         return dao.getAllFoodInventory();
     }
-    public FoodInventory getFoodInventory(int id){
+
+    public List<FoodInventory> getAllFoodInventoryByRetailerId(int retailerId) {
+        return dao.getAllFoodInventoryByRetailerId(retailerId);
+    }
+
+    public List<FoodInventory> getSurplusFoodInventoryByRetailerId(int retailerId) {
+        return dao.getSurplusFoodInventoryByRetailerId(retailerId);
+    }
+
+    public FoodInventory getFoodInventoryById(int id) {
         return dao.getFoodInventoryById(id);
     }
 
-    public void addFoodInventory(FoodInventory newFood) {
-
-        dao.addFoodInventory(newFood);
+    public void addFoodInventory(FoodInventory foodInventory) {
+        dao.addFoodInventory(foodInventory);
     }
 
-    public void updateFoodInventory(FoodInventory updatedFood) {
-        dao.updateFoodInventory(updatedFood);
+    public void updateFoodInventory(FoodInventory foodInventory) {
+        dao.updateFoodInventory(foodInventory);
     }
 
     public void deleteFoodInventory(int id) {
-
         dao.deleteFoodInventory(id);
-
     }
 
-    //public FoodInventory getFoodInventory(int id) throws SQLException {
-      //  return dao.getAllFoodInventory(id);
-   // }
-
-    public List<FoodInventory> getSurplusFoodInventory() throws SQLException {
-        return dao.getSurplusFoodInventory();
+    public void updateFoodInventoryQuantity(int id, int quantity) {
+        dao.updateFoodInventoryQuantity(id, quantity);
     }
 
-    public FoodInventory getFoodInventoryById(int foodInventoryID) {
-        return dao.getFoodInventoryById(foodInventoryID);
+    public void updateFoodInventoryAverageRating(int id, double price) {
+        dao.updateFoodInventoryAverageRating(id, price);
     }
 
+    public void updateFoodInventoryStatus(int id, FoodStatus status) {
+        dao.updateFoodInventoryStatus(id, status);
+    }
 }

@@ -1880,17 +1880,18 @@ UNLOCK TABLES;
 -- -----------------------------------------------------
 CREATE TABLE Users
 (
-    id              INT                                         NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name            VARCHAR(127)                                NOT NULL,
-    email           VARCHAR(255)                                NOT NULL UNIQUE,
-    type            ENUM ('retailer', 'charitable', 'consumer') NOT NULL,
-    subscription    BOOLEAN                                     DEFAULT FALSE,
-    city            VARCHAR(120)                                NULL,
-    province        CHAR(2)                                     NULL,
-    method          ENUM ('email', 'sms')                       NULL,
-    contact_email   VARCHAR(255)                                NULL,
-    contact_phone   VARCHAR(20)                                 NULL,
-    CHECK (subscription = FALSE OR (city IS NOT NULL AND province IS NOT NULL AND method IS NOT NULL AND (contact_email IS NOT NULL OR contact_phone IS NOT NULL))),
+    id            INT                                         NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name          VARCHAR(127)                                NOT NULL,
+    email         VARCHAR(255)                                NOT NULL UNIQUE,
+    type          ENUM ('retailer', 'charitable', 'consumer') NOT NULL,
+    subscription  BOOLEAN DEFAULT FALSE,
+    city          VARCHAR(120)                                NULL,
+    province      CHAR(2)                                     NULL,
+    method        ENUM ('email', 'sms')                       NULL,
+    contact_email VARCHAR(255)                                NULL,
+    contact_phone VARCHAR(20)                                 NULL,
+    CHECK (subscription = FALSE OR (city IS NOT NULL AND province IS NOT NULL AND method IS NOT NULL AND
+                                    (contact_email IS NOT NULL OR contact_phone IS NOT NULL))),
     CHECK (method != 'email' OR contact_email IS NOT NULL),
     CHECK (method != 'sms' OR contact_phone IS NOT NULL)
 );
@@ -1900,35 +1901,16 @@ CREATE TABLE Users
 -- -----------------------------------------------------
 CREATE TABLE FoodInventory
 (
-    id            INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    description   VARCHAR(255) NOT NULL,
-    standard_price DOUBLE(6,2) NOT NULL,
-    quantity      INT(5) NOT NULL,
-    expirationDate TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    average_rating DOUBLE(2,1) NULL
-);
-
-ALTER TABLE FoodInventory ADD COLUMN is_surplus BOOLEAN DEFAULT FALSE;
-ALTER TABLE FoodInventory ADD COLUMN isForDonation BOOLEAN DEFAULT FALSE;
-ALTER TABLE FoodInventory ADD COLUMN isForSale BOOLEAN DEFAULT FALSE;
-
--- -----------------------------------------------------
--- Table FoodItems
--- -----------------------------------------------------
-CREATE TABLE FoodItems
-(
-    id                INT                                        NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    expiration_date   DATETIME                                   NOT NULL,
-    price             DOUBLE(6, 2)                               NULL,
-    status            ENUM ('stock', 'donation', 'sale', 'sold') NOT NULL DEFAULT 'stock',
-    retailer_id       INT                                        NOT NULL,
-    food_inventory_id INT                                        NOT NULL,
+    id              INT                       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name            VARCHAR(255)              NOT NULL UNIQUE,
+    price           DOUBLE(6, 2)              NOT NULL,
+    expiration_date DATETIME                  NOT NULL,
+    quantity        INT                       NOT NULL,
+    average_rating  DOUBLE(2, 1)              NULL,
+    status          ENUM ('sale', 'donation') NULL,
+    retailer_id     INT                       NOT NULL,
     FOREIGN KEY (retailer_id)
         REFERENCES Users (id)
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION,
-    FOREIGN KEY (food_inventory_id)
-        REFERENCES FoodInventory (id)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
 );
@@ -1938,12 +1920,13 @@ CREATE TABLE FoodItems
 -- -----------------------------------------------------
 CREATE TABLE ClaimedFood
 (
-    food_item_id  INT       NOT NULL,
-    charitable_id INT       NOT NULL,
-    claim_date    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (food_item_id, charitable_id),
-    FOREIGN KEY (food_item_id)
-        REFERENCES FoodItems (id)
+    food_inventory_id INT       NOT NULL,
+    charitable_id     INT       NOT NULL,
+    quantity          INT       NOT NULL,
+    claim_date        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (food_inventory_id, charitable_id),
+    FOREIGN KEY (food_inventory_id)
+        REFERENCES FoodInventory (id)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     FOREIGN KEY (charitable_id)
@@ -1956,12 +1939,13 @@ CREATE TABLE ClaimedFood
 -- -----------------------------------------------------
 CREATE TABLE PurchasedFood
 (
-    food_item_id  INT       NOT NULL,
-    consumer_id   INT       NOT NULL,
-    purchase_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (food_item_id, consumer_id),
-    FOREIGN KEY (food_item_id)
-        REFERENCES FoodItems (id)
+    food_inventory_id INT       NOT NULL,
+    consumer_id       INT       NOT NULL,
+    quantity          INT       NOT NULL,
+    purchase_date     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (food_inventory_id, consumer_id),
+    FOREIGN KEY (food_inventory_id)
+        REFERENCES FoodInventory (id)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
     FOREIGN KEY (consumer_id)
@@ -2010,7 +1994,8 @@ CREATE TABLE Ratings
         ON UPDATE NO ACTION
 );
 
-INSERT INTO Users (name, email, type, subscription, city, province, method, contact_email, contact_phone) VALUES
+INSERT INTO Users (name, email, type, subscription, city, province, method, contact_email, contact_phone)
+VALUES
 -- Retailers
 ('Retailer 1', 'retailer1@example.com', 'retailer', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
 ('Retailer 2', 'retailer2@example.com', 'retailer', FALSE, 'Montreal', 'QC', NULL, NULL, NULL),
@@ -2033,152 +2018,133 @@ INSERT INTO Users (name, email, type, subscription, city, province, method, cont
 ('Consumer 5', 'consumer5@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
 
 -- Consumers with subscription
-('Consumer 6', 'consumer6@example.com', 'consumer', TRUE, 'Edmonton', 'AB', 'email', 'consumer6_contact@example.com', NULL),
+('Consumer 6', 'consumer6@example.com', 'consumer', TRUE, 'Edmonton', 'AB', 'email', 'consumer6_contact@example.com',
+ NULL),
 ('Consumer 7', 'consumer7@example.com', 'consumer', TRUE, 'Winnipeg', 'MB', 'sms', NULL, '1234567890'),
-('Consumer 8', 'consumer8@example.com', 'consumer', TRUE, 'Quebec City', 'QC', 'email', 'consumer8_contact@example.com', NULL),
+('Consumer 8', 'consumer8@example.com', 'consumer', TRUE, 'Quebec City', 'QC', 'email', 'consumer8_contact@example.com',
+ NULL),
 ('Consumer 9', 'consumer9@example.com', 'consumer', TRUE, 'Hamilton', 'ON', 'sms', NULL, '0987654321'),
-('Consumer 10', 'consumer10@example.com', 'consumer', TRUE, 'Kitchener', 'ON', 'email', 'consumer10_contact@example.com', NULL),
+('Consumer 10', 'consumer10@example.com', 'consumer', TRUE, 'Kitchener', 'ON', 'email',
+ 'consumer10_contact@example.com', NULL),
 ('Consumer 11', 'consumer11@example.com', 'consumer', TRUE, 'London', 'ON', 'sms', NULL, '2345678901'),
-('Consumer 12', 'consumer12@example.com', 'consumer', TRUE, 'Victoria', 'BC', 'email', 'consumer12_contact@example.com', NULL),
+('Consumer 12', 'consumer12@example.com', 'consumer', TRUE, 'Victoria', 'BC', 'email', 'consumer12_contact@example.com',
+ NULL),
 ('Consumer 13', 'consumer13@example.com', 'consumer', TRUE, 'Halifax', 'NS', 'sms', NULL, '3456789012'),
-('Consumer 14', 'consumer14@example.com', 'consumer', TRUE, 'Oshawa', 'ON', 'email', 'consumer14_contact@example.com', NULL),
+('Consumer 14', 'consumer14@example.com', 'consumer', TRUE, 'Oshawa', 'ON', 'email', 'consumer14_contact@example.com',
+ NULL),
 ('Consumer 15', 'consumer15@example.com', 'consumer', TRUE, 'Windsor', 'ON', 'sms', NULL, '4567890123');
 
 
+INSERT INTO FoodInventory (name, price, expiration_date, quantity, average_rating, status, retailer_id)
+VALUES ('Apple', 1.50, '2024-12-31 00:00:00', 100, 4.5, 'sale', 1),
+       ('Banana', 0.75, '2024-11-30 00:00:00', 150, 4.0, 'sale', 2),
+       ('Carrot', 1.20, '2024-10-15 00:00:00', 200, 4.2, 'donation', 3),
+       ('Broccoli', 2.00, '2024-09-20 00:00:00', 120, 4.6, 'sale', 4),
+       ('Chicken Breast', 5.00, '2024-12-15 00:00:00', 50, 4.4, NULL, 5),
+       ('Milk', 2.50, '2024-08-30 00:00:00', 80, 4.1, 'donation', 6),
+       ('Bread', 1.00, '2024-07-25 00:00:00', 60, 4.3, 'sale', 7),
+       ('Rice', 3.00, '2025-01-10 00:00:00', 300, 4.5, 'sale', 8),
+       ('Eggs', 2.80, '2024-10-10 00:00:00', 90, 4.7, NULL, 9),
+       ('Cheese', 4.50, '2024-11-15 00:00:00', 70, 4.4, 'sale', 10),
+       ('Yogurt', 1.80, '2024-09-05 00:00:00', 110, 4.6, 'sale', 11),
+       ('Tomato', 1.30, '2024-08-20 00:00:00', 140, 4.3, NULL, 12),
+       ('Lettuce', 1.00, '2024-12-01 00:00:00', 150, 4.2, 'sale', 13),
+       ('Potato', 0.90, '2024-10-30 00:00:00', 200, 4.4, 'donation', 14),
+       ('Beef Steak', 6.50, '2024-12-20 00:00:00', 30, 4.8, 'sale', 15),
+       ('Orange Juice', 3.00, '2024-08-05 00:00:00', 100, 4.5, 'sale', 16),
+       ('Pasta', 2.50, '2025-02-01 00:00:00', 250, 4.2, NULL, 17),
+       ('Butter', 3.20, '2024-11-01 00:00:00', 80, 4.4, 'sale', 18),
+       ('Pork Chop', 5.50, '2024-09-30 00:00:00', 60, 4.3, 'sale', 19),
+       ('Spinach', 2.00, '2024-07-15 00:00:00', 100, 4.5, NULL, 20),
+       ('Onion', 1.10, '2024-12-05 00:00:00', 180, 4.2, 'sale', 21),
+       ('Garlic', 1.50, '2024-10-01 00:00:00', 140, 4.1, NULL, 22),
+       ('Chicken Wings', 4.00, '2024-12-10 00:00:00', 70, 4.3, 'donation', 23),
+       ('Fish Fillet', 5.00, '2024-08-15 00:00:00', 80, 4.6, 'sale', 24);
 
 
-INSERT INTO FoodInventory (description, standard_price, quantity, average_rating)
-VALUES ('Apples', 1.50, 100, 4.5),
-       ('Bread', 2.00, 50, 4.2),
-       ('Milk', 1.20, 30, 4.8),
-       ('Eggs', 3.00, 20, 4.0),
-       ('Cheese', 4.00, 60, 4.7),
-       ('Yogurt', 1.80, 40, 4.3),
-       ('Chicken Breast', 5.00, 25, 4.6),
-       ('Spinach', 2.50, 70, 4.4),
-       ('Orange Juice', 3.00, 45, 4.5),
-       ('Pasta', 1.75, 80, 4.2),
-       ('Tomatoes', 2.00, 90, 4.6),
-       ('Potatoes', 1.00, 150, 4.4),
-       ('Carrots', 1.50, 120, 4.5),
-       ('Lettuce', 1.80, 110, 4.3),
-       ('Chicken Wings', 6.00, 35, 4.7),
-       ('Beef Steak', 7.50, 25, 4.8),
-       ('Salmon', 8.00, 20, 4.9),
-       ('Pork Chops', 5.50, 30, 4.4),
-       ('Olive Oil', 4.00, 50, 4.6),
-       ('Rice', 2.50, 100, 4.5),
-       ('Beans', 1.80, 70, 4.3),
-       ('Cereal', 3.00, 60, 4.4),
-       ('Juice', 2.50, 75, 4.3),
-       ('Frozen Vegetables', 2.00, 40, 4.2),
-       ('Apples', 1.50, 100, 4.5);
+-- Insert data into ClaimedFood table
+INSERT INTO ClaimedFood (food_inventory_id, charitable_id, quantity, claim_date)
+VALUES (1, 6, 20, '2024-07-01 12:00:00'),
+       (2, 7, 30, '2024-07-02 13:00:00'),
+       (3, 8, 10, '2024-07-03 14:00:00'),
+       (4, 9, 15, '2024-07-04 15:00:00'),
+       (5, 10, 5, '2024-07-05 16:00:00'),
+       (6, 11, 25, '2024-07-06 17:00:00'),
+       (7, 12, 40, '2024-07-07 18:00:00'),
+       (8, 13, 35, '2024-07-08 19:00:00'),
+       (9, 14, 50, '2024-07-09 20:00:00'),
+       (10, 15, 10, '2024-07-10 21:00:00'),
+       (11, 16, 30, '2024-07-11 22:00:00'),
+       (12, 17, 20, '2024-07-12 23:00:00'),
+       (13, 18, 15, '2024-07-13 12:30:00'),
+       (14, 19, 40, '2024-07-14 13:30:00'),
+       (15, 20, 25, '2024-07-15 14:30:00'),
+       (16, 21, 30, '2024-07-16 15:30:00'),
+       (17, 22, 20, '2024-07-17 16:30:00'),
+       (18, 23, 10, '2024-07-18 17:30:00'),
+       (19, 24, 50, '2024-07-19 18:30:00'),
+       (20, 6, 35, '2024-07-20 19:30:00'),
+       (21, 7, 25, '2024-07-21 20:30:00'),
+       (22, 8, 30, '2024-07-22 21:30:00'),
+       (23, 9, 15, '2024-07-23 22:30:00'),
+       (24, 10, 20, '2024-07-24 23:30:00');
 
-INSERT INTO FoodItems (expiration_date, price, status, retailer_id, food_inventory_id)
-VALUES ('2024-08-01 12:00:00', 1.50, 'stock', 1, 1),
-       ('2024-07-30 12:00:00', 2.00, 'donation', 1, 2),
-       ('2024-08-05 12:00:00', 1.20, 'sale', 1, 3),
-       ('2024-08-10 12:00:00', 3.00, 'stock', 1, 4),
-       ('2024-08-15 12:00:00', 4.00, 'stock', 1, 5),
-       ('2024-07-29 12:00:00', 1.80, 'donation', 2, 6),
-       ('2024-08-12 12:00:00', 5.00, 'sale', 2, 7),
-       ('2024-08-20 12:00:00', 2.50, 'stock', 2, 8),
-       ('2024-07-28 12:00:00', 3.00, 'sale', 3, 9),
-       ('2024-08-25 12:00:00', 4.00, 'stock', 3, 10),
-       ('2024-09-01 12:00:00', 1.75, 'stock', 3, 11),
-       ('2024-09-10 12:00:00', 2.00, 'donation', 4, 12),
-       ('2024-09-15 12:00:00', 1.50, 'sale', 4, 13),
-       ('2024-08-30 12:00:00', 2.00, 'stock', 4, 14),
-       ('2024-07-25 12:00:00', 3.00, 'sale', 5, 15),
-       ('2024-08-05 12:00:00', 4.00, 'stock', 5, 16),
-       ('2024-08-10 12:00:00', 5.00, 'sale', 5, 17),
-       ('2024-09-01 12:00:00', 2.50, 'stock', 5, 18),
-       ('2024-09-10 12:00:00', 1.80, 'donation', 6, 19),
-       ('2024-09-15 12:00:00', 2.00, 'sale', 6, 20),
-       ('2024-08-30 12:00:00', 1.75, 'stock', 6, 21),
-       ('2024-08-20 12:00:00', 3.00, 'stock', 7, 22),
-       ('2024-08-25 12:00:00', 4.00, 'donation', 7, 23),
-       ('2024-09-05 12:00:00', 5.00, 'sale', 7, 24);
 
-INSERT INTO ClaimedFood (food_item_id, charitable_id, claim_date)
-VALUES (1, 2, '2024-07-28 12:00:00'),
-       (2, 3, '2024-07-29 12:00:00'),
-       (3, 4, '2024-07-30 12:00:00'),
-       (4, 5, '2024-07-31 12:00:00'),
-       (5, 6, '2024-08-01 12:00:00'),
-       (6, 7, '2024-08-02 12:00:00'),
-       (7, 8, '2024-08-03 12:00:00'),
-       (8, 9, '2024-08-04 12:00:00'),
-       (9, 10, '2024-08-05 12:00:00'),
-       (10, 11, '2024-08-06 12:00:00'),
-       (11, 12, '2024-08-07 12:00:00'),
-       (12, 13, '2024-08-08 12:00:00'),
-       (13, 14, '2024-08-09 12:00:00'),
-       (14, 15, '2024-08-10 12:00:00'),
-       (15, 16, '2024-08-11 12:00:00'),
-       (16, 17, '2024-08-12 12:00:00'),
-       (17, 18, '2024-08-13 12:00:00'),
-       (18, 19, '2024-08-14 12:00:00'),
-       (19, 20, '2024-08-15 12:00:00'),
-       (20, 21, '2024-08-16 12:00:00'),
-       (21, 22, '2024-08-17 12:00:00'),
-       (22, 23, '2024-08-18 12:00:00'),
-       (23, 24, '2024-08-19 12:00:00'),
-       (24, 1, '2024-08-20 12:00:00');
+-- Insert data into PurchasedFood table
+INSERT INTO PurchasedFood (food_inventory_id, consumer_id, quantity, purchase_date)
+VALUES (1, 1, 10, '2024-06-01 09:00:00'),
+       (2, 2, 5, '2024-06-02 10:00:00'),
+       (3, 3, 20, '2024-06-03 11:00:00'),
+       (4, 4, 15, '2024-06-04 12:00:00'),
+       (5, 5, 8, '2024-06-05 13:00:00'),
+       (6, 6, 25, '2024-06-06 14:00:00'),
+       (7, 7, 12, '2024-06-07 15:00:00'),
+       (8, 8, 18, '2024-06-08 16:00:00'),
+       (9, 9, 30, '2024-06-09 17:00:00'),
+       (10, 10, 10, '2024-06-10 18:00:00'),
+       (11, 11, 5, '2024-06-11 19:00:00'),
+       (12, 12, 15, '2024-06-12 20:00:00'),
+       (13, 13, 25, '2024-06-13 21:00:00'),
+       (14, 14, 10, '2024-06-14 22:00:00'),
+       (15, 15, 8, '2024-06-15 23:00:00'),
+       (16, 16, 18, '2024-06-16 09:00:00'),
+       (17, 17, 12, '2024-06-17 10:00:00'),
+       (18, 18, 20, '2024-06-18 11:00:00'),
+       (19, 19, 5, '2024-06-19 12:00:00'),
+       (20, 20, 25, '2024-06-20 13:00:00'),
+       (21, 1, 30, '2024-06-21 14:00:00'),
+       (22, 2, 15, '2024-06-22 15:00:00'),
+       (23, 3, 8, '2024-06-23 16:00:00'),
+       (24, 4, 20, '2024-06-24 17:00:00');
 
-INSERT INTO PurchasedFood (food_item_id, consumer_id, purchase_date)
-VALUES (1, 3, '2024-07-28 12:00:00'),
-       (2, 4, '2024-07-29 12:00:00'),
-       (3, 5, '2024-07-30 12:00:00'),
-       (4, 6, '2024-07-31 12:00:00'),
-       (5, 7, '2024-08-01 12:00:00'),
-       (6, 8, '2024-08-02 12:00:00'),
-       (7, 9, '2024-08-03 12:00:00'),
-       (8, 10, '2024-08-04 12:00:00'),
-       (9, 11, '2024-08-05 12:00:00'),
-       (10, 12, '2024-08-06 12:00:00'),
-       (11, 13, '2024-08-07 12:00:00'),
-       (12, 14, '2024-08-08 12:00:00'),
-       (13, 15, '2024-08-09 12:00:00'),
-       (14, 16, '2024-08-10 12:00:00'),
-       (15, 17, '2024-08-11 12:00:00'),
-       (16, 18, '2024-08-12 12:00:00'),
-       (17, 19, '2024-08-13 12:00:00'),
-       (18, 20, '2024-08-14 12:00:00'),
-       (19, 21, '2024-08-15 12:00:00'),
-       (20, 22, '2024-08-16 12:00:00'),
-       (21, 23, '2024-08-17 12:00:00'),
-       (22, 24, '2024-08-18 12:00:00'),
-       (23, 1, '2024-08-19 12:00:00'),
-       (24, 2, '2024-08-20 12:00:00');
 
+-- Insert data into FoodPreferences table
 INSERT INTO FoodPreferences (consumer_id, food_inventory_id)
-VALUES (3, 1),
-       (3, 2),
-       (3, 3),
-       (3, 4),
+VALUES (1, 1),
+       (1, 2),
+       (2, 3),
+       (2, 4),
        (3, 5),
        (3, 6),
        (4, 7),
        (4, 8),
-       (4, 9),
-       (4, 10),
-       (4, 11),
-       (4, 12),
-       (5, 13),
-       (5, 14),
-       (5, 15),
-       (5, 16),
-       (5, 17),
-       (5, 18),
-       (6, 19),
-       (6, 20),
-       (6, 21),
-       (6, 22),
-       (6, 23),
-       (6, 24),
-       (7, 1),
-       (7, 2);
+       (5, 9),
+       (5, 10),
+       (6, 11),
+       (6, 12),
+       (7, 13),
+       (7, 14),
+       (8, 15),
+       (8, 16),
+       (9, 17),
+       (9, 18),
+       (10, 19),
+       (10, 20),
+       (11, 21),
+       (11, 22),
+       (12, 23),
+       (12, 24);
+
 
 INSERT INTO Ratings (consumer_id, food_inventory_id, rating, comment)
 VALUES (1, 1, 4.5, 'Delicious! Will definitely order again.'),
