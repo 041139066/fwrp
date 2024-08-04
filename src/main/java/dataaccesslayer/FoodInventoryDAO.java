@@ -26,7 +26,15 @@ public class FoodInventoryDAO {
 
     private List<FoodInventory> getFoodInventoryList(Integer id, boolean isSurplus) {
         List<FoodInventory> list = new ArrayList<>();
-        String sql = id == null ? "SELECT * FROM FoodInventory" : isSurplus ? "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ?" : "SELECT * FROM FoodInventory WHERE retailer_id = ?";
+        String sql;
+        if (id == null) {
+            sql = "SELECT * FROM FoodInventory";
+        } else if (isSurplus) {
+            sql = "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ?";
+        } else {
+            sql = "SELECT * FROM FoodInventory WHERE retailer_id = ?";
+        }
+
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -89,7 +97,7 @@ public class FoodInventoryDAO {
                 stmt.setDouble(2, item.getPrice());
                 stmt.setTimestamp(3, Timestamp.valueOf(item.getExpirationDate()));
                 stmt.setInt(4, item.getQuantity());
-                if (item.getStatus() == null) {
+                if (item.getStrStatus() == null) {
                     stmt.setNull(5, java.sql.Types.VARCHAR);
                 } else {
                     stmt.setString(5, item.getStrStatus());
@@ -98,7 +106,8 @@ public class FoodInventoryDAO {
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error adding food inventory: " + e.getMessage());
+
             e.printStackTrace();
         }
     }

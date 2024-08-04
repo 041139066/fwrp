@@ -1902,7 +1902,7 @@ CREATE TABLE Users
 CREATE TABLE FoodInventory
 (
     id              INT                       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name            VARCHAR(255)              NOT NULL UNIQUE,
+    name            VARCHAR(255)              NOT NULL,
     price           DOUBLE(6, 2)              NOT NULL,
     expiration_date DATETIME                  NOT NULL,
     quantity        INT                       NOT NULL,
@@ -1914,6 +1914,8 @@ CREATE TABLE FoodInventory
         ON DELETE NO ACTION
         ON UPDATE NO ACTION
 );
+
+ALTER TABLE FoodInventory ADD UNIQUE INDEX unique_name_retailer(name, retailer_id);
 
 -- -----------------------------------------------------
 -- Table ClaimedFood

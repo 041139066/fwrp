@@ -42,8 +42,8 @@
             <th>Food</th>
             <th>Price</th>
             <th>Expiration Date</th>
-            <th>Surplus Status</th>
             <th>Donation/Sale</th>
+            <th>Surplus Status</th>
             <th>Quantity</th>
             <th>Average Rating</th>
             <th>Actions</th>
@@ -67,7 +67,8 @@
                 <%= item.getStrExpirationDate() %>
             </td>
             <td>
-                <%= item.getStatus() != null ? item.getStrStatus() : "N/A" %>
+
+               <%= item.getStrStatus()  %>
             </td>
             <td>
                 <%= item.isSurplus() ? "Yes" : "No" %>
