@@ -71,6 +71,38 @@
     <url-pattern>/rating/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>foodInventoryServlet</servlet-name>
+    <servlet-class>controllers.FoodInventoryServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>foodInventoryServlet</servlet-name>
+    <url-pattern>/food-inventory</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>claimFoodServlet</servlet-name>
+    <servlet-class>controllers.ClaimFoodServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>claimFoodServlet</servlet-name>
+    <url-pattern>/claim-food</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>purchaseFoodServlet</servlet-name>
+    <servlet-class>controllers.PurchaseFoodServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>purchaseFoodServlet</servlet-name>
+    <url-pattern>/purchase-food</url-pattern>
+  </servlet-mapping>
+
+
+
   <!-- Other configurations -->
   <filter>
     <filter-name>AuthenticationFilter</filter-name>
