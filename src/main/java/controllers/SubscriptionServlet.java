@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,8 +30,9 @@ public class SubscriptionServlet extends HttpServlet {
             String pathInfoStr = request.getPathInfo();
             if (pathInfoStr == null) {
                 Gson gson = MyGson.getMyGson();
-                // int id = (Integer) request.getSession().getAttribute("id");
-                int userId = 3;
+                HttpSession session = request.getSession(false);
+                User user = (User) session.getAttribute("user");
+                int userId = user.getId();
 
                 LocationService locationService = new LocationService();
                 List<Province> provinces = locationService.getAllProvinces();
@@ -75,8 +77,9 @@ public class SubscriptionServlet extends HttpServlet {
             response.setContentType("application/json");
             int code = 0;
             String message = "";
-            // int userId = (Integer) request.getSession().getAttribute("id");
-            int userId = 3;
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int userId = user.getId();
             SubscriptionService subscriptionService = new SubscriptionService();
             int affectedRoes = subscriptionService.updateStatus(status, userId);
             if (affectedRoes == 0) {
@@ -115,11 +118,12 @@ public class SubscriptionServlet extends HttpServlet {
             int code = 0;
             String message = "";
 
-            // int userId = (Integer) request.getSession().getAttribute("id");
-            int consumerId = 3; // Placeholder for consumer ID
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int userId = user.getId();
 
             User subscription = new User();
-            subscription.setId(consumerId);
+            subscription.setId(userId);
             subscription.setCity(request.getParameter("city"));
             subscription.setProvince(request.getParameter("province"));
             subscription.setMethod(request.getParameter("method"));
@@ -134,7 +138,7 @@ public class SubscriptionServlet extends HttpServlet {
                 SubscriptionValidator validator = new SubscriptionValidator();
                 validator.validate(subscription);
                 SubscriptionService subscriptionService = new SubscriptionService();
-                subscriptionService.updateFoodPreferences(consumerId, request.getParameter("foodPreferences"));
+                subscriptionService.updateFoodPreferences(userId, request.getParameter("foodPreferences"));
                 int affectedRows = subscriptionService.updateSubscription(subscription);
                 if (affectedRows == 0) {
                     message = isCreate ? "No subscription created." : "No subscription updated.";

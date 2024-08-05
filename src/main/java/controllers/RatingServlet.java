@@ -5,6 +5,7 @@ import businesslayer.RatingService;
 import com.google.gson.Gson;
 import model.FoodInventory;
 import model.Rating;
+import model.User;
 import utilities.MyGson;
 import utilities.Response;
 
@@ -13,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -24,7 +26,9 @@ public class RatingServlet extends HttpServlet {
             RatingService service = new RatingService();
             String pathInfo = req.getPathInfo();
             if (pathInfo == null) {
-                int id = 3;
+                HttpSession session = req.getSession(false);
+                User user = (User) session.getAttribute("user");
+                int id = user.getId();
                 String foodInventoryId = req.getParameter("foodInventoryId");
                 List<Rating> list;
                 if (foodInventoryId != null) {
@@ -83,7 +87,9 @@ public class RatingServlet extends HttpServlet {
             int code = 0;
             String message = "";
             try {
-                int consumerId = 3; // Placeholder for consumer ID
+                HttpSession session = req.getSession(false);
+                User user = (User) session.getAttribute("user");
+                int consumerId = user.getId();
                 Rating rating = new Rating();
                 rating.setConsumerId(consumerId);
                 rating.setFoodInventoryId(Integer.parseInt(req.getParameter("foodInventoryId")));
@@ -116,7 +122,9 @@ public class RatingServlet extends HttpServlet {
             int code = 0;
             String message;
             try {
-                int consumerId = Integer.parseInt(req.getParameter("consumerId"));
+                HttpSession session = req.getSession(false);
+                User user = (User) session.getAttribute("user");
+                int consumerId = user.getId();
                 int foodInventoryId = Integer.parseInt(req.getParameter("foodInventoryId"));
                 RatingService service = new RatingService();
                 int affectedRows = service.deleteRating(consumerId, foodInventoryId);

@@ -7,19 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subscription Form</title>
-    <link rel="stylesheet" href="resources/css/subscription.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/subscription.css">
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
 <!-- Navigation Bar -->
-<nav>
-    <div class="nav-left">
-        <div class="link"><a href="food_inventory.jsp">Purchase Food</a></div>
-    </div>
-    <div class="nav-right">
-        <div class="link"><a href="logout.jsp">Log Out</a></div>
-    </div>
-</nav>
+<%@ include file="/utility/nav.jsp" %>
 
 <!-- Container -->
 <div class="container card">
@@ -181,7 +174,7 @@
         $("#info-method").text(subscription.method.toUpperCase());
         subscription.method.toLowerCase() === "email" && $("#info-email").text(subscription.contactEmail).parent("p").show();
         subscription.method.toLowerCase() === "sms" && $("#info-phone").text(subscription.contactPhone).parent("p").show();
-        $("#info-food-preferences").text(foodPreferences.map(itm => itm.description).join(", ") || "N/A");
+        $("#info-food-preferences").text(foodPreferences.map(itm => itm.name).join(", ") || "N/A");
         $(".info-card").show();
         $(".info-button").hover(function () {
             $(".info-card").addClass("active")
@@ -255,7 +248,7 @@
     }
 
     function updateFoodPreferences() {
-        const strFoodPreferences = foodPreferences.map(itm => itm.description).join(", ");
+        const strFoodPreferences = foodPreferences.map(itm => itm.name).join(", ");
         foodPreferencesSelect.val(strFoodPreferences);
     }
 

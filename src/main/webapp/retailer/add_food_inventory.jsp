@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Food Inventory</title>
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/resources/css/food.css">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/resources/css/inventory.css">
 </head>
 <body>
 <h1>Edit Food Inventory</h1>

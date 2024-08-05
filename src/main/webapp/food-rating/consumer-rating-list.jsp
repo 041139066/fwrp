@@ -4,26 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Inventory</title>
-    <link rel="stylesheet" href="resources/css/rating.css">
+    <title>My Rating</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/rating.css">
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
-<nav>
-    <div class="nav-left">
-        <div class="link"><a href="/subscription">Subscription</a></div>
-    </div>
-    <div class="nav-right">
-        <div class="link"><a href="logout.jsp">Log Out</a></div>
-    </div>
-</nav>
+<%-- Nav Bar --%>
+<%@ include file="/utility/nav.jsp" %>
 <h1>My Ratings</h1>
 <div class="container card">
     <c:forEach var="rating" items="${requestScope.ratingList}">
         <div class="rating-card">
             <div class="card-header">
-                <div class="title">NO.${rating.foodInventoryId} - ${rating.foodInventoryDescription}</div>
+                <div class="title">NO.${rating.foodInventoryId} - ${rating.foodInventoryName}</div>
                 <div>
                     <button class="icon-button" onclick='openUpdateModal(${rating.toJson()})'><i
                             class="fa-regular fa-pen-to-square"></i></button>
@@ -68,7 +62,6 @@
                 }
             });
         }
-
     }
 </script>
 </body>

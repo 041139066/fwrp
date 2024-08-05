@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,8 +16,10 @@ import java.util.List;
 
 import businesslayer.FoodInventoryManager;
 import businesslayer.RatingService;
+import com.google.gson.Gson;
 import model.FoodInventory;
 import model.Rating;
+import model.User;
 import utilities.MyGson;
 
 public class FoodInventoryServlet extends HttpServlet {
@@ -59,10 +62,15 @@ public class FoodInventoryServlet extends HttpServlet {
 
     private void displayFoodInventoryList(HttpServletRequest request, HttpServletResponse response, boolean isSurplus)
             throws SQLException, IOException, ServletException {
-        int userId = 1; // TODO: get user id from session, and check the user type to be "retailer"
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+        int id = user.getId();
         FoodInventoryManager manager = new FoodInventoryManager();
-        List<FoodInventory> list = isSurplus ? manager.getSurplusFoodInventoryByRetailerId(userId) : manager.getAllFoodInventoryByRetailerId(userId);
+        List<FoodInventory> list = isSurplus ? manager.getSurplusFoodInventoryByRetailerId(id) : manager.getAllFoodInventoryByRetailerId(id);
         request.setAttribute("foodInventoryList", list);
+        RatingService service = new RatingService();
+        List<Rating> consumerRatingList = service.getAllRatingsByConsumerId(id);
+        request.setAttribute("consumerRatingList", MyGson.getMyGson().toJson(consumerRatingList));
         request.setAttribute("isSurplus", isSurplus);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/retailer/food-inventory.jsp");
         dispatcher.forward(request, response);
@@ -132,8 +140,10 @@ public class FoodInventoryServlet extends HttpServlet {
 
         FoodInventoryManager manager = new FoodInventoryManager();
         if (isAdd) {
-            int retailerId = 1; // TODO
-            foodInventory.setRetailerId(retailerId);
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int id = user.getId();
+            foodInventory.setRetailerId(id);
             manager.addFoodInventory(foodInventory);
         } else {
             int id = Integer.parseInt(request.getParameter("id"));
@@ -150,21 +160,4 @@ public class FoodInventoryServlet extends HttpServlet {
         manager.deleteFoodInventory(id);
         response.sendRedirect(request.getContextPath() + "/food-inventory");
     }
-
-
-    private void listSurplusFoodInventory(HttpServletRequest request, HttpServletResponse response, FoodInventoryManager manager)
-            throws SQLException, IOException, ServletException {
-        List<FoodInventory> list = manager.getAllFoodInventory();
-        List<FoodInventory> surplusFoodItems = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
-        for (FoodInventory item : list) {
-            if (item.getExpirationDate().isBefore(now.plusWeeks(1))) {
-                surplusFoodItems.add(item);
-            }
-        }
-        request.setAttribute("foodInventoryList", surplusFoodItems);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("../retailer/surplus-food-inventory.jsp");
-        dispatcher.forward(request, response);
-    }
-
 }

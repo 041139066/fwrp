@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import model.MethodType;
 import model.User;
 import utilities.PasswordHasher;
@@ -94,51 +95,28 @@ public class UserDAO {
         return user;
     }
 
-    public void register(String username, String email, String password, String type) throws SQLException {
-        User user = new User();
-        user.setName(username);
-        user.setEmail(email);
-        user.setPassword(PasswordHasher.hashPassword(password));
-        user.setType(type);
+    public void register(User user) throws SQLException {
+        boolean isRetailer = user.getTypeName().equalsIgnoreCase("retailer");
+        String sql = isRetailer
+                ? "INSERT INTO users (name, email, password, type, city, province) VALUES (?, ?, ?, ?, ?, ?)"
+                : "INSERT INTO users (name, email, password, type) VALUES (?, ?, ?, ?)";
 
-        PreparedStatement statement = Database.getConnection().prepareStatement(
-                "INSERT INTO users (name, email, password, type) VALUES (?, ?, ?, ?)"
-        );
+        Connection con = Database.getConnection();
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, user.getName());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
+            stmt.setString(4, user.getTypeName());
+            if (isRetailer) {
+                stmt.setString(5, user.getCity());
+                stmt.setString(6, user.getProvince());
+            }
+            stmt.executeUpdate();
+        }
 
-        statement.setString(1, user.getName());
-        statement.setString(2, user.getEmail());
-        statement.setString(3, user.getPassword());
-        statement.setString(4, user.getTypeName());
-        statement.executeUpdate();
     }
 
-    public User auth (String email, String password){
-        try {
-            Connection connection = Database.getConnection();
-            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE email = ? AND password = ?")) {
-                preparedStatement.setString(1, email);
-                preparedStatement.setString(2,password);
-
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                       User user = new User();
-                       user.setEmail(resultSet.getString("email"));
-                       user.setName(resultSet.getString("name"));
-                        user.setType(resultSet.getString("type"));
-                        return user;
-                    }
-                    else {
-                        return null;
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    };
-
-    public User findByEmail(String email) {
+    public User getUserByEmail(String email) {
         User user = null;
         try {
             Connection connection = Database.getConnection();
