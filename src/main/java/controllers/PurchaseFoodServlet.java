@@ -1,8 +1,7 @@
 package controllers;
 
 import businesslayer.PurchaseFoodManager;
-import model.AvailableFood;
-import model.PurchasedFood;
+import model.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -10,10 +9,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/PurchaseFoodServlet")
 public class PurchaseFoodServlet extends HttpServlet {
 
     private PurchaseFoodManager manager = new PurchaseFoodManager();
@@ -41,7 +40,6 @@ public class PurchaseFoodServlet extends HttpServlet {
         if (action == null || action.isEmpty()) {
             action = "listAvailableFood";
         }
-
         switch (action) {
             case "listAvailableFood":
                 listAvailableFood(request, response);
@@ -59,43 +57,42 @@ public class PurchaseFoodServlet extends HttpServlet {
         String id = request.getParameter("id");
         String need = request.getParameter("need");
 
-        // 获取登录用户ID
-        Integer userId = getUserId(request);
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("user");
+        int userId = user.getId();
 
         try {
             manager.purchaseFood(Integer.parseInt(id), Integer.parseInt(need), userId);
-            response.sendRedirect("PurchaseFoodServlet?action=listAvailableFood");
+            listAvailableFood(request, response);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private void listAvailableFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<AvailableFood> list = manager.getAllAvailableFood();
-        request.setAttribute("list", list);
-
-        // 获取登录用户ID并设置为请求属性
-        Integer userId = getUserId(request);
-        request.setAttribute("userId", userId);
-
-        RequestDispatcher dispatcher = request.getRequestDispatcher("purchase/purchase-food.jsp");
-        dispatcher.forward(request, response);
+        try {
+            List<FoodInventory> list = manager.getAllFoodInventoryForSale();
+            request.setAttribute("list", list);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("purchase/purchase-food.jsp");
+            dispatcher.forward(request, response);
+        } catch (ServletException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void transactions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<PurchasedFood> list = manager.getAllPurchasedFood();
-        request.setAttribute("list", list);
+        try {
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int userId = user.getId();
+            List<PurchasedFood> list = manager.getAllPurchasedFoodByConsumerId(userId);
+            request.setAttribute("list", list);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("purchase/transactions.jsp");
+            dispatcher.forward(request, response);
+        } catch (ServletException | IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        // 获取登录用户ID并设置为请求属性
-        Integer userId = getUserId(request);
-        request.setAttribute("userId", userId);
-
-        RequestDispatcher dispatcher = request.getRequestDispatcher("purchase/transactions.jsp");
-        dispatcher.forward(request, response);
     }
 
-    private Integer getUserId(HttpServletRequest request) {
-        return (request.getSession().getAttribute("userId") != null) ? 
-                (Integer) request.getSession().getAttribute("userId") : 7;
-    }
 }

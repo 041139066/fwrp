@@ -38,7 +38,7 @@ public class Database {
                     String url = props.getProperty("db.url");
                     String username = props.getProperty("db.username");
                     String password = props.getProperty("db.password");
-                    password = "admin";
+//                    password = "admin";
                     connection = DriverManager.getConnection(url, username, password);
 
                 } catch (SQLException e) {

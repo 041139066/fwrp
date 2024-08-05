@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <nav>
     <div class="nav-left">
         <c:if test="${sessionScope.type == 'retailer'}">
@@ -7,11 +8,13 @@
         </c:if>
         <c:if test="${sessionScope.type == 'consumer'}">
             <div class="link"><a href="<%= request.getContextPath() %>/purchase-food">Purchase Food</a></div>
-            <div class="link"><a href="<%= request.getContextPath() %>/subscription">Surplus Food Alert Subscription</a></div>
+            <div class="link"><a href="<%= request.getContextPath() %>/purchase-food?action=transactions">My Transactions</a></div>
+            <div class="link"><a href="<%= request.getContextPath() %>/subscription">Surplus Food Alert</a></div>
             <div class="link"><a href="<%= request.getContextPath() %>/rating">My Food Ratings</a></div>
         </c:if>
         <c:if test="${sessionScope.type == 'charitable'}">
-            <div class="link"><a href="<%= request.getContextPath() %>/claim-food">Claim Food</a></div>
+            <div class="link"><a href="<%= request.getContextPath() %>/claim-food">Food For Donation</a></div>
+            <div class="link"><a href="<%= request.getContextPath() %>/claim-food?action=myClaimedFood">My Claimed Food</a></div>
         </c:if>
     </div>
     <div class="nav-right">

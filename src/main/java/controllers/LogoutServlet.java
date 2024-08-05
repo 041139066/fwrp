@@ -1,11 +1,8 @@
 package controllers;
 
-import businesslayer.UserManager;
 import com.google.gson.Gson;
-import model.User;
 import utilities.MyGson;
-import utilities.PasswordHasher;
-import utilities.Response;
+import utilities.JsonResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +31,7 @@ public class LogoutServlet extends HttpServlet {
                 code = 1;
                 message = e.getMessage();
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }

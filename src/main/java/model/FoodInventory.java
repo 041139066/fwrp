@@ -1,9 +1,11 @@
 package model;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import model.constants.FoodStatus;
 import utilities.MyGson;
 
 public class FoodInventory implements Serializable {
@@ -35,6 +37,11 @@ public class FoodInventory implements Serializable {
 
     public double getPrice() {
         return price;
+    }
+
+    public String getFormattedPrice(){
+        DecimalFormat df = new DecimalFormat("$#.00");
+        return df.format(price);
     }
 
     public void setPrice(double price) {

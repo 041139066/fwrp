@@ -1,5 +1,7 @@
 package model;
 
+import model.constants.MethodType;
+import model.constants.UserType;
 import utilities.MyGson;
 
 public class User {

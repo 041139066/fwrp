@@ -5,9 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import model.MethodType;
+import model.constants.MethodType;
 import model.User;
-import utilities.PasswordHasher;
 
 public class UserDAO {
 

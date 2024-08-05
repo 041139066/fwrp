@@ -1,3 +1,4 @@
+<%@ page import="model.User" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,14 +8,12 @@
     <script>
 
         <%
-            String redirectPath;
+            String redirectPath = "/login"; // user is not log in or invalid user type
             if (session != null && session.getAttribute("type") != null) {
-
-                // User is logged in
-                redirectPath = "/food-inventory";
-            } else {
-                // User is not logged in
-                redirectPath = "/login";
+                String type = (String) session.getAttribute("type");
+                if(type.equalsIgnoreCase("retailer")) redirectPath = "/food-inventory";
+                if(type.equalsIgnoreCase("charitable")) redirectPath = "/claim-food";
+                if(type.equalsIgnoreCase("consumer")) redirectPath = "/purchase-food";
             }
             out.print("window.location.href = '" + request.getContextPath() + redirectPath + "';");
         %>

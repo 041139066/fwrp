@@ -1,54 +1,47 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.PurchasedFood" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions</title>
-    <link rel="stylesheet" href="../resources/css/main-page.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/donation.css">
 </head>
 <body>
-<nav>
-    <div class="nav-left">
-        <div><a href="../food_inventory.jsp">Food Inventory</a></div>
-        <div><a href="../food_items.jsp">Food Items</a></div>
-    </div>
-    <div class="nav-right">
-        <div><a href="../logout.jsp" class="button button-logout">Log Out</a></div>
-    </div>
-</nav>
+
+<%@ include file="/utility/nav.jsp" %>
 
 <h1>Transactions</h1>
 <div class="container">
-    <a href="purchase-food?action=listAvailableFood" class="button button-add">Back to Purchase Food</a>
-
-    <table align="center">
+    <table>
         <thead>
         <tr>
-            <th>Food Item ID</th>
-            <th>Consumer ID</th>
+            <th>Food ID</th>
+            <th>Food</th>
+            <th>Purchase Quantity</th>
             <th>Purchase Date</th>
         </tr>
         </thead>
         <tbody>
         <%
             List<PurchasedFood> transactions = (List<PurchasedFood>) request.getAttribute("list");
-
             if (transactions != null && !transactions.isEmpty()) {
                 for (PurchasedFood item : transactions) {
         %>
-        <tr align="center">
-            <td><%= item.getFoodItemId() %></td>
-            <td><%= item.getConsumerId() %></td>
-            <td><%= item.getPurchaseDate() %></td>
+        <tr>
+            <td><%= item.getFoodInventoryId() %></td>
+            <td><%= item.getFoodInventoryName() %></td>
+            <td><%= item.getQuantity() %></td>
+            <td><%= item.getStrPurchaseDate() %></td>
         </tr>
         <%
                 }
             } else {
         %>
-        <tr align="center">
-            <td colspan="3">No transactions found.</td>
+        <tr>
+            <td colspan="4">No transactions found.</td>
         </tr>
         <%
             }
@@ -56,8 +49,7 @@
         </tbody>
     </table>
 </div>
-<footer>
-    &copy; 2024 Food Waste Reduction Platform. All rights reserved.
-</footer>
+<!-- Footer -->
+<%@ include file="/utility/footer.jsp" %>
 </body>
 </html>

@@ -4,11 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 import dataaccesslayer.CityDAO;
-import dataaccesslayer.UserDAO;
 import model.City;
-import model.MethodType;
+import model.constants.MethodType;
 import model.User;
-import model.UserType;
 
 public class SubscriptionValidator {
 

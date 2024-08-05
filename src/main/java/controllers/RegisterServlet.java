@@ -3,11 +3,10 @@ package controllers;
 import businesslayer.LocationService;
 import businesslayer.UserManager;
 import com.google.gson.Gson;
-import dataaccesslayer.UserDAO;
 import model.Province;
 import model.User;
 import utilities.MyGson;
-import utilities.Response;
+import utilities.JsonResponse;
 
 import java.io.*;
 import java.util.List;
@@ -17,7 +16,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import utilities.PasswordHasher;
 
@@ -67,7 +65,7 @@ public class RegisterServlet extends HttpServlet {
                 code = 1;
                 message = e.getMessage();
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }

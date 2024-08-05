@@ -17,9 +17,8 @@ import businesslayer.SubscriptionService;
 import businesslayer.FoodInventoryManager;
 import model.*;
 import utilities.MyGson;
-import utilities.Response;
+import utilities.JsonResponse;
 import validators.SubscriptionValidator;
-import validators.ValidationException;
 
 public class SubscriptionServlet extends HttpServlet {
 
@@ -88,7 +87,7 @@ public class SubscriptionServlet extends HttpServlet {
             } else {
                 message = status ? "Subscription activated successfully." : "Subscription deactivated successfully.";
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }
@@ -149,7 +148,7 @@ public class SubscriptionServlet extends HttpServlet {
                 code = 1;
                 message = e.getMessage();
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }

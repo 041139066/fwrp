@@ -82,26 +82,24 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>claimFoodServlet</servlet-name>
+    <servlet-name>ClaimFoodServlet</servlet-name>
     <servlet-class>controllers.ClaimFoodServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>claimFoodServlet</servlet-name>
+    <servlet-name>ClaimFoodServlet</servlet-name>
     <url-pattern>/claim-food</url-pattern>
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>purchaseFoodServlet</servlet-name>
+    <servlet-name>PurchaseFoodServlet</servlet-name>
     <servlet-class>controllers.PurchaseFoodServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>purchaseFoodServlet</servlet-name>
+    <servlet-name>PurchaseFoodServlet</servlet-name>
     <url-pattern>/purchase-food</url-pattern>
   </servlet-mapping>
-
-
 
   <!-- Other configurations -->
   <filter>

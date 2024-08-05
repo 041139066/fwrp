@@ -1922,11 +1922,11 @@ CREATE TABLE FoodInventory
 -- -----------------------------------------------------
 CREATE TABLE ClaimedFood
 (
+    id                INT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     food_inventory_id INT       NOT NULL,
     charitable_id     INT       NOT NULL,
     quantity          INT       NOT NULL,
     claim_date        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (food_inventory_id, charitable_id),
     FOREIGN KEY (food_inventory_id)
         REFERENCES FoodInventory (id)
         ON DELETE NO ACTION
@@ -1941,11 +1941,11 @@ CREATE TABLE ClaimedFood
 -- -----------------------------------------------------
 CREATE TABLE PurchasedFood
 (
+    id                INT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     food_inventory_id INT       NOT NULL,
     consumer_id       INT       NOT NULL,
     quantity          INT       NOT NULL,
     purchase_date     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (food_inventory_id, consumer_id),
     FOREIGN KEY (food_inventory_id)
         REFERENCES FoodInventory (id)
         ON DELETE NO ACTION

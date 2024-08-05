@@ -7,7 +7,7 @@ import model.FoodInventory;
 import model.Rating;
 import model.User;
 import utilities.MyGson;
-import utilities.Response;
+import utilities.JsonResponse;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -109,7 +109,7 @@ public class RatingServlet extends HttpServlet {
                 code = 1;
                 message = e.getMessage();
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }
@@ -136,7 +136,7 @@ public class RatingServlet extends HttpServlet {
                 code = 1;
                 message = e.getMessage();
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }

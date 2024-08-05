@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page import="model.FoodInventory" %>
-<%@ page import="model.FoodStatus" %>
+<%@ page import="model.constants.FoodStatus" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>

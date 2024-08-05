@@ -2,35 +2,47 @@ package dataaccesslayer;
 
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.FoodInventory;
-import model.FoodStatus;
+import model.constants.FoodStatus;
 
 public class FoodInventoryDAO {
 
     public List<FoodInventory> getAllFoodInventory() {
-        return getFoodInventoryList(null, false);
+        return getFoodInventoryList(0, 0);
     }
 
     public List<FoodInventory> getAllFoodInventoryByRetailerId(int retailerId) {
-        return getFoodInventoryList(retailerId, false);
+        return getFoodInventoryList(1, retailerId);
     }
 
     public List<FoodInventory> getSurplusFoodInventoryByRetailerId(int retailerId) {
-        return getFoodInventoryList(retailerId, true);
+        return getFoodInventoryList(2, retailerId);
     }
 
-    private List<FoodInventory> getFoodInventoryList(Integer id, boolean isSurplus) {
+    public List<FoodInventory> getAllFoodInventoryForDonation() {
+        return getFoodInventoryList(3, 0);
+    }
+
+    public List<FoodInventory> getAllFoodInventoryForSale() {
+        return getFoodInventoryList(4, 0);
+    }
+
+    private List<FoodInventory> getFoodInventoryList(int type, int id) {
+        String[] sqls = {
+                "SELECT * FROM FoodInventory", // all food inventory records
+                "SELECT * FROM FoodInventory WHERE retailer_id = ?", // all food inventory records of the retailer
+                "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ?", // all food inventory records of the retailer that are surplus, expiration date within 7 days form now
+                "SELECT * FROM FoodInventory WHERE status = 'donation'",
+                "SELECT * FROM FoodInventory WHERE status != 'donation'",
+        };
         List<FoodInventory> list = new ArrayList<>();
-        String sql = id == null ? "SELECT * FROM FoodInventory" : isSurplus ? "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ?" : "SELECT * FROM FoodInventory WHERE retailer_id = ?";
         try {
             Connection con = Database.getConnection();
-            try (PreparedStatement stmt = con.prepareStatement(sql)) {
-                if (id != null) {
+            try (PreparedStatement stmt = con.prepareStatement(sqls[type])) {
+                if (id != 0) {
                     stmt.setInt(1, id);
                 }
                 try (ResultSet rs = stmt.executeQuery()) {

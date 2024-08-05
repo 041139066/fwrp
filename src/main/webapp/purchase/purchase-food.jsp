@@ -1,39 +1,29 @@
 <%@ page import="java.util.List" %>
-<%@ page import="dataaccesslayer.PurchaseFoodDAO" %>
-<%@ page import="model.AvailableFood" %>
+<%@ page import="model.FoodInventory" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Food</title>
-    <link rel="stylesheet" href="../resources/css/main-page.css">
-    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/donation.css">
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
-<nav>
-    <div class="nav-left">
-        <div><a href="../food_inventory.jsp">Food Inventory</a></div>
-        <div><a href="../food_items.jsp">Food Items</a></div>
-    </div>
-    <div class="nav-right">
-        <div><a href="../logout.jsp" class="button button-logout">Log Out</a></div>
-    </div>
-</nav>
+<%@ include file="/utility/nav.jsp" %>
 
 <h1>Purchase Food</h1>
 <div class="container">
-    <a href="purchase-food?action=transactions" class="button button-add">My Transactions</a>
-
-    <table align="center">
+    <table>
         <thead>
         <tr>
             <th>ID</th>
-            <th>Description</th>
+            <th>Food</th>
             <th>Price</th>
+            <th>Expiration Date</th>
             <th>Quantity</th>
-            <th>Need</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -41,25 +31,23 @@
 
         <tbody>
         <%
-            PurchaseFoodDAO dao = new PurchaseFoodDAO();
-            List<AvailableFood> inventoryList = dao.getAllAvailableFood();
+            List<FoodInventory> list = (List<FoodInventory>) request.getAttribute("list");
 
-            for (AvailableFood item : inventoryList) {
+            for (FoodInventory item : list) {
         %>
         <tr align="center">
             <td><%= item.getId() %></td>
-            <td><%= item.getDescription() %></td>
-            <td><%= item.getPrice() %></td>
+            <td><%= item.getName() %></td>
+            <td><%= item.getFormattedPrice() %></td>
+            <td><%= item.getStrExpirationDate() %></td>
             <td><%= item.getQuantity() %></td>
-            <td>
-                <form method="post" action="purchase-food">
-                    <input type="number" name="need" value="0" style="height: 30px;width:50px">
-                    <input type="hidden" name="id" value="<%= item.getId() %>">
-                    <input type="hidden" name="action" value="purchaseFood">
-            </td>
             <td><%= item.getStatus() %></td>
             <td>
-                    <input type="submit" class="button button-edit" value="Purchase">
+                <form class="table-form" method="post" action="<%= request.getContextPath() %>/purchase-food">
+                    <input type="number" name="need" value="0" min="0" max="<%= item.getQuantity() %>" step="1" class="table-checkbox">
+                    <input type="hidden" name="id" value="<%= item.getId() %>">
+                    <input type="hidden" name="action" value="purchaseFood">
+                    <button type="submit" class="icon-button" title="purchase this food"><i class="fa-solid fa-cart-shopping"></i></button>
                 </form>
             </td>
         </tr>
@@ -69,8 +57,7 @@
         </tbody>
     </table>
 </div>
-<footer>
-    &copy; 2024 Food Waste Reduction Platform. All rights reserved.
-</footer>
+<!-- Footer -->
+<%@ include file="/utility/footer.jsp" %>
 </body>
 </html>
