@@ -1,16 +1,13 @@
 <%@ page import="java.util.List" %>
-<%@ page import="dataaccesslayer.ClaimedFoodDAO" %>
-<%@ page import="model.DonationFoodVO" %>
 <%@ page import="model.ClaimedFood" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Food</title>
+    <title>My Claimed Food</title>
     <link rel="stylesheet" href="resources/css/main-page.css">
-    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
 </head>
 <body>
 <nav>
@@ -23,37 +20,35 @@
     </div>
 </nav>
 
-<h1>My CLaimed Food</h1>
+<h1>My Claimed Food</h1>
 <div class="container">
-    <a href="my-claim-food" class="button button-add">My Claimed Food</a>
+    <a href="ClaimFoodServlet?action=listDonationFood" class="button button-add">Back to Claim Food</a>
 
     <table align="center">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>ClaimDate</th>
+            <th>Charitable ID</th>
+            <th>Food Item ID</th>
+            <th>Claim Date</th>
         </tr>
         </thead>
-
         <tbody>
         <%
-            // Example: Fetch the list of food inventory items from DAO
-            ClaimedFoodDAO dao = new ClaimedFoodDAO();
-            List<ClaimedFood> claimedFoodList = dao.myClaimFood(2);
-
-            for (ClaimedFood item : claimedFoodList) {
+            List<ClaimedFood> claimedFoodList = (List<ClaimedFood>) request.getAttribute("list");
+            if (claimedFoodList != null && !claimedFoodList.isEmpty()) {
+                for (ClaimedFood item : claimedFoodList) {
         %>
         <tr align="center">
-            <td><%= item.getId() %>
-            </td>
-            <td><%= item.getDescription() %>
-            </td>
-            <td><%= item.getPrice()%>
-            </td>
-            <td><%= item.getClaimDate()%>
-            </td>
+            <td><%= item.getCharitableId() %></td>
+            <td><%= item.getFoodItemId() %></td>
+            <td><%= item.getClaimDate() %></td>
+        </tr>
+        <%
+                }
+            } else {
+        %>
+        <tr align="center">
+            <td colspan="3">No claimed food found.</td>
         </tr>
         <%
             }

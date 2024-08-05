@@ -1,11 +1,8 @@
 package dataaccesslayer;
 
-
 import model.ClaimedFood;
 import model.DonationFoodVO;
-
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +12,10 @@ public class ClaimedFoodDAO {
         List<DonationFoodVO> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();
-            try (PreparedStatement stmt = con.prepareStatement("SELECT fooditems.id,description,price,quantity,status FROM fooditems,foodinventory " +
-                    "where fooditems.food_inventory_id = foodinventory.id and fooditems.status='donation'")) {
+            try (PreparedStatement stmt = con.prepareStatement(
+                "SELECT fooditems.id, description, price, quantity, status FROM fooditems " +
+                "JOIN foodinventory ON fooditems.food_inventory_id = foodinventory.id " +
+                "WHERE fooditems.status = 'donation'")) {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         DonationFoodVO item = new DonationFoodVO();
@@ -38,48 +37,71 @@ public class ClaimedFoodDAO {
     public void claimFood(Integer id, Integer need, Integer userId) {
         Connection con = Database.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("select quantity from foodinventory " +
-                    "where foodinventory.id=(select food_inventory_id from fooditems where fooditems.id = ?)");
-            ps.setObject(1, id);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            int quantity = rs.getInt("quantity");
-            if (need <= quantity) {
-                PreparedStatement ps1 = con.prepareStatement("update foodinventory set quantity = quantity - ? " +
-                        "where id = (select food_inventory_id from fooditems where fooditems.id = ?)");
-                ps1.setInt(1, need);
-                ps1.setInt(2, id);
-                ps1.executeUpdate();
+            con.setAutoCommit(false); // Start transaction
 
-                PreparedStatement ps2 = con.prepareStatement("INSERT INTO claimedfood(charitable_id,food_item_id,claim_date)" +
-                        "values (?,?,?)");
-                ps2.setInt(1, id);
-                ps2.setInt(2, userId);
-                ps2.setObject(3, new Date(new java.util.Date().getTime()));
-                ps2.execute();
-            } else {
-                return;
+            // 获取库存数量
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT quantity FROM foodinventory " +
+                "WHERE id = (SELECT food_inventory_id FROM fooditems WHERE fooditems.id = ?)");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int currentQuantity = rs.getInt("quantity");
+                if (currentQuantity >= need) {
+                    // 更新库存数量
+                    PreparedStatement ps1 = con.prepareStatement(
+                        "UPDATE foodinventory SET quantity = quantity - ? " +
+                        "WHERE id = (SELECT food_inventory_id FROM fooditems WHERE fooditems.id = ?)");
+                    ps1.setInt(1, need);
+                    ps1.setInt(2, id);
+                    ps1.executeUpdate();
+                    
+                    // 使用传入的用户ID
+                    int newCharitableId = userId;
+
+                    // 添加记录到claimedfood表
+                    PreparedStatement ps3 = con.prepareStatement(
+                        "INSERT INTO claimedfood (food_item_id, charitable_id, claim_date) VALUES (?, ?, ?)");
+                    ps3.setInt(1, id);
+                    ps3.setInt(2, newCharitableId);
+                    ps3.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                    ps3.executeUpdate();
+
+                    con.commit(); // Commit transaction
+                } else {
+                    throw new RuntimeException("Insufficient inventory quantity.");
+                }
             }
         } catch (SQLException e) {
+            try {
+                con.rollback(); // Rollback transaction on error
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            try {
+                con.setAutoCommit(true); // Reset autocommit
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public List<ClaimedFood> myClaimFood(Integer userId) {
+    public List<ClaimedFood> getAllClaimedFood() {
         List<ClaimedFood> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();
-            PreparedStatement stmt = con.prepareStatement("SELECT fooditems.id,description,price,claim_date FROM fooditems,foodinventory,claimedfood " +
-                    "where fooditems.food_inventory_id = foodinventory.id and claimedfood.food_item_id=fooditems.id and fooditems.status='donation' and charitable_id = ?");
-            stmt.setInt(1, userId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    ClaimedFood item = new ClaimedFood();
-                    item.setId(rs.getInt("id"));
-                    item.setDescription(rs.getString("description"));
-                    item.setPrice(rs.getDouble("price"));
-                    item.setClaimDate(rs.getTimestamp("claim_date").toLocalDateTime());
-                    list.add(item);
+            try (PreparedStatement stmt = con.prepareStatement(
+                "SELECT food_item_id, charitable_id, claim_date FROM claimedfood ORDER BY charitable_id")) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        ClaimedFood item = new ClaimedFood();
+                        item.setFoodItemId(rs.getInt("food_item_id"));
+                        item.setCharitableId(rs.getInt("charitable_id"));
+                        item.setClaimDate(rs.getTimestamp("claim_date").toLocalDateTime());
+                        list.add(item);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -88,4 +110,3 @@ public class ClaimedFoodDAO {
         return list;
     }
 }
-

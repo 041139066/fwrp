@@ -22,9 +22,16 @@
     </div>
 </nav>
 
-<h1>CLaim Food</h1>
+<h1>Claim Food</h1>
 <div class="container">
-    <a href="my-claim-food" class="button button-add">My Claimed Food</a>
+
+    <%
+        // ???servlet????userId
+        Integer userId = (Integer) request.getAttribute("userId");
+    %>
+    <p>UserId: <%= userId %></p>
+
+    <a href="ClaimFoodServlet?action=myClaimedFood" class="button button-add">My Claimed Food</a>
 
     <table align="center">
         <thead>
@@ -41,35 +48,26 @@
 
         <tbody>
         <%
-            // Example: Fetch the list of food inventory items from DAO
             ClaimedFoodDAO dao = new ClaimedFoodDAO();
             List<DonationFoodVO> inventoryList = dao.getAllDonationFood();
 
             for (DonationFoodVO item : inventoryList) {
         %>
         <tr align="center">
-            <td><%= item.getId() %>
-            </td>
-            <td><%= item.getDescription() %>
-            </td>
-            <td><%= item.getPrice()%>
-            </td>
-            <td><%= item.getQuantity() %>
-            </td>
+            <td><%= item.getId() %></td>
+            <td><%= item.getDescription() %></td>
+            <td><%= item.getPrice() %></td>
+            <td><%= item.getQuantity() %></td>
             <td>
-                <input type="number" id="need" value="0" style="height: 30px;width:50px">
+                <form method="post" action="ClaimFoodServlet">
+                    <input type="number" name="need" value="0" style="height: 30px;width:50px">
+                    <input type="hidden" name="id" value="<%= item.getId() %>">
+                    <input type="hidden" name="action" value="claimFood">
             </td>
-            <td><%= item.getStatus()%>
-            </td>
+            <td><%= item.getStatus() %></td>
             <td>
-                <input type="button" class="button button-edit" onClick="aa(<%= item.getId() %>,document.getElementById('need').value,2)" value="Claim"><%--
-                <a href="/claimFood?id=<%= item.getId() %>&quantity=<%= item.getQuantity() %>&status=" class="button button-edit"
-                   onclick="return confirm('Are you sure do this change');">Claim</a>--%>
-                <script type="text/javascript">
-                    function aa(id,q,userId){
-                        window.location.href="/claimFood?id="+id+"&need="+q+"&userId="+userId;
-                    }
-                </script>
+                    <input type="submit" class="button button-edit" value="Claim">
+                </form>
             </td>
         </tr>
         <%
