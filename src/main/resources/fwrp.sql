@@ -1912,10 +1912,9 @@ CREATE TABLE FoodInventory
     FOREIGN KEY (retailer_id)
         REFERENCES Users (id)
         ON DELETE NO ACTION
-        ON UPDATE NO ACTION
+        ON UPDATE NO ACTION,
+    UNIQUE KEY unique_name_retailer (name, retailer_id)
 );
-
-ALTER TABLE FoodInventory ADD UNIQUE INDEX unique_name_retailer(name, retailer_id);
 
 -- -----------------------------------------------------
 -- Table ClaimedFood

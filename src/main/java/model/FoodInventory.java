@@ -112,10 +112,17 @@ public class FoodInventory implements Serializable {
 
     public void setStatus(String status) {
         try {
-            this.status = FoodStatus.valueOf(status);
+            if (status != null && !status.isEmpty()) {
+                // Match the status string with enum constants
+                this.status = FoodStatus.valueOf(status.toUpperCase());
+            } else {
+                this.status = null;
+            }
         } catch (IllegalArgumentException | NullPointerException e) {
+            System.err.println("Invalid status value: " + status);
             this.status = null;
         }
+
     }
 
     public int getRetailerId() {

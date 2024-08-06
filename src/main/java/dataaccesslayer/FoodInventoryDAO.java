@@ -97,11 +97,18 @@ public class FoodInventoryDAO {
                 stmt.setDouble(2, item.getPrice());
                 stmt.setTimestamp(3, Timestamp.valueOf(item.getExpirationDate()));
                 stmt.setInt(4, item.getQuantity());
-                if (item.getStrStatus() == null) {
-                    stmt.setNull(5, java.sql.Types.VARCHAR);
-                } else {
-                    stmt.setString(5, item.getStrStatus());
+                System.out.println("Status received: " + item.getStrStatus());
+                if (item.getStrStatus() == null  || item.getStrStatus().equals("sale") || item.getStrStatus().equals("donation")) {
+                    if (item.getStrStatus() == null) {
+                        stmt.setNull(5, java.sql.Types.VARCHAR);
+                    } else {
+                        stmt.setString(5, item.getStrStatus());
+                    }
+                }else {
+                    // If the status is invalid, throw an exception or handle it appropriately
+                    throw new IllegalArgumentException("Invalid status value: " + item.getStrStatus());
                 }
+
                 stmt.setInt(6, item.getRetailerId());
                 stmt.executeUpdate();
             }
