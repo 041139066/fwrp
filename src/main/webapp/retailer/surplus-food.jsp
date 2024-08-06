@@ -38,11 +38,11 @@
             <th>ID</th>
             <th>Food</th>
             <th>Price</th>
+            <th>Quantity</th>
+            <th>Average Rating</th>
             <th>Expiration Date</th>
             <th>Surplus Status</th>
             <th>Donation/Sale</th>
-            <th>Quantity</th>
-            <th>Average Rating</th>
         </tr>
         </thead>
         <tbody>
@@ -51,7 +51,7 @@
         %>
         <tr>
             <td>
-                <input id="checkbox_<%= item.getId() %>" type="checkbox" onchange="handleCheckboxChange(<%= item.getId() %>);">
+                <input value="<%= item.getId() %>" type="checkbox">
             </td>
             <td>
                 <%= item.getId() %>
@@ -61,6 +61,12 @@
             </td>
             <td>
                 <%= item.getFormattedPrice() %>
+            </td>
+            <td>
+                <%= item.getQuantity() %>
+            </td>
+            <td>
+                <%= item.getAverageRating() %>
             </td>
             <td>
                 <%= item.getStrExpirationDate() %>
@@ -79,12 +85,6 @@
                 </select>
                 <button class="button-warning" onclick="handleUpdate(<%= item.getId() %>);">Update</button>
             </td>
-            <td>
-                <%= item.getQuantity() %>
-            </td>
-            <td>
-                <%= item.getAverageRating() %>
-            </td>
         </tr>
         <%
             }
@@ -98,15 +98,43 @@
 <!-- Footer -->
 <%@ include file="/utility/footer.jsp" %>
 <script>
-    function handleCheckboxChange(id){
-        console.log("checkbox: " + id);
-    }
-    function batchSetStatus(status){
-        console.log("batch: " + status);
 
+    function batchSetStatus(status) {
+        const ids = $('input:checked').map(function () {
+            return $(this).val();
+        }).get();
+        updateStatus(ids, status);
     }
-    function handleUpdate(id){
-        console.log("select: " + id);
+
+    function handleUpdate(id) {
+        updateStatus([id], $("#status_" + id).val());
+    }
+
+    function updateStatus(ids, status) {
+        if (ids.length === 0) {
+            alert("Please select a food.");
+            return;
+        }
+        const isConfirmed = confirm("Are you sure to set the food for " + status + ".");
+        if (isConfirmed) {
+            $.ajax({
+                url: 'updateStatus',
+                type: 'POST',
+                data: {ids: ids.join(","), status},
+                success: function (res) {
+                    if (res?.code === 0) {
+                        alert('Status updated successfully!');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to update status: ' + res?.message + '. Please try again.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', status, error);
+                    alert('Failed to update status. Please try again.');
+                }
+            });
+        }
     }
 
 </script>

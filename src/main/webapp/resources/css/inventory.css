@@ -2,6 +2,7 @@
 
 table {
     margin-top: 16px;
+    text-align: center;
 }
 
 .form-field input[type="datetime-local"],
