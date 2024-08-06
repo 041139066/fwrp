@@ -4,29 +4,13 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: stretch;
 }
 
+table{
+    text-align: center;
+}
 .form-buttons {
     text-align: right;
-}
-
-.row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.row > div {
-    flex: 50% 1 1;
-}
-
-.row > div:first-child {
-    margin-right: 12px;
-}
-
-.row > div:last-child {
-    margin-left: 12px;
 }
 
 #foodPreferences {
@@ -36,14 +20,6 @@
 
 .form-field {
     margin-bottom: 24px;
-}
-
-.error-message {
-    color: var(--error-button);
-    font-size: 0.75em;
-    display: block;
-    margin-left: 6px;
-    margin-bottom: -19.2px;
 }
 
 .info-button {

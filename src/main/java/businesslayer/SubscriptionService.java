@@ -7,6 +7,7 @@ import model.FoodInventory;
 import model.FoodPreference;
 import model.User;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,7 +29,7 @@ public class SubscriptionService {
         return userDAO.getUserById(userId);
     }
 
-    public int updateSubscription(User user) {
+    public int updateSubscription(User user) throws SQLException {
         return userDAO.updateSubscription(user);
     }
 
@@ -36,13 +37,8 @@ public class SubscriptionService {
         return userDAO.updateStatus(status, userId);
     }
 
-    public List<FoodInventory> getFoodPreferences(int userId) {
-        List<Integer> ids = prefDAO.getFoodPreferencesByUserId(userId);
-        List<FoodInventory> foodInventoryList = new ArrayList<>();
-        for(Integer id : ids) {
-            foodInventoryList.add(foodDAO.getFoodInventoryById(id));
-        }
-        return foodInventoryList;
+    public List<Integer> getFoodPreferencesByUserId(int userId) {
+        return prefDAO.getFoodPreferencesByUserId(userId);
     }
 
     public void updateFoodPreferences(int userId, String ids) {

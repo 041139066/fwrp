@@ -1883,10 +1883,11 @@ CREATE TABLE Users
     id            INT                                         NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name          VARCHAR(127)                                NOT NULL,
     email         VARCHAR(255)                                NOT NULL UNIQUE,
+    password      VARCHAR(255)                                NOT NULL,
     type          ENUM ('retailer', 'charitable', 'consumer') NOT NULL,
     subscription  BOOLEAN DEFAULT FALSE,
-    city          VARCHAR(120)                                NULL,
-    province      CHAR(2)                                     NULL,
+    city          VARCHAR(120)                                NOT NULL,
+    province      CHAR(2)                                     NOT NULL,
     method        ENUM ('email', 'sms')                       NULL,
     contact_email VARCHAR(255)                                NULL,
     contact_phone VARCHAR(20)                                 NULL,
@@ -1913,19 +1914,21 @@ CREATE TABLE FoodInventory
         REFERENCES Users (id)
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    UNIQUE KEY unique_name_retailer (name, retailer_id)
+    UNIQUE (name, retailer_id)
 );
+
+
 
 -- -----------------------------------------------------
 -- Table ClaimedFood
 -- -----------------------------------------------------
 CREATE TABLE ClaimedFood
 (
+    id                INT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     food_inventory_id INT       NOT NULL,
     charitable_id     INT       NOT NULL,
     quantity          INT       NOT NULL,
     claim_date        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (food_inventory_id, charitable_id),
     FOREIGN KEY (food_inventory_id)
         REFERENCES FoodInventory (id)
         ON DELETE NO ACTION
@@ -1940,11 +1943,11 @@ CREATE TABLE ClaimedFood
 -- -----------------------------------------------------
 CREATE TABLE PurchasedFood
 (
+    id                INT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     food_inventory_id INT       NOT NULL,
     consumer_id       INT       NOT NULL,
     quantity          INT       NOT NULL,
     purchase_date     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (food_inventory_id, consumer_id),
     FOREIGN KEY (food_inventory_id)
         REFERENCES FoodInventory (id)
         ON DELETE NO ACTION
@@ -1995,45 +1998,53 @@ CREATE TABLE Ratings
         ON UPDATE NO ACTION
 );
 
-INSERT INTO Users (name, email, type, subscription, city, province, method, contact_email, contact_phone)
+INSERT INTO Users (name, email, password, type, subscription, city, province, method, contact_email, contact_phone)
 VALUES
 -- Retailers
-('Retailer 1', 'retailer1@example.com', 'retailer', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
-('Retailer 2', 'retailer2@example.com', 'retailer', FALSE, 'Montreal', 'QC', NULL, NULL, NULL),
-('Retailer 3', 'retailer3@example.com', 'retailer', FALSE, 'Vancouver', 'BC', NULL, NULL, NULL),
-('Retailer 4', 'retailer4@example.com', 'retailer', FALSE, 'Calgary', 'AB', NULL, NULL, NULL),
-('Retailer 5', 'retailer5@example.com', 'retailer', FALSE, 'Ottawa', 'ON', NULL, NULL, NULL),
+('Retailer 1', 'retailer1@example.com', 'default_password', 'retailer', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
+('Retailer 2', 'retailer2@example.com', 'default_password', 'retailer', FALSE, 'Montreal', 'QC', NULL, NULL, NULL),
+('Retailer 3', 'retailer3@example.com', 'default_password', 'retailer', FALSE, 'Vancouver', 'BC', NULL, NULL, NULL),
+('Retailer 4', 'retailer4@example.com', 'default_password', 'retailer', FALSE, 'Calgary', 'AB', NULL, NULL, NULL),
+('Retailer 5', 'retailer5@example.com', 'default_password', 'retailer', FALSE, 'Ottawa', 'ON', NULL, NULL, NULL),
 
 -- Charitable organizations
-('Charitable 1', 'charitable1@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 2', 'charitable2@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 3', 'charitable3@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 4', 'charitable4@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Charitable 5', 'charitable5@example.com', 'charitable', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Charitable 1', 'charitable1@example.com', 'default_password', 'charitable', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
+('Charitable 2', 'charitable2@example.com', 'default_password', 'charitable', FALSE, 'Montreal', 'QC', NULL, NULL,
+ NULL),
+('Charitable 3', 'charitable3@example.com', 'default_password', 'charitable', FALSE, 'Vancouver', 'BC', NULL, NULL,
+ NULL),
+('Charitable 4', 'charitable4@example.com', 'default_password', 'charitable', FALSE, 'Calgary', 'AB', NULL, NULL, NULL),
+('Charitable 5', 'charitable5@example.com', 'default_password', 'charitable', FALSE, 'Quebec City', 'QC', NULL, NULL,
+ NULL),
 
 -- Consumers without subscription
-('Consumer 1', 'consumer1@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 2', 'consumer2@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 3', 'consumer3@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 4', 'consumer4@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
-('Consumer 5', 'consumer5@example.com', 'consumer', FALSE, NULL, NULL, NULL, NULL, NULL),
+('Consumer 1', 'consumer1@example.com', 'default_password', 'consumer', FALSE, 'Toronto', 'ON', NULL, NULL, NULL),
+('Consumer 2', 'consumer2@example.com', 'default_password', 'consumer', FALSE, 'Montreal', 'QC', NULL, NULL, NULL),
+('Consumer 3', 'consumer3@example.com', 'default_password', 'consumer', FALSE, 'Vancouver', 'BC', NULL, NULL, NULL),
+('Consumer 4', 'consumer4@example.com', 'default_password', 'consumer', FALSE, 'Calgary', 'AB', NULL, NULL, NULL),
+('Consumer 5', 'consumer5@example.com', 'default_password', 'consumer', FALSE, 'Ottawa', 'ON', NULL, NULL, NULL),
 
 -- Consumers with subscription
-('Consumer 6', 'consumer6@example.com', 'consumer', TRUE, 'Edmonton', 'AB', 'email', 'consumer6_contact@example.com',
- NULL),
-('Consumer 7', 'consumer7@example.com', 'consumer', TRUE, 'Winnipeg', 'MB', 'sms', NULL, '1234567890'),
-('Consumer 8', 'consumer8@example.com', 'consumer', TRUE, 'Quebec City', 'QC', 'email', 'consumer8_contact@example.com',
- NULL),
-('Consumer 9', 'consumer9@example.com', 'consumer', TRUE, 'Hamilton', 'ON', 'sms', NULL, '0987654321'),
-('Consumer 10', 'consumer10@example.com', 'consumer', TRUE, 'Kitchener', 'ON', 'email',
+('Consumer 6', 'consumer6@example.com', 'default_password', 'consumer', TRUE, 'Edmonton', 'AB', 'email',
+ 'consumer6_contact@example.com', NULL),
+('Consumer 7', 'consumer7@example.com', 'default_password', 'consumer', TRUE, 'Winnipeg', 'MB', 'sms', NULL,
+ '1234567890'),
+('Consumer 8', 'consumer8@example.com', 'default_password', 'consumer', TRUE, 'Quebec City', 'QC', 'email',
+ 'consumer8_contact@example.com', NULL),
+('Consumer 9', 'consumer9@example.com', 'default_password', 'consumer', TRUE, 'Hamilton', 'ON', 'sms', NULL,
+ '0987654321'),
+('Consumer 10', 'consumer10@example.com', 'default_password', 'consumer', TRUE, 'Kitchener', 'ON', 'email',
  'consumer10_contact@example.com', NULL),
-('Consumer 11', 'consumer11@example.com', 'consumer', TRUE, 'London', 'ON', 'sms', NULL, '2345678901'),
-('Consumer 12', 'consumer12@example.com', 'consumer', TRUE, 'Victoria', 'BC', 'email', 'consumer12_contact@example.com',
- NULL),
-('Consumer 13', 'consumer13@example.com', 'consumer', TRUE, 'Halifax', 'NS', 'sms', NULL, '3456789012'),
-('Consumer 14', 'consumer14@example.com', 'consumer', TRUE, 'Oshawa', 'ON', 'email', 'consumer14_contact@example.com',
- NULL),
-('Consumer 15', 'consumer15@example.com', 'consumer', TRUE, 'Windsor', 'ON', 'sms', NULL, '4567890123');
+('Consumer 11', 'consumer11@example.com', 'default_password', 'consumer', TRUE, 'London', 'ON', 'sms', NULL,
+ '2345678901'),
+('Consumer 12', 'consumer12@example.com', 'default_password', 'consumer', TRUE, 'Victoria', 'BC', 'email',
+ 'consumer12_contact@example.com', NULL),
+('Consumer 13', 'consumer13@example.com', 'default_password', 'consumer', TRUE, 'Halifax', 'NS', 'sms', NULL,
+ '3456789012'),
+('Consumer 14', 'consumer14@example.com', 'default_password', 'consumer', TRUE, 'Oshawa', 'ON', 'email',
+ 'consumer14_contact@example.com', NULL),
+('Consumer 15', 'consumer15@example.com', 'default_password', 'consumer', TRUE, 'Windsor', 'ON', 'sms', NULL,
+ '4567890123');
 
 
 INSERT INTO FoodInventory (name, price, expiration_date, quantity, average_rating, status, retailer_id)
@@ -2066,57 +2077,14 @@ VALUES ('Apple', 1.50, '2024-12-31 00:00:00', 100, 4.5, 'sale', 1),
 -- Insert data into ClaimedFood table
 INSERT INTO ClaimedFood (food_inventory_id, charitable_id, quantity, claim_date)
 VALUES (1, 6, 20, '2024-07-01 12:00:00'),
-       (2, 7, 30, '2024-07-02 13:00:00'),
        (3, 8, 10, '2024-07-03 14:00:00'),
-       (4, 9, 15, '2024-07-04 15:00:00'),
-       (5, 10, 5, '2024-07-05 16:00:00'),
-       (6, 11, 25, '2024-07-06 17:00:00'),
-       (7, 12, 40, '2024-07-07 18:00:00'),
-       (8, 13, 35, '2024-07-08 19:00:00'),
-       (9, 14, 50, '2024-07-09 20:00:00'),
-       (10, 15, 10, '2024-07-10 21:00:00'),
-       (11, 16, 30, '2024-07-11 22:00:00'),
-       (12, 17, 20, '2024-07-12 23:00:00'),
-       (13, 18, 15, '2024-07-13 12:30:00'),
-       (14, 19, 40, '2024-07-14 13:30:00'),
-       (15, 20, 25, '2024-07-15 14:30:00'),
-       (16, 21, 30, '2024-07-16 15:30:00'),
-       (17, 22, 20, '2024-07-17 16:30:00'),
-       (18, 23, 10, '2024-07-18 17:30:00'),
-       (19, 24, 50, '2024-07-19 18:30:00'),
-       (20, 6, 35, '2024-07-20 19:30:00'),
-       (21, 7, 25, '2024-07-21 20:30:00'),
-       (22, 8, 30, '2024-07-22 21:30:00'),
-       (23, 9, 15, '2024-07-23 22:30:00'),
-       (24, 10, 20, '2024-07-24 23:30:00');
+       (4, 9, 15, '2024-07-04 15:00:00');
 
 
 -- Insert data into PurchasedFood table
 INSERT INTO PurchasedFood (food_inventory_id, consumer_id, quantity, purchase_date)
 VALUES (1, 1, 10, '2024-06-01 09:00:00'),
-       (2, 2, 5, '2024-06-02 10:00:00'),
-       (3, 3, 20, '2024-06-03 11:00:00'),
-       (4, 4, 15, '2024-06-04 12:00:00'),
-       (5, 5, 8, '2024-06-05 13:00:00'),
-       (6, 6, 25, '2024-06-06 14:00:00'),
-       (7, 7, 12, '2024-06-07 15:00:00'),
-       (8, 8, 18, '2024-06-08 16:00:00'),
-       (9, 9, 30, '2024-06-09 17:00:00'),
-       (10, 10, 10, '2024-06-10 18:00:00'),
-       (11, 11, 5, '2024-06-11 19:00:00'),
-       (12, 12, 15, '2024-06-12 20:00:00'),
-       (13, 13, 25, '2024-06-13 21:00:00'),
-       (14, 14, 10, '2024-06-14 22:00:00'),
-       (15, 15, 8, '2024-06-15 23:00:00'),
-       (16, 16, 18, '2024-06-16 09:00:00'),
-       (17, 17, 12, '2024-06-17 10:00:00'),
-       (18, 18, 20, '2024-06-18 11:00:00'),
-       (19, 19, 5, '2024-06-19 12:00:00'),
-       (20, 20, 25, '2024-06-20 13:00:00'),
-       (21, 1, 30, '2024-06-21 14:00:00'),
-       (22, 2, 15, '2024-06-22 15:00:00'),
-       (23, 3, 8, '2024-06-23 16:00:00'),
-       (24, 4, 20, '2024-06-24 17:00:00');
+       (2, 2, 5, '2024-06-02 10:00:00');
 
 
 -- Insert data into FoodPreferences table

@@ -6,13 +6,13 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page import="model.FoodInventory" %>
-<%@ page import="model.FoodStatus" %>
+<%@ page import="model.constants.FoodStatus" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Edit Food Inventory</title>
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/resources/css/food.css">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/resources/css/inventory.css">
 </head>
 <body>
 <%
@@ -39,13 +39,13 @@
         <label for="expiration-date">Expiration Date:</label>
         <input type="datetime-local" id="expiration-date" name="expirationDate" value="<%= item.getLocalExpirationDate() %>" required>
     </div>
-    <div class="form-field">
-        <label>Status: </label>
-        <input id="donation" type="radio" name="status" value ='<%= FoodStatus.donation.name()%>' <%= "donation".equalsIgnoreCase(item.getStrStatus()) ? "checked" : "" %>>
-        <label for="donation" class="inline-label">For Donation</label>
-        <input id="sale" type="radio" name="status" value ='<%= FoodStatus.sale.name()%>' <%= "sale".equalsIgnoreCase(item.getStrStatus()) ? "checked" : "" %>>
-        <label for="sale" class="inline-label">For Sale</label>
-    </div>
+<%--    <div class="form-field">--%>
+<%--        <label>Status: </label>--%>
+<%--        <input id="donation" type="radio" name="status" value ='<%= FoodStatus.donation.name()%>' <%= "donation".equalsIgnoreCase(item.getStrStatus()) ? "checked" : "" %>>--%>
+<%--        <label for="donation" class="inline-label">For Donation</label>--%>
+<%--        <input id="sale" type="radio" name="status" value ='<%= FoodStatus.sale.name()%>' <%= "sale".equalsIgnoreCase(item.getStrStatus()) ? "checked" : "" %>>--%>
+<%--        <label for="sale" class="inline-label">For Sale</label>--%>
+<%--    </div>--%>
     <div class="form-buttons">
         <button type="submit" class="button-primary">Update</button>
     </div>

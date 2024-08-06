@@ -1,4 +1,4 @@
-package model;
+package model.constants;
 
 public enum FoodStatus {
     SALE("sale"),

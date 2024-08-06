@@ -25,7 +25,7 @@ public class RatingDAO {
 
     private List<Rating> getRatingList(int type, int id) {
         List<Rating> list = new ArrayList<>();
-        String sql = "SELECT u.id AS consumer_id, u.name AS consumerName, f.id AS food_inventory_id, f.description AS food_inventory_description, r.rating, r.comment, r.last_modified  " +
+        String sql = "SELECT u.id AS consumer_id, u.name AS consumerName, f.id AS food_inventory_id, f.name AS food_inventory_name, r.rating, r.comment, r.last_modified  " +
                 "FROM Ratings AS r " +
                 "JOIN Users AS u ON u.id = r.consumer_id " +
                 "JOIN FoodInventory AS f ON f.id = r.food_inventory_id" +
@@ -52,7 +52,7 @@ public class RatingDAO {
         rating.setConsumerId(rs.getInt("consumer_id"));
         rating.setConsumerName(rs.getString("consumerName"));
         rating.setFoodInventoryId(rs.getInt("food_inventory_id"));
-        rating.setFoodInventoryDescription(rs.getString("food_inventory_description"));
+        rating.setFoodInventoryName(rs.getString("food_inventory_name"));
         rating.setRating(rs.getDouble("rating"));
         rating.setComment(rs.getString("comment"));
         rating.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());

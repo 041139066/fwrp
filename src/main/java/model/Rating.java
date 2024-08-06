@@ -9,7 +9,7 @@ public class Rating {
     private int consumerId;
     private String consumerName;
     private int foodInventoryId;
-    private String foodInventoryDescription;
+    private String foodInventoryName;
     private double rating;
     private String comment;
     private LocalDateTime lastModified;
@@ -38,12 +38,12 @@ public class Rating {
         this.foodInventoryId = foodInventoryId;
     }
 
-    public String getFoodInventoryDescription() {
-        return foodInventoryDescription;
+    public String getFoodInventoryName() {
+        return foodInventoryName;
     }
 
-    public void setFoodInventoryDescription(String foodInventoryDescription) {
-        this.foodInventoryDescription = foodInventoryDescription;
+    public void setFoodInventoryName(String foodInventoryName) {
+        this.foodInventoryName = foodInventoryName;
     }
 
     public double getRating() {
@@ -81,7 +81,7 @@ public class Rating {
                 "consumerId=" + consumerId +
                 ", consumerName='" + consumerName + '\'' +
                 ", foodInventoryId=" + foodInventoryId +
-                ", foodInventoryDescription='" + foodInventoryDescription + '\'' +
+                ", foodInventoryName='" + foodInventoryName + '\'' +
                 ", rating=" + rating +
                 ", comment='" + comment + '\'' +
                 ", lastModified=" + getStrLastModified() +

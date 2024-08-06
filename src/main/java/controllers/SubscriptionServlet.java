@@ -5,10 +5,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import businesslayer.LocationService;
@@ -16,9 +18,8 @@ import businesslayer.SubscriptionService;
 import businesslayer.FoodInventoryManager;
 import model.*;
 import utilities.MyGson;
-import utilities.Response;
+import utilities.JsonResponse;
 import validators.SubscriptionValidator;
-import validators.ValidationException;
 
 public class SubscriptionServlet extends HttpServlet {
 
@@ -29,8 +30,11 @@ public class SubscriptionServlet extends HttpServlet {
             String pathInfoStr = request.getPathInfo();
             if (pathInfoStr == null) {
                 Gson gson = MyGson.getMyGson();
-                // int id = (Integer) request.getSession().getAttribute("id");
-                int userId = 3;
+                HttpSession session = request.getSession(false);
+                User user = (User) session.getAttribute("user");
+                int userId = user.getId();
+                String city = user.getCity();
+                String province = user.getProvince();
 
                 LocationService locationService = new LocationService();
                 List<Province> provinces = locationService.getAllProvinces();
@@ -42,12 +46,16 @@ public class SubscriptionServlet extends HttpServlet {
                 User subscription = subscriptionService.getSubscription(userId);
                 request.setAttribute("subscription", subscription);
 
-                String foodPreferences = gson.toJson(subscriptionService.getFoodPreferences(userId));
-                request.setAttribute("foodPreferences", foodPreferences);
 
                 FoodInventoryManager foodInventoryManager = new FoodInventoryManager();
-                List<FoodInventory> foodInventoryList = foodInventoryManager.getAllFoodInventory();
+                List<FoodInventory> foodInventoryList = foodInventoryManager.getAllFoodInventoryByLocation(city, province);
                 request.setAttribute("foodInventoryList", foodInventoryList);
+
+                List<Integer> foodPreferences = subscriptionService.getFoodPreferencesByUserId(userId);
+                List<FoodInventory> filteredPreferences = foodInventoryList.stream()
+                        .filter(item -> foodPreferences.contains(item.getId()))
+                        .toList();
+                request.setAttribute("foodPreferences", gson.toJson(filteredPreferences));
 
                 RequestDispatcher dispatcher = request.getRequestDispatcher("surplus-food-alert/subscription.jsp");
                 dispatcher.forward(request, response);
@@ -75,8 +83,9 @@ public class SubscriptionServlet extends HttpServlet {
             response.setContentType("application/json");
             int code = 0;
             String message = "";
-            // int userId = (Integer) request.getSession().getAttribute("id");
-            int userId = 3;
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int userId = user.getId();
             SubscriptionService subscriptionService = new SubscriptionService();
             int affectedRoes = subscriptionService.updateStatus(status, userId);
             if (affectedRoes == 0) {
@@ -85,7 +94,7 @@ public class SubscriptionServlet extends HttpServlet {
             } else {
                 message = status ? "Subscription activated successfully." : "Subscription deactivated successfully.";
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }
@@ -115,13 +124,14 @@ public class SubscriptionServlet extends HttpServlet {
             int code = 0;
             String message = "";
 
-            // int userId = (Integer) request.getSession().getAttribute("id");
-            int consumerId = 3; // Placeholder for consumer ID
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int userId = user.getId();
 
             User subscription = new User();
-            subscription.setId(consumerId);
-            subscription.setCity(request.getParameter("city"));
-            subscription.setProvince(request.getParameter("province"));
+            subscription.setId(userId);
+//            subscription.setCity(request.getParameter("city"));
+//            subscription.setProvince(request.getParameter("province"));
             subscription.setMethod(request.getParameter("method"));
             if ("email".equalsIgnoreCase(request.getParameter("method"))) {
                 subscription.setContactEmail(request.getParameter("contactEmail"));
@@ -134,7 +144,7 @@ public class SubscriptionServlet extends HttpServlet {
                 SubscriptionValidator validator = new SubscriptionValidator();
                 validator.validate(subscription);
                 SubscriptionService subscriptionService = new SubscriptionService();
-                subscriptionService.updateFoodPreferences(consumerId, request.getParameter("foodPreferences"));
+                subscriptionService.updateFoodPreferences(userId, request.getParameter("foodPreferences"));
                 int affectedRows = subscriptionService.updateSubscription(subscription);
                 if (affectedRows == 0) {
                     message = isCreate ? "No subscription created." : "No subscription updated.";
@@ -145,7 +155,7 @@ public class SubscriptionServlet extends HttpServlet {
                 code = 1;
                 message = e.getMessage();
             }
-            String jsonResponse = gson.toJson(new Response(code, message));
+            String jsonResponse = gson.toJson(new JsonResponse(code, message));
             out.print(jsonResponse);
             out.flush();
         }

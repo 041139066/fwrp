@@ -5,20 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Inventory</title>
-    <link rel="stylesheet" href="resources/css/rating.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/rating.css">
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
-<nav>
-    <div class="nav-left">
-        <div class="link"><a href="/subscription">Subscription</a></div>
-    </div>
-    <div class="nav-right">
-        <div class="link"><a href="logout.jsp">Log Out</a></div>
-    </div>
-</nav>
-<h1>Ratings for ${requestScope.foodInventory.description}</h1>
+<%@ include file="/utility/nav.jsp" %>
+
+<h1>Ratings for ${requestScope.foodInventory.name}</h1>
 <div class="container card">
     <button class="button-primary"
             onclick="window.history.back();">Close

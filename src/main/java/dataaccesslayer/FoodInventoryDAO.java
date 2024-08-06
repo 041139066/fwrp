@@ -2,45 +2,71 @@ package dataaccesslayer;
 
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import model.FoodInventory;
-import model.FoodStatus;
+import model.constants.FoodStatus;
 
 public class FoodInventoryDAO {
 
     public List<FoodInventory> getAllFoodInventory() {
-        return getFoodInventoryList(null, false);
+        return getFoodInventoryList(0, 0);
     }
 
     public List<FoodInventory> getAllFoodInventoryByRetailerId(int retailerId) {
-        return getFoodInventoryList(retailerId, false);
+        return getFoodInventoryList(1, retailerId);
     }
 
     public List<FoodInventory> getSurplusFoodInventoryByRetailerId(int retailerId) {
-        return getFoodInventoryList(retailerId, true);
+        return getFoodInventoryList(2, retailerId);
     }
 
-    private List<FoodInventory> getFoodInventoryList(Integer id, boolean isSurplus) {
-        List<FoodInventory> list = new ArrayList<>();
-        String sql;
-        if (id == null) {
-            sql = "SELECT * FROM FoodInventory";
-        } else if (isSurplus) {
-            sql = "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ?";
-        } else {
-            sql = "SELECT * FROM FoodInventory WHERE retailer_id = ?";
-        }
+    public List<FoodInventory> getAllFoodInventoryForDonation() {
+        return getFoodInventoryList(3, 0);
+    }
 
+    public List<FoodInventory> getAllFoodInventoryForSale() {
+        return getFoodInventoryList(4, 0);
+    }
+
+    private List<FoodInventory> getFoodInventoryList(int type, int id) {
+        String[] sqls = {
+                "SELECT * FROM FoodInventory", // all food inventory records
+                "SELECT * FROM FoodInventory WHERE retailer_id = ?", // all food inventory records of the retailer
+                "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ?", // all food inventory records of the retailer that are surplus, expiration date within 7 days form now
+                "SELECT * FROM FoodInventory WHERE status = 'donation'",
+                "SELECT * FROM FoodInventory WHERE status IS NULL || status != 'donation'",
+        };
+        List<FoodInventory> list = new ArrayList<>();
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sqls[type])) {
+                if (id != 0) {
+                    stmt.setInt(1, id);
+                }
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(makeFoodInventory(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<FoodInventory> getAllFoodInventoryByLocation(String city, String province) {
+        String sql =
+                "SELECT * FROM FoodInventory AS fi JOIN Users AS u ON fi.retailer_id = u.id WHERE u.city = ? AND u.province = ?";
+        List<FoodInventory> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement(sql)) {
-                if (id != null) {
-                    stmt.setInt(1, id);
-                }
+                stmt.setString(1, city);
+                stmt.setString(2, province);
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         list.add(makeFoodInventory(rs));
@@ -88,35 +114,24 @@ public class FoodInventoryDAO {
         return foodInventory;
     }
 
-    public void addFoodInventory(FoodInventory item) {
-        String sql = "INSERT INTO FoodInventory (name, price, expiration_date, quantity, status, retailer_id) VALUES (?, ?, ?, ?, ?, ?)";
-        try {
-            Connection con = Database.getConnection();
-            try (PreparedStatement stmt = con.prepareStatement(sql)) {
-                stmt.setString(1, item.getName());
-                stmt.setDouble(2, item.getPrice());
-                stmt.setTimestamp(3, Timestamp.valueOf(item.getExpirationDate()));
-                stmt.setInt(4, item.getQuantity());
-                System.out.println("Status received: " + item.getStrStatus());
-                if (item.getStrStatus() == null  || item.getStrStatus().equals("sale") || item.getStrStatus().equals("donation")) {
-                    if (item.getStrStatus() == null) {
-                        stmt.setNull(5, java.sql.Types.VARCHAR);
-                    } else {
-                        stmt.setString(5, item.getStrStatus());
-                    }
-                }else {
-                    // If the status is invalid, throw an exception or handle it appropriately
-                    throw new IllegalArgumentException("Invalid status value: " + item.getStrStatus());
-                }
+    public void addFoodInventory(FoodInventory item) throws SQLException {
+        String sql = "INSERT INTO FoodInventory (name, price, expiration_date, quantity, retailer_id) VALUES (?, ?, ?, ?, ?)";
 
-                stmt.setInt(6, item.getRetailerId());
-                stmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error adding food inventory: " + e.getMessage());
-
-            e.printStackTrace();
+        Connection con = Database.getConnection();
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, item.getName());
+            stmt.setDouble(2, item.getPrice());
+            stmt.setTimestamp(3, Timestamp.valueOf(item.getExpirationDate()));
+            stmt.setInt(4, item.getQuantity());
+//                if (item.getStatus() == null) {
+//                    stmt.setNull(5, java.sql.Types.VARCHAR);
+//                } else {
+//                    stmt.setString(5, item.getStrStatus());
+//                }
+            stmt.setInt(5, item.getRetailerId());
+            stmt.executeUpdate();
         }
+
     }
 
     public void deleteFoodInventory(int id) {
@@ -134,7 +149,7 @@ public class FoodInventoryDAO {
     }
 
     public void updateFoodInventory(FoodInventory item) {
-        String sql = "UPDATE FoodInventory SET name = ?, price= ?, expiration_date = ?, quantity = ?,  status = ? WHERE id = ?";
+        String sql = "UPDATE FoodInventory SET name = ?, price= ?, expiration_date = ?, quantity = ? WHERE id = ?";
         try {
             Connection conn = Database.getConnection();
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -142,12 +157,12 @@ public class FoodInventoryDAO {
                 stmt.setDouble(2, item.getPrice());
                 stmt.setTimestamp(3, Timestamp.valueOf(item.getExpirationDate()));
                 stmt.setInt(4, item.getQuantity());
-                if (item.getStatus() == null) {
-                    stmt.setNull(5, java.sql.Types.VARCHAR);
-                } else {
-                    stmt.setString(5, item.getStrStatus());
-                }
-                stmt.setInt(6, item.getId());
+//                if (item.getStatus() == null) {
+//                    stmt.setNull(5, java.sql.Types.VARCHAR);
+//                } else {
+//                    stmt.setString(5, item.getStrStatus());
+//                }
+                stmt.setInt(5, item.getId());
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {

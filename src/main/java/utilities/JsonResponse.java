@@ -1,11 +1,11 @@
 package utilities;
 
 
-public class Response {
+public class JsonResponse {
     private int code;
     private String message;
 
-    public Response(int code, String message) {
+    public JsonResponse(int code, String message) {
         this.code = code;
         this.message = message;
     }

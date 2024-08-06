@@ -7,19 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subscription Form</title>
-    <link rel="stylesheet" href="resources/css/subscription.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/subscription.css">
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
 <!-- Navigation Bar -->
-<nav>
-    <div class="nav-left">
-        <div class="link"><a href="food_inventory.jsp">Purchase Food</a></div>
-    </div>
-    <div class="nav-right">
-        <div class="link"><a href="logout.jsp">Log Out</a></div>
-    </div>
-</nav>
+<%@ include file="/utility/nav.jsp" %>
 
 <!-- Container -->
 <div class="container card">
@@ -29,8 +22,8 @@
             <!-- Information Card -->
             <div class="info-card" style="display: none">
                 <h3>Subscription Information</h3>
-                <p><strong>Province:</strong> <span id="info-province"></span></p>
-                <p><strong>City:</strong> <span id="info-city"></span></p>
+                    <%--                <p><strong>Province:</strong> <span id="info-province"></span></p>--%>
+                    <%--                <p><strong>City:</strong> <span id="info-city"></span></p>--%>
                 <p><strong>Communication Method:</strong> <span id="info-method"></span></p>
                 <p style="display:none"><strong>Email:</strong> <span id="info-email"></span></p>
                 <p style="display:none"><strong>Phone:</strong> <span id="info-phone"></span></p>
@@ -40,7 +33,7 @@
         </c:when>
         <c:otherwise>
             <h2>Subscription Form</h2>
-            <form id="subscriptionForm">
+            <form id="subscription-form">
                 <div class="form-buttons">
                     <c:if test="${requestScope.subscription.method == null}">
                         <button class="button-primary" type="button" onclick="handleSubscribe()">Subscribe</button>
@@ -53,26 +46,26 @@
 
                 </div>
                 <!-- Location Selection -->
-                <div class="row">
-                    <div class="form-field">
-                        <label for="province">Province:</label>
-                        <select id="province" name="province" onchange="handleProvinceChange()">
-                            <option value="">Select Province</option>
-                            <c:forEach var="province" items="${requestScope.provinces}">
-                                <option value="${province.id}">${province.province}</option>
-                            </c:forEach>
-                        </select>
-                        <span class="error-message" style="display: none">Please select a province.</span>
-                    </div>
-                    <div class="form-field">
-                        <label for="city">City:</label>
-                        <select id="city" name="city" onchange="handleCityChange()">
-                            <option value="">Select City</option>
-                            <!-- Options will be dynamically loaded based on selected province -->
-                        </select>
-                        <span class="error-message" style="display: none">Please select a city.</span>
-                    </div>
-                </div>
+                    <%--                <div class="row">--%>
+                    <%--                    <div class="form-field">--%>
+                    <%--                        <label for="province">Province:</label>--%>
+                    <%--                        <select id="province" name="province" onchange="handleProvinceChange()">--%>
+                    <%--                            <option value="">Select Province</option>--%>
+                    <%--                            <c:forEach var="province" items="${requestScope.provinces}">--%>
+                    <%--                                <option value="${province.id}">${province.province}</option>--%>
+                    <%--                            </c:forEach>--%>
+                    <%--                        </select>--%>
+                    <%--                        <span class="error-message" style="display: none">Please select a province.</span>--%>
+                    <%--                    </div>--%>
+                    <%--                    <div class="form-field">--%>
+                    <%--                        <label for="city">City:</label>--%>
+                    <%--                        <select id="city" name="city" onchange="handleCityChange()">--%>
+                    <%--                            <option value="">Select City</option>--%>
+                    <%--                            <!-- Options will be dynamically loaded based on selected province -->--%>
+                    <%--                        </select>--%>
+                    <%--                        <span class="error-message" style="display: none">Please select a city.</span>--%>
+                    <%--                    </div>--%>
+                    <%--                </div>--%>
                 <div class="row">
                     <!-- Subscription Method -->
                     <div class="form-field">
@@ -102,33 +95,47 @@
                 </div>
                 <!-- Food Preferences -->
                 <div class="form-field">
-                    <label for="foodPreferences">Food Preferences:</label>
-                    <textarea id="foodPreferences" disabled></textarea>
+                    <label for="food-preferences">Food Preferences:</label>
+                    <textarea id="food-preferences" disabled></textarea>
                 </div>
             </form>
             <table>
                 <thead>
                 <tr>
-                    <th>Select</th>
+                    <th>ID</th>
+                    <th>Subscribe</th>
                     <th>Food Name</th>
+                    <th>Price</th>
+                    <th>Average Rating</th>
                 </tr>
                 </thead>
                 <tbody>
-                <c:forEach var="food" items="${requestScope.foodInventoryList}">
-                    <tr>
-                        <td style="text-align: center">
-                            <input
-                                    type="checkbox"
-                                    name="foodInventory"
-                                    value="${food.id}"
-                                    <c:if test="${fn:contains(requestScope.foodPreferences, food.toJson())}">checked</c:if>
-                                    onchange="handleCheckboxChange(this, '${fn:escapeXml(food.toJson())}')"
-                            />
-                        </td>
-                        <td>${food.name}</td>
-                    </tr>
-                </c:forEach>
-                </tbody>
+                <c:choose>
+                    <c:when test="${requestScope.foodInventoryList == null || requestScope.foodInventoryList.size() == 0}">
+                        <tr>
+                            <td colspan="5">No food available in your area. Come back later.</td>
+                        </tr>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="food" items="${requestScope.foodInventoryList}">
+                            <tr>
+                                <td>${food.id}</td>
+                                <td>
+                                    <input
+                                            type="checkbox"
+                                            name="foodInventory"
+                                            value="${food.id}"
+                                            <c:if test="${fn:contains(requestScope.foodPreferences, food.toJson())}">checked</c:if>
+                                            onchange="handleCheckboxChange(this, '${fn:escapeXml(food.toJson())}')"
+                                    />
+                                </td>
+                                <td>${food.name}</td>
+                                <td>${food.getFormattedPrice()}</td>
+                                <td>${food.averageRating}</td>
+                            </tr>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose></tbody>
             </table>
 
         </c:otherwise>
@@ -147,27 +154,27 @@
     const subscription = ${requestScope.subscription.toJson()};
     </c:otherwise>
     </c:choose>
-    const cities = ${requestScope.cities};
-    let filteredCities = cities;
+    <%--const cities = ${requestScope.cities};--%>
+    // let filteredCities = cities;
     let foodPreferences = ${requestScope.foodPreferences};
 
-    const form = $('#subscriptionForm');
-    const provinceSelect = $('#province');
-    const citySelect = $('#city');
+    const form = $('#subscription-form');
+    // const provinceSelect = $('#province');
+    // const citySelect = $('#city');
     const methodSelect = $('#method');
     const emailInput = $('#email');
     const phoneInput = $('#phone');
-    const foodPreferencesSelect = $('#foodPreferences');
+    const foodPreferencesSelect = $('#food-preferences');
 
     function iniCreateForm() {
         emailInput.val(subscription.email);
-        filterCityList(subscription.province);
+        // filterCityList(subscription.province);
     }
 
     function iniUpdateForm() {
-        provinceSelect.val(subscription.province);
-        filterCityList(subscription.province);
-        citySelect.val(subscription.city);
+        // provinceSelect.val(subscription.province);
+        // filterCityList(subscription.province);
+        // citySelect.val(subscription.city);
         methodSelect.val(subscription.method);
         handleMethodChange();
         emailInput.val(subscription.contactEmail); // or user.email
@@ -176,12 +183,12 @@
     }
 
     function iniInfoCard() {
-        $("#info-province").text(subscription.province);
-        $("#info-city").text(subscription.city);
+        // $("#info-province").text(subscription.province);
+        // $("#info-city").text(subscription.city);
         $("#info-method").text(subscription.method.toUpperCase());
         subscription.method.toLowerCase() === "email" && $("#info-email").text(subscription.contactEmail).parent("p").show();
         subscription.method.toLowerCase() === "sms" && $("#info-phone").text(subscription.contactPhone).parent("p").show();
-        $("#info-food-preferences").text(foodPreferences.map(itm => itm.description).join(", ") || "N/A");
+        $("#info-food-preferences").text(foodPreferences.map(itm => itm.name).join(", ") || "N/A");
         $(".info-card").show();
         $(".info-button").hover(function () {
             $(".info-card").addClass("active")
@@ -190,36 +197,36 @@
         })
     }
 
-    function filterCityList(provinceId) {
-        citySelect.empty();
-        citySelect.append('<option value="">Select City</option>');
-        if (provinceId) {
-            filteredCities = cities.filter(city => city.provinceId === provinceId);
-            filteredCities.forEach(city =>
-                citySelect.append('<option value="' + city.city + '">' + city.city + '</option>')
-            );
-        } else {
-            filteredCities = cities;
-            filteredCities.forEach(city => {
-                citySelect.append('<option value="' + city.city + '">' + city.city + '</option>');
-            });
-        }
-    }
+    // function filterCityList(provinceId) {
+    //     citySelect.empty();
+    //     citySelect.append('<option value="">Select City</option>');
+    //     if (provinceId) {
+    //         filteredCities = cities.filter(city => city.provinceId === provinceId);
+    //         filteredCities.forEach(city =>
+    //             citySelect.append('<option value="' + city.city + '">' + city.city + '</option>')
+    //         );
+    //     } else {
+    //         filteredCities = cities;
+    //         filteredCities.forEach(city => {
+    //             citySelect.append('<option value="' + city.city + '">' + city.city + '</option>');
+    //         });
+    //     }
+    // }
 
-    function handleProvinceChange() {
-        const provinceId = provinceSelect.val();
-        filterCityList(provinceId);
-        validateProvinceField();
-    }
-
-    function handleCityChange() {
-        const city = filteredCities.find(city => city.city === citySelect.val());
-        if (city && city.provinceId !== provinceSelect.val()) {
-            provinceSelect.val(city.provinceId);
-            validateProvinceField();
-        }
-        validateCityField();
-    }
+    // function handleProvinceChange() {
+    //     const provinceId = provinceSelect.val();
+    //     filterCityList(provinceId);
+    //     validateProvinceField();
+    // }
+    //
+    // function handleCityChange() {
+    //     const city = filteredCities.find(city => city.city === citySelect.val());
+    //     if (city && city.provinceId !== provinceSelect.val()) {
+    //         provinceSelect.val(city.provinceId);
+    //         validateProvinceField();
+    //     }
+    //     validateCityField();
+    // }
 
     function handleMethodChange() {
         const method = methodSelect.val();
@@ -255,7 +262,7 @@
     }
 
     function updateFoodPreferences() {
-        const strFoodPreferences = foodPreferences.map(itm => itm.description).join(", ");
+        const strFoodPreferences = foodPreferences.map(itm => itm.name).join(", ");
         foodPreferencesSelect.val(strFoodPreferences);
     }
 
@@ -272,70 +279,76 @@
 
 
     function handleSubscribe() {
-        validateForm();
-        const data = {
-            province: provinceSelect.val(),
-            city: citySelect.val(),
-            method: methodSelect.val(),
-            foodPreferences: foodPreferences.map(food => food.id).join(',')
-        }
-        if (methodSelect.val() === 'email') {
-            data.contactEmail = emailInput.val();
-        }
-        if (methodSelect.val() === 'sms') {
-            data.contactPhone = phoneInput.val();
-        }
-        $.ajax({
-            url: 'subscription/subscribe',
-            type: 'POST',
-            data,
-            success: function (res) {
-                if (res?.code === 0) {
-                    alert('Subscribe successfully!');
-                    window.location.reload();
-                } else {
-                    alert('Failed to subscribe: ' + res?.message + '. Please try again.');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error:', status, error);
-                alert('Failed to subscribe. Please try again.');
+        const isValid = validateForm();
+        if (true) {
+            const data = {
+                // province: provinceSelect.val(),
+                // city: citySelect.val(),
+                method: methodSelect.val(),
+                foodPreferences: foodPreferences.map(food => food.id).join(',')
             }
-        });
+            if (methodSelect.val() === 'email') {
+                data.contactEmail = emailInput.val();
+            }
+            if (methodSelect.val() === 'sms') {
+                data.contactPhone = phoneInput.val();
+            }
+            $.ajax({
+                url: 'subscription/subscribe',
+                type: 'POST',
+                data,
+                success: function (res) {
+                    if (res?.code === 0) {
+                        alert('Subscribe successfully!');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to subscribe: ' + res?.message + '. Please try again.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', status, error);
+                    alert('Failed to subscribe. Please try again.');
+                }
+            });
+        }
+
     }
 
     function handleUpdate() {
-        validateForm();
-        const data = {
-            consumerId: subscription.consumerId,
-            province: provinceSelect.val(),
-            city: citySelect.val(),
-            method: methodSelect.val(),
-            foodPreferences: foodPreferences.map(food => food.id).join(',')
-        }
-        if (methodSelect.val() === 'email') {
-            data.contactEmail = emailInput.val();
-        }
-        if (methodSelect.val() === 'sms') {
-            data.contactPhone = phoneInput.val();
-        }
-        $.ajax({
-            url: 'subscription/update',
-            type: 'POST',
-            data,
-            success: function (res) {
-                if (res?.code === 0) {
-                    alert('Subscription updated successfully!');
-                    window.location.reload();
-                } else {
-                    alert('Failed to update subscription: ' + res?.message + '. Please try again.');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error:', status, error);
-                alert('Failed to update subscription. Please try again.');
+        const isValid = validateForm();
+        if (isValid) {
+            const data = {
+                consumerId: subscription.consumerId,
+                // province: provinceSelect.val(),
+                // city: citySelect.val(),
+                method: methodSelect.val(),
+                foodPreferences: foodPreferences.map(food => food.id).join(',')
             }
-        });
+            if (methodSelect.val() === 'email') {
+                data.contactEmail = emailInput.val();
+            }
+            if (methodSelect.val() === 'sms') {
+                data.contactPhone = phoneInput.val();
+            }
+            $.ajax({
+                url: 'subscription/update',
+                type: 'POST',
+                data,
+                success: function (res) {
+                    if (res?.code === 0) {
+                        alert('Subscription updated successfully!');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to update subscription: ' + res?.message + '. Please try again.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', status, error);
+                    alert('Failed to update subscription. Please try again.');
+                }
+            });
+        }
+
     }
 
     function handleDeactivate() {
@@ -378,13 +391,13 @@
         });
     }
 
-    function validateProvinceField() {
-        return validateField(provinceSelect);
-    }
-
-    function validateCityField() {
-        return validateField(citySelect);
-    }
+    // function validateProvinceField() {
+    //     return validateField(provinceSelect);
+    // }
+    //
+    // function validateCityField() {
+    //     return validateField(citySelect);
+    // }
 
     function validateMethodField() {
         return validateField(methodSelect);
@@ -409,9 +422,9 @@
     }
 
     function validateForm() {
-        let isValid = validateProvinceField();
-        isValid = validateCityField() && isValid;
-        isValid = validateMethodField() && isValid;
+        // let isValid = validateProvinceField();
+        // isValid = validateCityField() && isValid;
+        let isValid = validateMethodField();
         if (methodSelect.val() === 'email') {
             isValid = validateEmailField() && isValid;
         }
