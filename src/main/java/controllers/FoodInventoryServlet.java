@@ -69,10 +69,7 @@ public class FoodInventoryServlet extends HttpServlet {
         List<FoodInventory> list = isSurplus ? manager.getSurplusFoodInventoryByRetailerId(id) : manager.getAllFoodInventoryByRetailerId(id);
         request.setAttribute("foodInventoryList", list);
         RatingService service = new RatingService();
-        List<Rating> consumerRatingList = service.getAllRatingsByConsumerId(id);
-        request.setAttribute("consumerRatingList", MyGson.getMyGson().toJson(consumerRatingList));
-        request.setAttribute("isSurplus", isSurplus);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/retailer/food-inventory.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher(isSurplus ? "/retailer/surplus-food.jsp" : "/retailer/food-inventory.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -117,40 +114,44 @@ public class FoodInventoryServlet extends HttpServlet {
                 }
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
     }
 
     private void handleFoodInventory(HttpServletRequest request, HttpServletResponse response, boolean isAdd)
             throws SQLException, IOException, ServletException {
+        try {
+            String name = request.getParameter("name");
+            double price = Double.parseDouble(request.getParameter("price"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            String expirationDate = request.getParameter("expirationDate");
+//        String status = request.getParameter("status");
 
-        String name = request.getParameter("name");
-        double price = Double.parseDouble(request.getParameter("price"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        String expirationDate = request.getParameter("expirationDate");
-        String status = request.getParameter("status");
+            FoodInventory foodInventory = new FoodInventory();
+            foodInventory.setName(name);
+            foodInventory.setPrice(price);
+            foodInventory.setQuantity(quantity);
+            foodInventory.setLocalExpirationDate(expirationDate);
+//        foodInventory.setStatus(status);
 
-        FoodInventory foodInventory = new FoodInventory();
-        foodInventory.setName(name);
-        foodInventory.setPrice(price);
-        foodInventory.setQuantity(quantity);
-        foodInventory.setLocalExpirationDate(expirationDate);
-        foodInventory.setStatus(status);
-
-        FoodInventoryManager manager = new FoodInventoryManager();
-        if (isAdd) {
-            HttpSession session = request.getSession(false);
-            User user = (User) session.getAttribute("user");
-            int id = user.getId();
-            foodInventory.setRetailerId(id);
-            manager.addFoodInventory(foodInventory);
-        } else {
-            int id = Integer.parseInt(request.getParameter("id"));
-            foodInventory.setId(id);
-            manager.updateFoodInventory(foodInventory);
+            FoodInventoryManager manager = new FoodInventoryManager();
+            if (isAdd) {
+                HttpSession session = request.getSession(false);
+                User user = (User) session.getAttribute("user");
+                int id = user.getId();
+                foodInventory.setRetailerId(id);
+                manager.addFoodInventory(foodInventory);
+            } else {
+                int id = Integer.parseInt(request.getParameter("id"));
+                foodInventory.setId(id);
+                manager.updateFoodInventory(foodInventory);
+            }
+            response.sendRedirect(request.getContextPath() + "/food-inventory");
+        } catch (Exception e) {
+            throw new ServletException(e.getMessage());
         }
-        response.sendRedirect(request.getContextPath() + "/food-inventory");
+
     }
 
     private void deleteFoodInventory(HttpServletRequest request, HttpServletResponse response)

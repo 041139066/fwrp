@@ -32,13 +32,13 @@
             <label for="expiration-date">Expiration Date:</label>
             <input type="datetime-local" id="expiration-date" name="expirationDate" required>
         </div>
-        <div class="form-field">
-            <label>Status: </label>
-            <input id="donation" type="radio" name="status">
-            <label for="donation" class="inline-label">For Donation</label>
-            <input id="sale" type="radio" name="status">
-            <label for="sale" class="inline-label">For Sale</label>
-        </div>
+<%--        <div class="form-field">--%>
+<%--            <label>Status: </label>--%>
+<%--            <input id="donation" type="radio" name="status">--%>
+<%--            <label for="donation" class="inline-label">For Donation</label>--%>
+<%--            <input id="sale" type="radio" name="status">--%>
+<%--            <label for="sale" class="inline-label">For Sale</label>--%>
+<%--        </div>--%>
         <div class="form-buttons">
             <button type="submit" class="button-primary">Submit</button>
         </div>

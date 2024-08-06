@@ -12,11 +12,11 @@ public class SubscriptionValidator {
 
     public void validate(User user) throws ValidationException {
         List<String> list = new ArrayList<>();
-        try{
-            validateLocation(user.getCity(), user.getProvince());
-        } catch (ValidationException e) {
-            list.add(e.getMessage());
-        }
+//        try{
+//            validateLocation(user.getCity(), user.getProvince());
+//        } catch (ValidationException e) {
+//            list.add(e.getMessage());
+//        }
         try {
             MethodType method = user.getMethod();
             if(method == MethodType.email){
@@ -35,13 +35,13 @@ public class SubscriptionValidator {
         }
     }
 
-    private void validateLocation(String cityId, String provinceId) throws ValidationException {
-        CityDAO cityDAO = new CityDAO();
-        City city = cityDAO.getCityByIds(cityId, provinceId);
-        if(city == null) {
-            throw new ValidationException("Invalid Canada location: '" + cityId + ", " + provinceId + "'.");
-        }
-    }
+//    private void validateLocation(String cityId, String provinceId) throws ValidationException {
+//        CityDAO cityDAO = new CityDAO();
+//        City city = cityDAO.getCityByIds(cityId, provinceId);
+//        if(city == null) {
+//            throw new ValidationException("Invalid Canada location: '" + cityId + ", " + provinceId + "'.");
+//        }
+//    }
 
     private void validateEmail(String email) throws ValidationException {
         String pattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";

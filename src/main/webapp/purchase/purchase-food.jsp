@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Food</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/donation.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/consumer-charitable.css">
     <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
@@ -25,6 +25,7 @@
             <th>Expiration Date</th>
             <th>Quantity</th>
             <th>Status</th>
+            <th>Average Rating</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -32,24 +33,47 @@
         <tbody>
         <%
             List<FoodInventory> list = (List<FoodInventory>) request.getAttribute("list");
-
+            if (list != null && !list.isEmpty()) {
             for (FoodInventory item : list) {
         %>
-        <tr align="center">
-            <td><%= item.getId() %></td>
-            <td><%= item.getName() %></td>
-            <td><%= item.getFormattedPrice() %></td>
-            <td><%= item.getStrExpirationDate() %></td>
-            <td><%= item.getQuantity() %></td>
-            <td><%= item.getStatus() %></td>
+        <tr>
+            <td><%= item.getId() %>
+            </td>
+            <td><%= item.getName() %>
+            </td>
+            <td><%= item.getFormattedPrice() %>
+            </td>
+            <td><%= item.getStrExpirationDate() %>
+            </td>
+            <td><%= item.getQuantity() %>
+            </td>
+            <td><%= item.getStatus() != null ? item.getStrStatus() : "N/A" %>
+            </td>
+            <td>
+                <button class="link-button"
+                        onclick="handleAverageRating(<%= item.getId() %>)"><%= item.getAverageRating() %>
+                </button>
+                <button class="icon-button" onclick='handleRating(<%= item.toJson()%>)'><i
+                        class="fa-regular fa-pen-to-square"></i></button>
+            </td>
             <td>
                 <form class="table-form" method="post" action="<%= request.getContextPath() %>/purchase-food">
-                    <input type="number" name="need" value="0" min="0" max="<%= item.getQuantity() %>" step="1" class="table-checkbox">
+                    <input class="table-input" type="number" name="need" value="0" min="0"
+                           max="<%= item.getQuantity() %>" step="1"
+                    >
                     <input type="hidden" name="id" value="<%= item.getId() %>">
                     <input type="hidden" name="action" value="purchaseFood">
-                    <button type="submit" class="icon-button" title="purchase this food"><i class="fa-solid fa-cart-shopping"></i></button>
+                    <button type="submit" class="icon-button" title="purchase this food"><i
+                            class="fa-solid fa-cart-shopping"></i></button>
                 </form>
             </td>
+        </tr>
+        <%
+            }
+        } else {
+        %>
+        <tr>
+            <td colspan="7">No food for available at the moment. Come back later.</td>
         </tr>
         <%
             }
@@ -59,5 +83,22 @@
 </div>
 <!-- Footer -->
 <%@ include file="/utility/footer.jsp" %>
+<!-- Rating -->
+<%@ include file="/food-rating/rating-modal.jsp" %>
+<script>
+    function handleAverageRating(id) {
+        window.location = "rating?foodInventoryId=" + id;
+    }
+
+    function handleRating(foodInventory) {
+        const consumerRatingList = ${requestScope.consumerRatingList};
+        const rating = consumerRatingList.find(itm => itm.foodInventoryId === foodInventory.id);
+        if (rating) {
+            openUpdateModal(rating);
+        } else {
+            openCreateModal(foodInventory)
+        }
+    }
+</script>
 </body>
 </html>

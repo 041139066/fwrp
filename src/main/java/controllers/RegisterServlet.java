@@ -1,7 +1,7 @@
 package controllers;
 
 import businesslayer.LocationService;
-import businesslayer.UserManager;
+import businesslayer.AuthenticationService;
 import com.google.gson.Gson;
 import model.Province;
 import model.User;
@@ -39,6 +39,7 @@ public class RegisterServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -54,12 +55,10 @@ public class RegisterServlet extends HttpServlet {
                 String password = request.getParameter("password");
                 user.setPassword(PasswordHasher.hashPassword(password));
                 user.setType(request.getParameter("type"));
-                if ("retailer".equalsIgnoreCase(request.getParameter("type"))) {
-                    user.setCity(request.getParameter("city"));
-                    user.setProvince(request.getParameter("province"));
-                }
-                UserManager manager = new UserManager();
-                manager.register(user);
+                user.setCity(request.getParameter("city"));
+                user.setProvince(request.getParameter("province"));
+                AuthenticationService service = new AuthenticationService();
+                service.register(user);
                 message = "Register successfully!";
             } catch (Exception e) {
                 code = 1;

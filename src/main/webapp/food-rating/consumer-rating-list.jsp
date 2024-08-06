@@ -13,26 +13,36 @@
 <%-- Nav Bar --%>
 <%@ include file="/utility/nav.jsp" %>
 <h1>My Ratings</h1>
-<div class="container card">
-    <c:forEach var="rating" items="${requestScope.ratingList}">
-        <div class="rating-card">
-            <div class="card-header">
-                <div class="title">NO.${rating.foodInventoryId} - ${rating.foodInventoryName}</div>
-                <div>
-                    <button class="icon-button" onclick='openUpdateModal(${rating.toJson()})'><i
-                            class="fa-regular fa-pen-to-square"></i></button>
-                    <button class="icon-button-error" onclick='handleDelete(${rating.toJson()})'><i
-                            class="fa-regular fa-trash-can"></i></button>
-                </div>
-            </div>
-            <div class="card-body">
-                <p><strong>Rating:</strong> <span>${rating.rating}</span></p>
-                <p><strong>Comment:</strong> <span>${rating.comment}</span></p>
-                <p><strong>Last Modified:</strong> <span>${rating.getStrLastModified()}</span></p>
-            </div>
+<c:choose>
+    <c:when test="${requestScope.ratingList == null || requestScope.ratingList.size() == 0}">
+        <div class="container">
+            <p class="info-message"><i class="fa-regular fa-face-sad-cry"></i> You haven't made any ratings yet.</p>
         </div>
-    </c:forEach>
-</div>
+    </c:when>
+    <c:otherwise>
+        <div class="container card">
+            <c:forEach var="rating" items="${requestScope.ratingList}">
+                <div class="rating-card">
+                    <div class="card-header">
+                        <div class="title">NO.${rating.foodInventoryId} - ${rating.foodInventoryName}</div>
+                        <div>
+                            <button class="icon-button" onclick='openUpdateModal(${rating.toJson()})'><i
+                                    class="fa-regular fa-pen-to-square"></i></button>
+                            <button class="icon-button-error" onclick='handleDelete(${rating.toJson()})'><i
+                                    class="fa-regular fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Rating:</strong> <span>${rating.rating}</span></p>
+                        <p><strong>Comment:</strong> <span>${rating.comment}</span></p>
+                        <p><strong>Last Modified:</strong> <span>${rating.getStrLastModified()}</span></p>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+    </c:otherwise>
+</c:choose>
+
 <!-- Footer -->
 <%@ include file="/utility/footer.jsp" %>
 <%@ include file="rating-modal.jsp" %>

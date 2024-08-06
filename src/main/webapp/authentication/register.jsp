@@ -34,19 +34,17 @@
                 <span class="error-message"
                       style="display: none">Please enter a valid email address: xxx@xxx.xx.</span>
             </div>
-            <div class="row">
-                <div class="form-field">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" onchange="handlePasswordChange()" required>
-                    <span class="error-message"
-                          style="display: none">Please enter a valid password: at least 6 letters and digits.</span>
-                </div>
-                <div class="form-field">
-                    <label for="re-password">Enter password again:</label>
-                    <input type="password" id="re-password" onchange="handleRePasswordChange()" required>
-                    <span class="error-message"
-                          style="display: none">Passwords do not match.</span>
-                </div>
+            <div class="form-field">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" onchange="handlePasswordChange()" required>
+                <span class="error-message"
+                      style="display: none">Please enter a valid password: at least 6 characters with both letters and digits.</span>
+            </div>
+            <div class="form-field">
+                <label for="re-password">Enter password again:</label>
+                <input type="password" id="re-password" onchange="handleRePasswordChange()" required>
+                <span class="error-message"
+                      style="display: none">Passwords do not match.</span>
             </div>
             <div class="form-field">
                 <label for="type">User Type:</label>
@@ -59,7 +57,7 @@
                 <span class="error-message"
                       style="display: none">Please select a user type.</span>
             </div>
-            <div class="row" id="location" style="display: none">
+            <div class="row">
                 <div class="form-field">
                     <label for="province">Province:</label>
                     <select id="province" name="province" onchange="handleProvinceChange()">
@@ -102,12 +100,13 @@
     const password = $("#password");
     const rePassword = $("#re-password")
     const type = $("#type");
-    const locationSelect = $("#location");
     const provinceSelect = $("#province");
     const citySelect = $("#city");
 
     $(document).ready(function () {
         filterCityList();
+        provinceSelect.val("ON");
+        citySelect.val("Ottawa")
     });
 
     function handleNameChange() {
@@ -120,6 +119,7 @@
 
     function handlePasswordChange() {
         validatePassword();
+        rePassword.val() && validateRePassword();
     }
 
     function handleRePasswordChange() {
@@ -127,7 +127,6 @@
     }
 
     function handleTypeChange() {
-        type.val() === 'retailer' ? locationSelect.show() : locationSelect.hide();
         validateType();
     }
 
@@ -159,7 +158,7 @@
             provinceSelect.val(city.provinceId);
             validateProvince();
         }
-        validateCityField();
+        validateCity();
     }
 
     function handleSubmit() {
@@ -169,12 +168,10 @@
                 name: name.val(),
                 email: email.val(),
                 password: password.val(),
-                type: type.val()
+                type: type.val(),
+                province: provinceSelect.val(),
+                city: citySelect.val(),
             };
-            if(type.val() === 'retailer'){
-                data.province = provinceSelect.val();
-                data.city = citySelect.val();
-            }
             $.ajax({
                 url: 'register',
                 type: 'POST',
@@ -202,10 +199,8 @@
         isValid = validateRePassword() && isValid;
         isValid = validateType() && isValid;
         isValid = validateType() && isValid;
-        if (type.val() === 'retailer') {
-            isValid = validateProvince() && isValid;
-            isValid = validateCity() && isValid;
-        }
+        isValid = validateProvince() && isValid;
+        isValid = validateCity() && isValid;
         return isValid;
     }
 

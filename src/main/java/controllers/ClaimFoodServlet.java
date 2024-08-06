@@ -1,9 +1,12 @@
 package controllers;
 
 import businesslayer.DonationFoodManager;
+import businesslayer.RatingService;
 import model.ClaimedFood;
 import model.FoodInventory;
+import model.Rating;
 import model.User;
+import utilities.MyGson;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -71,8 +74,15 @@ public class ClaimFoodServlet extends HttpServlet {
 
     private void listDonationFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int userId = user.getId();
+
             List<FoodInventory> list = manager.getAllFoodInventoryForDonation();
             request.setAttribute("list", list);
+            RatingService service = new RatingService();
+            List<Rating> consumerRatingList = service.getAllRatingsByConsumerId(userId);
+            request.setAttribute("consumerRatingList", MyGson.getMyGson().toJson(consumerRatingList));
             RequestDispatcher dispatcher = request.getRequestDispatcher("charitable/claim-food.jsp");
             dispatcher.forward(request, response);
         } catch (ServletException | IOException e) {

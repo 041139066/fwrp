@@ -1,6 +1,6 @@
 package controllers;
 
-import businesslayer.UserManager;
+import businesslayer.AuthenticationService;
 import com.google.gson.Gson;
 import model.User;
 import utilities.MyGson;
@@ -37,8 +37,8 @@ public class LoginServlet extends HttpServlet {
             try {
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");
-                UserManager manager = new UserManager();
-                User user = manager.authenticate(email, password);
+                AuthenticationService service = new AuthenticationService();
+                User user = service.authenticate(email, password);
                 HttpSession session = request.getSession();
                 session.setAttribute("id", user.getId());
                 session.setAttribute("name", user.getName());

@@ -16,9 +16,13 @@
 <body>
 <%@ include file="/utility/nav.jsp" %>
 
-<h1>Food Inventory</h1>
+<h1>Surplus Food</h1>
 <div class="container card">
-    <button class="button-primary" onclick="handleAdd()">Add New Inventory</button>
+    <!-- Batch actions -->
+    <div class="batch-actions">
+        <button class="button-primary" onclick="batchSetStatus('sale')">Set For Sale</button>
+        <button class="button-primary" onclick="batchSetStatus('donation')">Set For Donation</button>
+    </div>
     <%
         List<FoodInventory> foodInventoryList = (List<FoodInventory>) request.getAttribute("foodInventoryList");
         if (foodInventoryList == null) {
@@ -30,6 +34,7 @@
     <table>
         <thead>
         <tr>
+            <th>Check</th>
             <th>ID</th>
             <th>Food</th>
             <th>Price</th>
@@ -38,7 +43,6 @@
             <th>Donation/Sale</th>
             <th>Quantity</th>
             <th>Average Rating</th>
-            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -46,6 +50,9 @@
             for (FoodInventory item : foodInventoryList) {
         %>
         <tr>
+            <td>
+                <input id="checkbox_<%= item.getId() %>" type="checkbox" onchange="handleCheckboxChange(<%= item.getId() %>);">
+            </td>
             <td>
                 <%= item.getId() %>
             </td>
@@ -62,17 +69,21 @@
                 <%= item.isSurplus() ? "Yes" : "No" %>
             </td>
             <td>
-                <%= item.getStatus() != null ? item.getStrStatus() : "N/A" %>
+                <select id="status_<%= item.getId() %>" class="table-select">
+                    <option value="">N/A</option>
+                    <option value="sale" <%= "sale".equalsIgnoreCase(item.getStrStatus()) ? "selected" : "" %>>Sale
+                    </option>
+                    <option value="donation" <%= "donation".equalsIgnoreCase(item.getStrStatus()) ? "selected" : "" %>>
+                        Donation
+                    </option>
+                </select>
+                <button class="button-warning" onclick="handleUpdate(<%= item.getId() %>);">Update</button>
             </td>
             <td>
                 <%= item.getQuantity() %>
             </td>
             <td>
                 <%= item.getAverageRating() %>
-            </td>
-            <td>
-                <button class="button-warning" onclick="handleEdit(<%= item.getId() %>);">Edit</button>
-                <button class="button-error" onclick="handleDelete(<%= item.getId() %>);">Delete</button>
             </td>
         </tr>
         <%
@@ -87,20 +98,15 @@
 <!-- Footer -->
 <%@ include file="/utility/footer.jsp" %>
 <script>
-
-    function handleAdd() {
-        window.location = "<%= request.getContextPath() %>/food-inventory/add";
+    function handleCheckboxChange(id){
+        console.log("checkbox: " + id);
     }
+    function batchSetStatus(status){
+        console.log("batch: " + status);
 
-    function handleEdit(id) {
-        window.location = "<%= request.getContextPath() %>/food-inventory/edit?id=" + id;
     }
-
-    function handleDelete(id) {
-        const isConfirmed = confirm("Do you want to delete this food inventory?");
-        if (isConfirmed) {
-            window.location = "<%= request.getContextPath() %>/food-inventory/delete?id=" + id;
-        }
+    function handleUpdate(id){
+        console.log("select: " + id);
     }
 
 </script>

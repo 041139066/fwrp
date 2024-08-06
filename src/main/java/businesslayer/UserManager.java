@@ -1,33 +1,37 @@
 package businesslayer;
 
+import dataaccesslayer.FoodPreferencesDAO;
 import dataaccesslayer.UserDAO;
+import model.EmailSubscriber;
+import model.SMSSubscriber;
+import model.Subscriber;
+import model.constants.MethodType;
+import model.constants.UserType;
 import model.User;
-import utilities.PasswordHasher;
-import validators.ValidationException;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserManager {
-    private final UserDAO userDAO;
+    UserDAO userDAO;
+    FoodPreferencesDAO prefDAO;
 
-    public UserManager() {
+    public UserManager(){
         userDAO = new UserDAO();
+        prefDAO = new FoodPreferencesDAO();
     }
-
-    public User authenticate(String email, String password) throws ValidationException {
-        User user = userDAO.getUserByEmail(email);
-        if (user == null) {
-            throw new ValidationException("The email address is not registered yet");
+    public List<Subscriber> getSubscribers(UserType type, int retailerId){
+        List<User> users = userDAO.getSubscribers(type, retailerId);
+        List<Subscriber> subscribers = new ArrayList<Subscriber>();
+        for(User user : users){
+            List<Integer> foodPreferences = prefDAO.getFoodPreferencesByUserId(retailerId);
+            if(user.getMethod() == MethodType.email){
+                subscribers.add(new EmailSubscriber(user.getId(), user.getName(), user.getContactEmail(), foodPreferences));
+            }
+            if(user.getMethod() == MethodType.sms){
+                subscribers.add(new SMSSubscriber(user.getId(), user.getName(), user.getContactPhone(), foodPreferences));
+            }
         }
-        String hashedPassword = user.getPassword();
-        if (!PasswordHasher.checkPassword(password, hashedPassword)) {
-            throw new ValidationException("The email or password is incorrect");
-        }
-        return user;
+        return subscribers;
     }
-
-    public void register(User user) throws ValidationException, SQLException {
-        userDAO.register(user);
-    }
-
 }

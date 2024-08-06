@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import businesslayer.LocationService;
@@ -32,6 +33,8 @@ public class SubscriptionServlet extends HttpServlet {
                 HttpSession session = request.getSession(false);
                 User user = (User) session.getAttribute("user");
                 int userId = user.getId();
+                String city = user.getCity();
+                String province = user.getProvince();
 
                 LocationService locationService = new LocationService();
                 List<Province> provinces = locationService.getAllProvinces();
@@ -43,12 +46,16 @@ public class SubscriptionServlet extends HttpServlet {
                 User subscription = subscriptionService.getSubscription(userId);
                 request.setAttribute("subscription", subscription);
 
-                String foodPreferences = gson.toJson(subscriptionService.getFoodPreferences(userId));
-                request.setAttribute("foodPreferences", foodPreferences);
 
                 FoodInventoryManager foodInventoryManager = new FoodInventoryManager();
-                List<FoodInventory> foodInventoryList = foodInventoryManager.getAllFoodInventory();
+                List<FoodInventory> foodInventoryList = foodInventoryManager.getAllFoodInventoryByLocation(city, province);
                 request.setAttribute("foodInventoryList", foodInventoryList);
+
+                List<Integer> foodPreferences = subscriptionService.getFoodPreferencesByUserId(userId);
+                List<FoodInventory> filteredPreferences = foodInventoryList.stream()
+                        .filter(item -> foodPreferences.contains(item.getId()))
+                        .toList();
+                request.setAttribute("foodPreferences", gson.toJson(filteredPreferences));
 
                 RequestDispatcher dispatcher = request.getRequestDispatcher("surplus-food-alert/subscription.jsp");
                 dispatcher.forward(request, response);
@@ -123,8 +130,8 @@ public class SubscriptionServlet extends HttpServlet {
 
             User subscription = new User();
             subscription.setId(userId);
-            subscription.setCity(request.getParameter("city"));
-            subscription.setProvince(request.getParameter("province"));
+//            subscription.setCity(request.getParameter("city"));
+//            subscription.setProvince(request.getParameter("province"));
             subscription.setMethod(request.getParameter("method"));
             if ("email".equalsIgnoreCase(request.getParameter("method"))) {
                 subscription.setContactEmail(request.getParameter("contactEmail"));

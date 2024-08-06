@@ -1,7 +1,9 @@
 package controllers;
 
 import businesslayer.PurchaseFoodManager;
+import businesslayer.RatingService;
 import model.*;
+import utilities.MyGson;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -71,8 +73,15 @@ public class PurchaseFoodServlet extends HttpServlet {
 
     private void listAvailableFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+            HttpSession session = request.getSession(false);
+            User user = (User) session.getAttribute("user");
+            int userId = user.getId();
+
             List<FoodInventory> list = manager.getAllFoodInventoryForSale();
             request.setAttribute("list", list);
+            RatingService service = new RatingService();
+            List<Rating> consumerRatingList = service.getAllRatingsByConsumerId(userId);
+            request.setAttribute("consumerRatingList", MyGson.getMyGson().toJson(consumerRatingList));
             RequestDispatcher dispatcher = request.getRequestDispatcher("purchase/purchase-food.jsp");
             dispatcher.forward(request, response);
         } catch (ServletException | IOException e) {

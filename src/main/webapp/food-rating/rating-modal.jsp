@@ -69,7 +69,7 @@
     let currentItem;
 
     function openUpdateModal(item) {
-        title.text("Update Your Rating for " + item.foodInventoryDescription);
+        title.text("Update Your Rating for " + item.foodInventoryName);
         if (item) {
             currentItem = item;
             rating.val(item.rating);
@@ -80,7 +80,7 @@
     }
 
     function openCreateModal(item) {
-        title.text("Create Your Rating for " + item.description);
+        title.text("Create Your Rating for " + item.name);
         if (item) {
             currentItem = item;
         }
