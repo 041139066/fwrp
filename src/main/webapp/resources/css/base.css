@@ -103,6 +103,12 @@ nav a:hover {
     max-width: 1200px;
 }
 
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 /* Card */
 .card {
     background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
@@ -459,6 +465,7 @@ button {
 }
 
 .info-message {
+    margin: 24px auto;
     color: var(--theme-color-dark-hover);
     font-size: 2rem;
     font-weight: 700;

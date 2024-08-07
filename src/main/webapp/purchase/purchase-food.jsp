@@ -12,6 +12,8 @@
     <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
+
+<!-- Nav Bar -->
 <%@ include file="/utility/nav.jsp" %>
 
 <h1>Purchase Food</h1>
@@ -24,7 +26,6 @@
             <th>Price</th>
             <th>Expiration Date</th>
             <th>Quantity</th>
-            <th>Status</th>
             <th>Average Rating</th>
             <th>Actions</th>
         </tr>
@@ -34,7 +35,7 @@
         <%
             List<FoodInventory> list = (List<FoodInventory>) request.getAttribute("list");
             if (list != null && !list.isEmpty()) {
-            for (FoodInventory item : list) {
+                for (FoodInventory item : list) {
         %>
         <tr>
             <td><%= item.getId() %>
@@ -47,14 +48,16 @@
             </td>
             <td><%= item.getQuantity() %>
             </td>
-            <td><%= item.getStatus() != null ? item.getStrStatus() : "N/A" %>
-            </td>
             <td>
                 <button class="link-button"
-                        onclick="handleAverageRating(<%= item.getId() %>)"><%= item.getAverageRating() %>
+                        onclick="window.location = 'rating?foodInventoryId=' + <%= item.getId() %>"
+                        title="see all ratings"
+                >
+                    <%= item.getAverageRating() %>
                 </button>
-                <button class="icon-button" onclick='handleRating(<%= item.toJson()%>)'><i
-                        class="fa-regular fa-pen-to-square"></i></button>
+                <button class="icon-button" onclick='handleRating(<%= item.toJson()%>)' title="add your rating">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
             </td>
             <td>
                 <form class="table-form" method="post" action="<%= request.getContextPath() %>/purchase-food">
@@ -86,18 +89,10 @@
 <!-- Rating -->
 <%@ include file="/food-rating/rating-modal.jsp" %>
 <script>
-    function handleAverageRating(id) {
-        window.location = "rating?foodInventoryId=" + id;
-    }
-
     function handleRating(foodInventory) {
         const consumerRatingList = ${requestScope.consumerRatingList};
         const rating = consumerRatingList.find(itm => itm.foodInventoryId === foodInventory.id);
-        if (rating) {
-            openUpdateModal(rating);
-        } else {
-            openCreateModal(foodInventory)
-        }
+        rating ? openUpdateModal(rating) : openCreateModal(foodInventory);
     }
 </script>
 </body>

@@ -89,7 +89,6 @@
     function validateField(field, pattern = /^.+$/) {
         const errorMessage = field.next('.error-message');
         const val = field.val().toString().trim();
-        console.log(val);
         const isValid = val && pattern.test(val);
         isValid ? errorMessage.hide() : errorMessage.show();
         return isValid;

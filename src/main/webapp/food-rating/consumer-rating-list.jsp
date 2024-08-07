@@ -15,8 +15,11 @@
 <h1>My Ratings</h1>
 <c:choose>
     <c:when test="${requestScope.ratingList == null || requestScope.ratingList.size() == 0}">
-        <div class="container">
+        <div class="container center-container">
             <p class="info-message"><i class="fa-regular fa-face-sad-cry"></i> You haven't made any ratings yet.</p>
+            <button class="button-primary"
+                    onclick="window.history.back();">Go back!
+            </button>
         </div>
     </c:when>
     <c:otherwise>
