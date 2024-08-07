@@ -18,6 +18,37 @@ public class FoodInventory implements Serializable {
     private double averageRating;
     private FoodStatus status;
     private int retailerId;
+    public FoodInventory() {
+
+    }
+
+    public  FoodInventory( String name, double price, LocalDateTime expirationDate,
+                         int quantity, int retailerId) {
+        this.name=name;
+        this.price=price;
+        this.expirationDate=expirationDate;
+
+        this.quantity=quantity;
+
+        this.retailerId=retailerId;
+
+
+    }
+
+   public  FoodInventory(int id, String name, double price, int quantity,LocalDateTime expirationDate,
+                         double averageRating, FoodStatus status
+    , int retailerId) { this.id=id;
+        this.name=name;
+        this.price=price;
+        this.expirationDate=expirationDate;
+
+        this.quantity=quantity;
+        this.averageRating=averageRating;
+        this.status=status;
+        this.retailerId=retailerId;
+
+
+    }
 
     public int getId() {
         return id;

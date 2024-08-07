@@ -1,245 +1,326 @@
-//package dataaccesslayer;
-//
-//import model.FoodInventory;
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.mockito.ArgumentCaptor;
-//import org.mockito.MockedStatic;
-//
-//import java.sql.*;
-//import java.time.LocalDateTime;
-//import java.util.Arrays;
-//import java.util.List;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.*;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//class FoodInventoryDAOTest {
-//
-//    private FoodInventoryDAO foodInventoryDAO; // Assume this is the class containing the methods
-//    private Connection mockConnection;
-//    private PreparedStatement mockPreparedStatement;
-//    private ResultSet mockResultSet;
-//    private MockedStatic<Database> mockedDatabase;
-//    @BeforeEach
-//    public void setUp() throws SQLException {
-//        foodInventoryDAO = new FoodInventoryDAO();
-//        mockConnection = mock(Connection.class);
-//        mockPreparedStatement = mock(PreparedStatement.class);
-//        mockResultSet = mock(ResultSet.class);
-//
-//        // Mock the Database.getConnection() to return our mock connection
-//        mockedDatabase = mockStatic(Database.class);
-//        mockedDatabase.when(Database::getConnection).thenReturn(mockConnection);
-//    }
-//    @AfterEach
-//    public void tearDown() {
-//        // Clean up mocked static
-//        if (mockedDatabase != null) {
-//            mockedDatabase.close();
-//        }
-//    }
-//
-//    @org.junit.jupiter.api.Test
-//    void testGetAllFoodInventory() throws SQLException {
-//        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-//        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-//
-//        // Mock ResultSet behavior
-//        when(mockResultSet.next()).thenReturn(true).thenReturn(false); // Only one row
-//        when(mockResultSet.getInt("id")).thenReturn(1);
-//        when(mockResultSet.getString("description")).thenReturn("Apple");
-//        when(mockResultSet.getDouble("standard_price")).thenReturn(1.99);
-//        when(mockResultSet.getInt("quantity")).thenReturn(100);
-//        when(mockResultSet.getDouble("average_rating")).thenReturn(4.5);
-//        when(mockResultSet.getTimestamp("expirationDate")).thenReturn(Timestamp.valueOf(LocalDateTime.now().plusDays(5)));
-//        when(mockResultSet.getBoolean("is_surplus")).thenReturn(false);
-//        when(mockResultSet.getBoolean("isForDonation")).thenReturn(true);
-//        when(mockResultSet.getBoolean("isForSale")).thenReturn(true);
-//
-//        List<FoodInventory> result = foodInventoryDAO.getAllFoodInventory();
-//
-//        // Verify and assert
-//        assertNotNull(result);
-//        assertEquals(1, result.size());
-//        FoodInventory item = result.get(0);
-//        assertEquals(1, item.getId());
-//        assertEquals("Apple", item.getDescription());
-//        assertEquals(1.99, item.getStandardPrice());
-//        assertEquals(100, item.getQuantity());
-//        assertEquals(4.5, item.getAverageRating());
-//        assertEquals(false, item.getIsSurplus());
-//        assertEquals(true, item.getIsForDonation());
-//        assertEquals(true, item.getIsForSale());
-//    }
-//
-//    @org.junit.jupiter.api.Test
-//    void getFoodInventoryById() throws SQLException {
-//        int itemId = 1;
-//
-//        // Prepare mock behavior
-//        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-//        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-//        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
-//        when(mockResultSet.getInt("id")).thenReturn(itemId);
-//        when(mockResultSet.getString("description")).thenReturn("Apple");
-//        when(mockResultSet.getDouble("standard_price")).thenReturn(1.99);
-//        when(mockResultSet.getInt("quantity")).thenReturn(100);
-//        when(mockResultSet.getDouble("average_rating")).thenReturn(4.5);
-//        when(mockResultSet.getTimestamp("expirationDate")).thenReturn(Timestamp.valueOf(LocalDateTime.now().plusDays(5)));
-//        when(mockResultSet.getBoolean("is_surplus")).thenReturn(false);
-//        when(mockResultSet.getBoolean("isForDonation")).thenReturn(true);
-//        when(mockResultSet.getBoolean("isForSale")).thenReturn(true);
-//
-//        // Execute method
-//        FoodInventory item = foodInventoryDAO.getFoodInventoryById(itemId);
-//
-//        // Assertions
-//        assertNotNull(item);
-//        assertEquals(itemId, item.getId());
-//        assertEquals("Apple", item.getDescription());
-//        assertEquals(1.99, item.getStandardPrice());
-//    }
-//
-//    @org.junit.jupiter.api.Test
-//    void addFoodInventory() throws SQLException {
-//
-//        FoodInventory newItem = new FoodInventory(1, "Orange", 0.99, 50, 4.2, LocalDateTime.now().plusDays(10), false, true, true);
-//
-//        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-//
-//        // Perform the operation
-//        foodInventoryDAO.addFoodInventory(newItem);
-//
-//        // Verify the interaction
-//        verify(mockPreparedStatement).setString(1, newItem.getDescription());
-//        verify(mockPreparedStatement).setDouble(2, newItem.getStandardPrice());
-//        verify(mockPreparedStatement).setInt(3, newItem.getQuantity());
-//        verify(mockPreparedStatement).setDouble(4, newItem.getAverageRating());
-//        verify(mockPreparedStatement).setTimestamp(5, Timestamp.valueOf(newItem.getExpirationDate()));
-//        verify(mockPreparedStatement).executeUpdate();
-//    }
-//
-//
-//
-//    @org.junit.jupiter.api.Test
-//    void updateFoodInventory() throws SQLException {
-//
-//        FoodInventory updatedItem = new FoodInventory(1, "Banana", 0.75, 200, 4.6, LocalDateTime.now().plusDays(2), true, false, true);
-//
-//        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-//
-//        // Perform the update
-//        foodInventoryDAO.updateFoodInventory(updatedItem);
-//
-//        // Verify interactions
-//        verify(mockPreparedStatement).setString(1, updatedItem.getDescription());
-//        verify(mockPreparedStatement).setDouble(2, updatedItem.getStandardPrice());
-//        verify(mockPreparedStatement).setInt(3, updatedItem.getQuantity());
-//        verify(mockPreparedStatement).setDouble(4, updatedItem.getAverageRating());
-//        verify(mockPreparedStatement).setTimestamp(5, Timestamp.valueOf(updatedItem.getExpirationDate()));
-//        verify(mockPreparedStatement).setBoolean(6, updatedItem.getIsForDonation());
-//        verify(mockPreparedStatement).setBoolean(7, updatedItem.getIsForSale());
-//        verify(mockPreparedStatement).setInt(8, updatedItem.getId());
-//        verify(mockPreparedStatement).executeUpdate();
-//
-//    }
-//
-//    @org.junit.jupiter.api.Test
-//    void deleteFoodInventory() throws SQLException {
-//        int itemId = 1;
-//
-//        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-//
-//        // Perform delete operation
-//        foodInventoryDAO.deleteFoodInventory(itemId);
-//
-//        // Verify the interaction
-//        verify(mockPreparedStatement).setInt(1, itemId);
-//        verify(mockPreparedStatement).executeUpdate();
-//    }
-//
-//    @org.junit.jupiter.api.Test
-//    void updateSurplusStatus() throws SQLException {
-//        LocalDateTime now = LocalDateTime.now();
-//        FoodInventory item1 = new FoodInventory(1, "Milk", 2.5, 10, 4.2, now.plusDays(2), false, true, true);
-//        FoodInventory item2 = new FoodInventory(2, "Bread", 1.5, 20, 3.8, now.plusDays(10), false, true, false);
-//        FoodInventory item3 = new FoodInventory(3, "Eggs", 3.0, 30, 4.8, now.plusDays(6), false, false, true);
-//
-//        // Mock getAllFoodInventory method
-//        FoodInventoryDAO spyService = spy(foodInventoryDAO);
-//        doReturn(Arrays.asList(item1, item2, item3)).when(spyService).getAllFoodInventory();
-//
-//        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-//
-//        // Execute method
-//        spyService.updateSurplusStatus();
-//
-//        // Verify surplus status update
-//        verify(mockPreparedStatement, times(2)).executeUpdate(); // Only items 1 and 3 should be updated
-//
-//        // Capture arguments passed to updateSurplusStatusInDatabase
-//        ArgumentCaptor<Boolean> surplusCaptor = ArgumentCaptor.forClass(Boolean.class);
-//        ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-//        verify(spyService, times(2)).updateSurplusStatusInDatabase(idCaptor.capture(), surplusCaptor.capture());
-//
-//        // Check captured values
-//        List<Boolean> surplusValues = surplusCaptor.getAllValues();
-//        List<Integer> ids = idCaptor.getAllValues();
-//        assertTrue(surplusValues.contains(true));
-//        assertEquals(1, (int) ids.get(0));
-//        assertEquals(3, (int) ids.get(1));
-//
-//        assertTrue(item1.getIsSurplus());
-//        assertFalse(item2.getIsSurplus());
-//        assertTrue(item3.getIsSurplus());
-//    }
-//
-//    @org.junit.jupiter.api.Test
-//    void getSurplusFoodInventory() throws SQLException {
-//        // Prepare mock data
-//        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-//        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-//
-//        // Mock ResultSet behavior
-//        when(mockResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
-//        when(mockResultSet.getInt("id")).thenReturn(1).thenReturn(2);
-//        when(mockResultSet.getString("description")).thenReturn("Milk").thenReturn("Bread");
-//        when(mockResultSet.getDouble("standard_price")).thenReturn(2.5).thenReturn(1.5);
-//        when(mockResultSet.getInt("quantity")).thenReturn(10).thenReturn(20);
-//        when(mockResultSet.getDouble("average_rating")).thenReturn(4.2).thenReturn(3.8);
-//        when(mockResultSet.getTimestamp("expirationDate")).thenReturn(Timestamp.valueOf(LocalDateTime.now().plusDays(2))).thenReturn(Timestamp.valueOf(LocalDateTime.now().plusDays(10)));
-//        when(mockResultSet.getBoolean("is_surplus")).thenReturn(true).thenReturn(true);
-//        when(mockResultSet.getBoolean("isForDonation")).thenReturn(true).thenReturn(false);
-//        when(mockResultSet.getBoolean("isForSale")).thenReturn(true).thenReturn(true);
-//
-//        // Execute method
-//        List<FoodInventory> surplusItems = foodInventoryDAO.getSurplusFoodInventory();
-//
-//        // Assertions
-//        assertNotNull(surplusItems);
-//        assertEquals(2, surplusItems.size());
-//
-//        FoodInventory item1 = surplusItems.get(0);
-//        assertEquals(1, item1.getId());
-//        assertEquals("Milk", item1.getDescription());
-//        assertEquals(2.5, item1.getStandardPrice());
-//        assertEquals(10, item1.getQuantity());
-//        assertEquals(4.2, item1.getAverageRating());
-//        assertTrue(item1.getIsSurplus());
-//        assertTrue(item1.getIsForDonation());
-//        assertTrue(item1.getIsForSale());
-//
-//        FoodInventory item2 = surplusItems.get(1);
-//        assertEquals(2, item2.getId());
-//        assertEquals("Bread", item2.getDescription());
-//        assertEquals(1.5, item2.getStandardPrice());
-//        assertEquals(20, item2.getQuantity());
-//        assertEquals(3.8, item2.getAverageRating());
-//        assertTrue(item2.getIsSurplus());
-//        assertFalse(item2.getIsForDonation());
-//        assertTrue(item2.getIsForSale());
-//    }
-//}
+package dataaccesslayer;
+
+import businesslayer.FoodInventoryManager;
+import model.FoodInventory;
+import model.constants.FoodStatus;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+
+class FoodInventoryDAOTest {
+
+    private FoodInventoryDAO foodInventoryDAO; // Assume this is the class containing the methods
+    private Connection mockConnection;
+    private PreparedStatement mockPreparedStatement;
+    private ResultSet mockResultSet;
+    private MockedStatic<Database> mockedDatabase;
+    private FoodInventoryManager foodInventoryManager;
+
+
+    @BeforeEach
+    public void setUp() throws Exception {
+
+        // MockitoAnnotations.openMocks(this);
+        mockConnection = mock(Connection.class);
+        mockPreparedStatement = mock(PreparedStatement.class);
+        mockResultSet = mock(ResultSet.class);
+
+         when(mockConnection.prepareStatement(any(String.class))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        mockedDatabase = Mockito.mockStatic(Database.class);
+        mockedDatabase.when(Database::getConnection).thenReturn(mockConnection);
+
+        foodInventoryDAO = new FoodInventoryDAO();
+        foodInventoryManager = new FoodInventoryManager();
+    }
+
+
+    @AfterEach
+    public void tearDown() {
+        // Clean up mocked static
+        if (mockedDatabase != null) {
+            mockedDatabase.close();
+        }
+    }
+
+    private void mockResultSetForFoodInventory() throws SQLException {
+
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("id")).thenReturn(1);
+        when(mockResultSet.getString("name")).thenReturn("Apple");
+        when(mockResultSet.getDouble("price")).thenReturn(1.99);
+        when(mockResultSet.getTimestamp("expiration_date")).thenReturn(Timestamp.valueOf(LocalDateTime.of(2024, 8, 6, 12, 0)));
+        when(mockResultSet.getInt("quantity")).thenReturn(10);
+        when(mockResultSet.getDouble("average_rating")).thenReturn(4.5);
+        when(mockResultSet.getString("status")).thenReturn(FoodStatus.DONATION.name());
+        when(mockResultSet.getInt("retailer_id")).thenReturn(1);
+    }
+
+
+    @Test
+    public void testGetFoodInventoryListAllRecords() throws SQLException {
+        // Arrange
+        when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("id")).thenReturn(1, 2);
+        when(mockResultSet.getString("name")).thenReturn("Apple", "Banana");
+        when(mockResultSet.getDouble("price")).thenReturn(1.99, 0.99);
+        when(mockResultSet.getTimestamp("expiration_date")).thenReturn(java.sql.Timestamp.valueOf(LocalDateTime.now().plusDays(7)));
+        when(mockResultSet.getInt("quantity")).thenReturn(100, 200);
+        when(mockResultSet.getInt("retailer_id")).thenReturn(1, 1);
+
+        // Act
+        List<FoodInventory> result = foodInventoryDAO.getFoodInventoryList(0, 0);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals("Apple", result.get(0).getName());
+        assertEquals("Banana", result.get(1).getName());
+        verify(mockPreparedStatement, never()).setInt(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testGetFoodInventoryListByRetailer() throws Exception {
+        // Arrange
+        int type = 1;
+        int id = 1;
+        mockResultSetForFoodInventory();
+
+        // Act
+        List<FoodInventory> result = foodInventoryDAO.getFoodInventoryList(type, id);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        // assertEquals("Apple", result.get(0).getName());
+
+        // Verify that the prepared statement is set with the correct id
+        //verify(mockPreparedStatement).setInt(1, id);
+
+        FoodInventory item = result.get(0);
+        assertEquals(1, item.getId());
+        assertEquals("Apple", item.getName());
+        assertEquals(1.99, item.getPrice());
+        assertEquals(10, item.getQuantity());
+        assertEquals(4.5, item.getAverageRating());
+        assertEquals(FoodStatus.DONATION, item.getStatus());
+        assertEquals(1, item.getRetailerId());
+
+        // Verify interactions with the PreparedStatement
+        verify(mockPreparedStatement).setInt(1, id);
+        verify(mockPreparedStatement).executeQuery();
+    }
+
+    @Test
+    public void testGetFoodInventoryListSurplusByRetailer() throws Exception {
+        // Arrange
+        int type = 2;
+        int id = 1;
+        mockResultSetForFoodInventory();
+
+        // Act
+        List<FoodInventory> result = foodInventoryDAO.getFoodInventoryList(type, id);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        // assertEquals("Apple", result.get(0).getName());
+
+        // Verify that the prepared statement is set with the correct id
+        // verify(mockPreparedStatement).setInt(1, id);
+        FoodInventory item = result.get(0);
+        assertEquals(1, item.getId());
+        assertEquals("Apple", item.getName());
+        assertEquals(1.99, item.getPrice());
+        assertEquals(10, item.getQuantity());
+        assertEquals(4.5, item.getAverageRating());
+        assertEquals(FoodStatus.DONATION, item.getStatus());
+        assertEquals(1, item.getRetailerId());
+    }
+
+    @Test
+    void testGetAllFoodInventoryByLocation() throws SQLException {
+
+        mockResultSetForFoodInventory();
+
+        String city = "SampleCity";
+        String province = "SampleProvince";
+
+        List<FoodInventory> result = foodInventoryDAO.getAllFoodInventoryByLocation(city, province);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        FoodInventory item = result.get(0);
+        assertEquals(1, item.getId());
+        assertEquals("Apple", item.getName());
+        assertEquals(1.99, item.getPrice());
+        assertEquals(10, item.getQuantity());
+        assertEquals(4.5, item.getAverageRating());
+        assertEquals(FoodStatus.DONATION, item.getStatus());
+        assertEquals(1, item.getRetailerId());
+    }
+
+
+    @Test
+    void testGetFoodInventoryById() throws SQLException {
+        int id = 1;
+        mockResultSetForFoodInventory();
+        FoodInventory item = foodInventoryDAO.getFoodInventoryById(id);
+        assertNotNull(item);
+        assertEquals(1, item.getId());
+        assertEquals("Apple", item.getName());
+        assertEquals(1.99, item.getPrice());
+        assertEquals(10, item.getQuantity());
+
+
+        assertEquals(4.5, item.getAverageRating());
+        assertEquals(FoodStatus.DONATION, item.getStatus());
+        assertEquals(1, item.getRetailerId());
+        verify(mockPreparedStatement).setInt(1, id);
+
+    }
+
+    @Test
+    public void testGetFoodInventoryListForDonation() throws Exception {
+        // Arrange
+        int type = 3;
+        int id = 0;
+        mockResultSetForFoodInventory();
+
+        // Act
+        List<FoodInventory> result = foodInventoryDAO.getFoodInventoryList(type, id);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Apple", result.get(0).getName());
+    }
+
+    @Test
+    public void testGetFoodInventoryListForSale() throws Exception {
+        // Arrange
+        int type = 4;
+        int id = 0;
+        mockResultSetForFoodInventory();
+
+        // Act
+        List<FoodInventory> result = foodInventoryDAO.getFoodInventoryList(type, id);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Apple", result.get(0).getName());
+    }
+
+
+    @org.junit.jupiter.api.Test
+    void testAddFoodInventory() throws SQLException {
+
+        FoodInventory newItem = new FoodInventory(
+                "Orange",
+                0.99,
+                LocalDateTime.now().plusDays(10),
+                50, 1);
+
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+
+
+        // Perform the operation
+        foodInventoryDAO.addFoodInventory(newItem);
+
+        // Verify the interaction
+        verify(mockPreparedStatement).setString(1, newItem.getName());
+        verify(mockPreparedStatement).setDouble(2, newItem.getPrice());
+        verify(mockPreparedStatement).setTimestamp(3, Timestamp.valueOf(newItem.getExpirationDate()));
+        verify(mockPreparedStatement).setInt(4, newItem.getQuantity());
+        verify(mockPreparedStatement).setInt(5, newItem.getRetailerId());
+        verify(mockPreparedStatement).executeUpdate();  verify(mockPreparedStatement).executeUpdate();
+    }
+
+
+
+    @org.junit.jupiter.api.Test
+    void testUpdateFoodInventory() throws SQLException {
+
+        FoodInventory updatedItem = new FoodInventory(1, "Banana", 0.75, 200, LocalDateTime.now().plusDays(2),
+                4.6, FoodStatus.SALE, 1);
+
+
+        // Perform the update
+        foodInventoryManager.updateFoodInventory(updatedItem);
+
+        // Verify interactions
+        verify(mockPreparedStatement).setString(1, updatedItem.getName());
+        verify(mockPreparedStatement).setDouble(2, updatedItem.getPrice());
+        verify(mockPreparedStatement).setTimestamp(3, Timestamp.valueOf(updatedItem.getExpirationDate()));
+        verify(mockPreparedStatement).setInt(4, updatedItem.getQuantity());
+        verify(mockPreparedStatement).setInt(5, updatedItem.getId());
+        verify(mockPreparedStatement).executeUpdate();
+
+        verify(mockPreparedStatement).executeUpdate();
+
+    }
+
+    @org.junit.jupiter.api.Test
+    void deleteFoodInventory() throws SQLException {
+        int itemId = 1;
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+
+        // Perform delete operation
+        foodInventoryDAO.deleteFoodInventory(itemId);
+
+        // Verify the interaction
+        verify(mockPreparedStatement).setInt(1, itemId);
+        verify(mockPreparedStatement).executeUpdate();
+    }
+
+    @Test
+    public void testUpdateFoodInventoryStatusWithValidStatus() throws SQLException {
+        int id = 1;
+        String status = "Available";
+
+        foodInventoryManager.updateFoodInventoryStatus(id, status);
+
+        verify(mockPreparedStatement).setString(1, status);
+        verify(mockPreparedStatement).setInt(2, id);
+        verify(mockPreparedStatement).executeUpdate();
+    }
+
+    @Test
+    public void testUpdateFoodInventoryStatusWithNullStatus() throws SQLException {
+        int id = 1;
+        String status = null;
+
+        foodInventoryManager.updateFoodInventoryStatus(id, status);
+
+        verify(mockPreparedStatement).setNull(1, java.sql.Types.VARCHAR);
+        verify(mockPreparedStatement).setInt(2, id);
+        verify(mockPreparedStatement).executeUpdate();
+    }
+
+    @Test
+    public void testUpdateFoodInventoryStatusWithEmptyStatus() throws SQLException {
+        int id = 1;
+        String status = "";
+
+        foodInventoryManager.updateFoodInventoryStatus(id, status);
+
+        verify(mockPreparedStatement).setNull(1, java.sql.Types.VARCHAR);
+        verify(mockPreparedStatement).setInt(2, id);
+        verify(mockPreparedStatement).executeUpdate();
+
+    }
+}

@@ -2,6 +2,7 @@ package dataaccesslayer;
 
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class FoodInventoryDAO {
         return getFoodInventoryList(4, 0);
     }
 
-    private List<FoodInventory> getFoodInventoryList(int type, int id) {
+    List<FoodInventory> getFoodInventoryList(int type, int id) {
         String[] sqls = {
                 "SELECT * FROM FoodInventory", // all food inventory records
                 "SELECT * FROM FoodInventory WHERE retailer_id = ?", // all food inventory records of the retailer
@@ -102,7 +103,7 @@ public class FoodInventoryDAO {
 
 
     private FoodInventory makeFoodInventory(ResultSet rs) throws SQLException {
-        FoodInventory foodInventory = new FoodInventory();
+        FoodInventory foodInventory =new FoodInventory(0,null,0,0, LocalDateTime.now(),0,null,0);
         foodInventory.setId(rs.getInt("id"));
         foodInventory.setName(rs.getString("name"));
         foodInventory.setPrice(rs.getDouble("price"));
