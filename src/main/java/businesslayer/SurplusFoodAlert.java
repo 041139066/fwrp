@@ -18,8 +18,8 @@ public class SurplusFoodAlert implements Publisher{
     public SurplusFoodAlert(int retailerId) {
         UserManager manager = new UserManager();
         subscribers = new HashMap<>();
-        subscribers.put(FoodStatus.donation, manager.getSubscribers(UserType.charitable, retailerId));
-        subscribers.put(FoodStatus.sale, manager.getSubscribers(UserType.consumer, retailerId));
+        subscribers.put(FoodStatus.DONATION, manager.getSubscribers(UserType.charitable, retailerId));
+        subscribers.put(FoodStatus.SALE, manager.getSubscribers(UserType.consumer, retailerId));
     }
 
     public void subscribe(FoodStatus event, Subscriber subscriber) {
