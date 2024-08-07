@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PurchaseFoodDAO {
 
-    public void purchaseFood(Integer foodInventoryId, Integer need, Integer userId) {
+    public void purchaseFood(Integer userId, Integer foodInventoryId, Integer need, Double cost) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -34,10 +34,11 @@ public class PurchaseFoodDAO {
                     ps.executeUpdate();
 
                     // add purchase record
-                    ps = con.prepareStatement("INSERT INTO PurchasedFood (food_inventory_id, consumer_id, quantity) VALUES (?, ?, ?)");
-                    ps.setInt(1, foodInventoryId);
-                    ps.setInt(2, userId);
+                    ps = con.prepareStatement("INSERT INTO PurchasedFood (consumer_id, food_inventory_id, quantity, cost) VALUES (?, ?, ?, ?)");
+                    ps.setInt(1, userId);
+                    ps.setInt(2, foodInventoryId);
                     ps.setInt(3, need);
+                    ps.setDouble(4, cost);
                     ps.executeUpdate();
 
                     con.commit(); // Commit transaction
@@ -67,10 +68,10 @@ public class PurchaseFoodDAO {
 
     public List<PurchasedFood> getAllPurchasedFoodByConsumerId(int consumerId) {
         List<PurchasedFood> list = new ArrayList<>();
-        String sql = "SELECT pf.id, food_inventory_id, name, consumer_id, pf.quantity, purchase_date " +
+        String sql = "SELECT pf.id, food_inventory_id, name, consumer_id, pf.quantity, pf.cost, pf.purchase_date " +
                 "FROM PurchasedFood AS pf JOIN FoodInventory AS fi ON pf.food_inventory_id = fi.id " +
                 "WHERE pf.consumer_id = ? " +
-                "ORDER BY pf.food_inventory_id";
+                "ORDER BY pf.purchase_date DESC";
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -83,6 +84,7 @@ public class PurchaseFoodDAO {
                         item.setFoodInventoryId(rs.getInt("food_inventory_id"));
                         item.setFoodInventoryName(rs.getString("name"));
                         item.setQuantity(rs.getInt("quantity"));
+                        item.setCost(rs.getDouble("cost"));
                         item.setPurchaseDate(rs.getTimestamp("purchase_date").toLocalDateTime());
                         list.add(item);
                     }

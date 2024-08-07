@@ -15,11 +15,11 @@ public class RatingDAO {
         return getRatingList(0, 0);
     }
 
-    public List<Rating> getAllRatingsByConsumerId(int consumerId){
+    public List<Rating> getAllRatingsByConsumerId(int consumerId) {
         return getRatingList(1, consumerId);
     }
 
-    public List<Rating> getAllRatingsByFoodInventoryId(int foodInventoryId){
+    public List<Rating> getAllRatingsByFoodInventoryId(int foodInventoryId) {
         return getRatingList(2, foodInventoryId);
     }
 
@@ -29,11 +29,14 @@ public class RatingDAO {
                 "FROM Ratings AS r " +
                 "JOIN Users AS u ON u.id = r.consumer_id " +
                 "JOIN FoodInventory AS f ON f.id = r.food_inventory_id" +
-                (type == 1 ? " WHERE u.id = ?" : type == 2 ? " WHERE f.id = ?" : "");
+                (type == 1 ? " WHERE u.id = ?" : type == 2 ? " WHERE f.id = ?" : "") +
+                " ORDER BY last_modified DESC";
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement(sql)) {
-                if(type >0) {stmt.setInt(1, id);}
+                if (type > 0) {
+                    stmt.setInt(1, id);
+                }
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         Rating rating = makeRating(rs);
@@ -59,28 +62,24 @@ public class RatingDAO {
         return rating;
     }
 
-    public int createRating(Rating rating) {
+    public int createRating(Rating rating) throws SQLException{
         return processRating(rating, true);
     }
 
-    public int updateRating(Rating rating) {
+    public int updateRating(Rating rating) throws SQLException{
         return processRating(rating, false);
     }
 
-    private int processRating(Rating rating, boolean isCreate) {
+    private int processRating(Rating rating, boolean isCreate) throws SQLException{
         int affectedRows = 0;
-        String sql = isCreate ?  "INSERT INTO Ratings(rating, comment, consumer_id, food_inventory_id) VALUES (?, ?, ?, ?)" : "UPDATE Ratings SET rating = ?, comment = ? WHERE consumer_id = ? AND food_inventory_id = ?";
-        try {
-            Connection con = Database.getConnection();
-            try (PreparedStatement stmt = con.prepareStatement(sql)) {
-                stmt.setDouble(1, rating.getRating());
-                stmt.setString(2, rating.getComment());
-                stmt.setInt(3, rating.getConsumerId());
-                stmt.setInt(4, rating.getFoodInventoryId());
-                affectedRows = stmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        String sql = isCreate ? "INSERT INTO Ratings(rating, comment, consumer_id, food_inventory_id) VALUES (?, ?, ?, ?)" : "UPDATE Ratings SET rating = ?, comment = ? WHERE consumer_id = ? AND food_inventory_id = ?";
+        Connection con = Database.getConnection();
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setDouble(1, rating.getRating());
+            stmt.setString(2, rating.getComment());
+            stmt.setInt(3, rating.getConsumerId());
+            stmt.setInt(4, rating.getFoodInventoryId());
+            affectedRows = stmt.executeUpdate();
         }
         return affectedRows;
     }

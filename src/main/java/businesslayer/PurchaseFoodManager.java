@@ -27,8 +27,9 @@ public class PurchaseFoodManager {
         return purchaseFoodDAO.getAllPurchasedFoodByConsumerId(userId);
     }
 
-    public void purchaseFood(Integer id, Integer need, Integer userId) {
-        purchaseFoodDAO.purchaseFood(id, need, userId);
+    public void purchaseFood(Integer userId, Integer id, Integer need, Double standardPrice) {
+        Double price = need * standardPrice * 0.9;
+        purchaseFoodDAO.purchaseFood(userId, id, need, price);
     }
 
 

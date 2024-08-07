@@ -21,6 +21,7 @@
             <th>Food ID</th>
             <th>Food</th>
             <th>Purchase Quantity</th>
+            <th>Cost</th>
             <th>Purchase Date</th>
         </tr>
         </thead>
@@ -34,6 +35,7 @@
             <td><%= item.getFoodInventoryId() %></td>
             <td><%= item.getFoodInventoryName() %></td>
             <td><%= item.getQuantity() %></td>
+            <td><%= item.getFormattedCost() %></td>
             <td><%= item.getStrPurchaseDate() %></td>
         </tr>
         <%
@@ -41,7 +43,7 @@
             } else {
         %>
         <tr>
-            <td colspan="4">No transactions found.</td>
+            <td colspan="5">No transactions found.</td>
         </tr>
         <%
             }

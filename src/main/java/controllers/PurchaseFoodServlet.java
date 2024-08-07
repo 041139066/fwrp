@@ -63,7 +63,7 @@ public class PurchaseFoodServlet extends HttpServlet {
         int userId = user.getId();
 
         try {
-            manager.purchaseFood(Integer.parseInt(id), Integer.parseInt(need), userId);
+            manager.purchaseFood(userId, Integer.parseInt(id), Integer.parseInt(need), Double.parseDouble(request.getParameter("price")));
             listAvailableFood(request, response);
         } catch (Exception e) {
             throw new RuntimeException(e);

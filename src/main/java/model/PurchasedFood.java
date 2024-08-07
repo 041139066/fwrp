@@ -1,5 +1,6 @@
 package model;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -9,16 +10,18 @@ public class PurchasedFood {
     private int foodInventoryId;
     private String foodInventoryName;
     private int quantity;
+    private double cost;
     private LocalDateTime purchaseDate;
 
     public PurchasedFood() {}
 
-    public PurchasedFood(int id, int consumerId, int foodInventoryId, String foodInventoryName, int quantity, LocalDateTime purchaseDate) {
+    public PurchasedFood(int id, int consumerId, int foodInventoryId, String foodInventoryName, int quantity, double cost, LocalDateTime purchaseDate) {
         this.id = id;
         this.consumerId = consumerId;
         this.foodInventoryId = foodInventoryId;
         this.foodInventoryName = foodInventoryName;
         this.quantity = quantity;
+        this.cost = cost;
         this.purchaseDate = purchaseDate;
     }
 
@@ -60,6 +63,19 @@ public class PurchasedFood {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public String getFormattedCost(){
+        DecimalFormat df = new DecimalFormat("$#.00");
+        return df.format(cost);
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 
     public LocalDateTime getPurchaseDate() {

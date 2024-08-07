@@ -4,6 +4,7 @@ import dataaccesslayer.FoodInventoryDAO;
 import dataaccesslayer.RatingDAO;
 import model.Rating;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class RatingService {
@@ -27,13 +28,13 @@ public class RatingService {
         return rtDAO.getAllRatingsByFoodInventoryId(foodInventoryId);
     }
 
-    public int createRating(Rating rating){
+    public int createRating(Rating rating) throws SQLException {
         int affectedRows = rtDAO.createRating(rating);
         updateAverageRating(rating.getFoodInventoryId());
         return affectedRows;
     }
 
-    public int updateRating(Rating rating){
+    public int updateRating(Rating rating) throws SQLException {
         int affectedRows = rtDAO.updateRating(rating);
         updateAverageRating(rating.getFoodInventoryId());
         return affectedRows;

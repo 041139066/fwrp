@@ -30,11 +30,11 @@ public class FoodInventoryDAO {
 
     private List<FoodInventory> getFoodInventoryList(int type, int id) {
         String[] sqls = {
-                "SELECT * FROM FoodInventory", // all food inventory records
-                "SELECT * FROM FoodInventory WHERE retailer_id = ?", // all food inventory records of the retailer
-                "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ?", // all food inventory records of the retailer that are surplus, expiration date within 7 days form now
-                "SELECT * FROM FoodInventory WHERE status = 'donation'",
-                "SELECT * FROM FoodInventory WHERE status IS NULL || status != 'donation'",
+                "SELECT * FROM FoodInventory ORDER BY name", // all food inventory records
+                "SELECT * FROM FoodInventory WHERE retailer_id = ? ORDER BY name", // all food inventory records of the retailer
+                "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ? ORDER BY name", // all food inventory records of the retailer that are surplus, expiration date within 7 days form now
+                "SELECT * FROM FoodInventory WHERE status = 'donation' ORDER BY name",
+                "SELECT * FROM FoodInventory WHERE status IS NULL || status != 'donation' ORDER BY name",
         };
         List<FoodInventory> list = new ArrayList<>();
         try {
@@ -58,7 +58,7 @@ public class FoodInventoryDAO {
 
     public List<FoodInventory> getAllFoodInventoryByLocation(String city, String province) {
         String sql =
-                "SELECT * FROM FoodInventory AS fi JOIN Users AS u ON fi.retailer_id = u.id WHERE u.city = ? AND u.province = ?";
+                "SELECT * FROM FoodInventory AS fi JOIN Users AS u ON fi.retailer_id = u.id WHERE u.city = ? AND u.province = ? ORDER BY fi.name";
         List<FoodInventory> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();

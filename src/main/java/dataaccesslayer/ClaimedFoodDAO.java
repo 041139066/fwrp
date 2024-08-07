@@ -68,7 +68,7 @@ public class ClaimedFoodDAO {
         String sql = "SELECT cf.id, food_inventory_id, name, charitable_id, cf.quantity, claim_date " +
                 "FROM ClaimedFood AS cf JOIN FoodInventory AS fi ON cf.food_inventory_id = fi.id " +
                 "WHERE cf.charitable_id = ? " +
-                "ORDER BY cf.food_inventory_id";
+                "ORDER BY cf.claim_date DESC";
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement(sql)) {

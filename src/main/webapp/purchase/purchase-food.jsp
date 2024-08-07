@@ -43,8 +43,15 @@
             <td><%= item.getName() %>
             </td>
             <td><%= item.getFormattedPrice() %>
+                <% if (item.getStrStatus().equalsIgnoreCase("sale")) {
+                %>
+                <i class="fa-solid fa-tag" style="color: var(--error-button)" title="10% off"></i>
+                <%
+                    }
+                %>
+
             </td>
-            <td><%= item.getStrExpirationDate() %>
+            <td><%= item.getStrExpirationDate()  %>
             </td>
             <td><%= item.getQuantity() %>
             </td>
@@ -61,10 +68,11 @@
             </td>
             <td>
                 <form class="table-form" method="post" action="<%= request.getContextPath() %>/purchase-food">
+                    <input type="hidden" name="id" value="<%= item.getId() %>">
                     <input class="table-input" type="number" name="need" value="0" min="0"
                            max="<%= item.getQuantity() %>" step="1"
                     >
-                    <input type="hidden" name="id" value="<%= item.getId() %>">
+                    <input type="hidden" name="price" value="<%= item.getPrice() %>">
                     <input type="hidden" name="action" value="purchaseFood">
                     <button type="submit" class="icon-button" title="purchase this food"><i
                             class="fa-solid fa-cart-shopping"></i></button>
@@ -93,6 +101,7 @@
         const consumerRatingList = ${requestScope.consumerRatingList};
         const rating = consumerRatingList.find(itm => itm.foodInventoryId === foodInventory.id);
         rating ? openUpdateModal(rating) : openCreateModal(foodInventory);
+        console.log(consumerRatingList, rating);
     }
 </script>
 </body>
