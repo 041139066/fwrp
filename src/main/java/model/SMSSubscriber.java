@@ -10,7 +10,10 @@ public class SMSSubscriber extends Subscriber {
 
     @Override
     protected void sendNotifcation(FoodInventory item) {
-        System.out.println("Phone: " + contact);
-        System.out.println("Hi " + name + ", a new surplus food item is available for " + item.getStrStatus() + " that matches your preferences.");
+        System.out.println("\n============ SMS Notification ============");
+        System.out.println("To: " + name);
+        System.out.println("Phone Number: " + contact);
+        System.out.println("Surplus Food : " + item.getName());
+        System.out.println("==========================================\n");
     }
 }

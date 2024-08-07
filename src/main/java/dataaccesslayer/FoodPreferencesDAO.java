@@ -1,6 +1,5 @@
 package dataaccesslayer;
 
-import model.FoodInventory;
 import model.FoodPreference;
 
 import java.sql.Connection;

@@ -16,12 +16,10 @@ import java.util.List;
 public class SubscriptionService {
 
     private final UserDAO userDAO;
-    private final FoodInventoryDAO foodDAO;
     private final FoodPreferencesDAO prefDAO;
 
     public SubscriptionService() {
         userDAO = new UserDAO();
-        foodDAO = new FoodInventoryDAO();
         prefDAO = new FoodPreferencesDAO();
     }
 
