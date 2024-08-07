@@ -84,8 +84,10 @@
         }
     %>
 </div>
+
 <!-- Footer -->
 <%@ include file="/utility/footer.jsp" %>
+
 <script>
 
     function handleAdd() {

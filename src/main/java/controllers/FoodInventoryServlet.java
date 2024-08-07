@@ -8,18 +8,24 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import businesslayer.FoodInventoryManager;
 import businesslayer.RatingService;
+import businesslayer.SurplusFoodAlert;
 import com.google.gson.Gson;
 import model.FoodInventory;
 import model.Rating;
 import model.User;
+import model.constants.FoodStatus;
+import utilities.JsonResponse;
 import utilities.MyGson;
 
 public class FoodInventoryServlet extends HttpServlet {
@@ -107,6 +113,9 @@ public class FoodInventoryServlet extends HttpServlet {
                         case "update":
                             handleFoodInventory(request, response, false);
                             break;
+                        case "updateStatus":
+                            updateFoodInventoryStatus(request, response);
+                            break;
                         // TODO: handle other paths
                     }
                 } else {
@@ -152,6 +161,49 @@ public class FoodInventoryServlet extends HttpServlet {
             throw new ServletException(e.getMessage());
         }
 
+    }
+
+    private void updateFoodInventoryStatus(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            int code = 0;
+            String message = "Food status updated successfully";
+            try {
+                HttpSession session = request.getSession(false);
+                User user = (User) session.getAttribute("user");
+                int userId = user.getId();
+                SurplusFoodAlert alert = new SurplusFoodAlert(userId);
+                FoodInventoryManager manager = new FoodInventoryManager();
+                String idsStr = request.getParameter("ids");
+                List<Integer> ids = splitStringToIntList(idsStr);
+                String status = request.getParameter("status");
+                for (int id : ids) {
+                    manager.updateFoodInventoryStatus(id, status);
+                    alert.notifySubscribers(manager.getFoodInventoryById(id));
+                }
+
+            } catch (Exception e) {
+                code = 1;
+                message = e.getMessage();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+            String jsonResponse = MyGson.getMyGson().toJson(new JsonResponse(code, message));
+            out.print(jsonResponse);
+            out.flush();
+        }
+    }
+
+
+    public static List<Integer> splitStringToIntList(String input) {
+        if (input == null || input.isEmpty()) {
+            return List.of(); // Return an empty list if input is null or empty
+        }
+        // Split the string by commas and convert each element to an integer
+        return Arrays.stream(input.split("\\s*,\\s*"))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
     }
 
     private void deleteFoodInventory(HttpServletRequest request, HttpServletResponse response)

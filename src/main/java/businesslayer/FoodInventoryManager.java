@@ -55,7 +55,7 @@ public class FoodInventoryManager {
         dao.updateFoodInventoryAverageRating(id, price);
     }
 
-    public void updateFoodInventoryStatus(int id, FoodStatus status) {
+    public void updateFoodInventoryStatus(int id, String status) {
         dao.updateFoodInventoryStatus(id, status);
     }
 }

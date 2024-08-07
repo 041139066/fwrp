@@ -17,6 +17,7 @@ public abstract class Subscriber {
 
 
     public void update(FoodInventory item){
+        boolean isloved = foodPreferences.contains(item.getId());
         if(foodPreferences.contains(item.getId())){
             sendNotifcation(item);
         }

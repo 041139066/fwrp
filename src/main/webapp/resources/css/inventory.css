@@ -4,9 +4,16 @@ table {
     margin-top: 16px;
 }
 
-.form-field input[type="datetime-local"],
-.form-field input[type="radio"] {
+.inventory-form {
+    margin: auto;
+    max-width: 600px;
+    flex:0;
+}
+
+.form-field input[type="datetime-local"] {
     width: auto;
     resize: none;
 }
+
+
 

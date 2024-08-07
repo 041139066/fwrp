@@ -262,7 +262,8 @@ table {
     border-collapse: collapse;
     background: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
     backdrop-filter: blur(12px); /* Glass effect */
-    overflow: hidden; /* For rounded corners */
+    overflow: hidden;
+    text-align: center;
 }
 
 th, td {

@@ -32,7 +32,16 @@ public class SurplusFoodAlert implements Publisher{
 
     @Override
     public void notifySubscribers(FoodInventory item) {
-        subscribers.get(item.getStatus()).forEach(subscriber -> subscriber.update(item));
+        try{
+            subscribers.get(item.getStatus()).forEach(subscriber -> {
+                System.out.println("Notifying subscriber: " + subscriber);
+                subscriber.update(item);
+            });
+        }catch(Exception e){
+            String message = e.getMessage();
+            e.printStackTrace();
+        }
+
     }
 
 }

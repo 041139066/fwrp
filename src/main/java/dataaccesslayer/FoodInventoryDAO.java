@@ -201,15 +201,15 @@ public class FoodInventoryDAO {
         }
     }
 
-    public void updateFoodInventoryStatus(int id, FoodStatus status) {
+    public void updateFoodInventoryStatus(int id, String status) {
         String sql = "UPDATE FoodInventory SET status = ? WHERE id = ?";
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement(sql)) {
-                if (status == null) {
+                if (status == null || status.isEmpty()) {
                     stmt.setNull(1, java.sql.Types.VARCHAR);
                 } else {
-                    stmt.setString(1, status.name());
+                    stmt.setString(1, status);
                 }
                 stmt.setInt(2, id);
                 stmt.executeUpdate();

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Food Waste Reduction Platform</title>
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/resources/css/authentication.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
 <h1>Food Waste Reduction Platform</h1>
@@ -22,13 +22,15 @@
         <form id="login-form">
             <div class="form-field">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input id="email" type="email">
                 <span class="error-message"
                       style="display: none">Please enter a valid email address: xxx@xxx.xx.</span>
             </div>
             <div class="form-field">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input id="password" type="password">
+                <span class="error-message"
+                      style="display: none">Please enter a password.</span>
             </div>
             <div class="form-buttons">
                 <button type="button" id="login-button" class="button-primary" onclick="handleSubmit()">Login
@@ -49,7 +51,8 @@
     const password = $("#password");
 
     function handleSubmit() {
-        const isValid = validateEmail();
+        let isValid = validateEmail();
+        isValid = validatePassword() && isValid;
         if (isValid) {
             $.ajax({
                 url: 'login',
@@ -79,9 +82,14 @@
         return validateField(email, pattern);
     }
 
+    function validatePassword() {
+        return validateField(password);
+    }
+
     function validateField(field, pattern = /^.+$/) {
-        const val = field.val().toString().trim();
         const errorMessage = field.next('.error-message');
+        const val = field.val().toString().trim();
+        console.log(val);
         const isValid = val && pattern.test(val);
         isValid ? errorMessage.hide() : errorMessage.show();
         return isValid;

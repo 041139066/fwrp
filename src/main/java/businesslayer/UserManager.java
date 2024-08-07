@@ -24,7 +24,7 @@ public class UserManager {
         List<User> users = userDAO.getSubscribers(type, retailerId);
         List<Subscriber> subscribers = new ArrayList<Subscriber>();
         for(User user : users){
-            List<Integer> foodPreferences = prefDAO.getFoodPreferencesByUserId(retailerId);
+            List<Integer> foodPreferences = prefDAO.getFoodPreferencesByUserId(user.getId());
             if(user.getMethod() == MethodType.email){
                 subscribers.add(new EmailSubscriber(user.getId(), user.getName(), user.getContactEmail(), foodPreferences));
             }
