@@ -1,0 +1,19 @@
+@import url("base.css");
+
+table {
+    margin-top: 16px;
+}
+
+.inventory-form {
+    margin: 0 auto;
+    max-width: 600px;
+    flex:0;
+}
+
+.form-field input[type="datetime-local"] {
+    width: auto;
+    resize: none;
+}
+
+
+

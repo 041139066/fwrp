@@ -3,7 +3,14 @@
   <component name="WebContextManager">
     <option name="state">
       <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/Dashboard/dashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/Dashboard" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/food-rating/rating-modal.jsp" value="file://$PROJECT_DIR$/src/main/webapp/food-rating" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/register.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/retailer/add_food_inventory.jsp" value="file://$PROJECT_DIR$/src/main/webapp/retailer" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/retailer/delete_food_inventory.jsp" value="file://$PROJECT_DIR$/src/main/webapp/retailer" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/retailer/food-inventory.jsp" value="file://$PROJECT_DIR$/src/main/webapp/retailer" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/surplus-food-alert/subscription.jsp" value="file://$PROJECT_DIR$/src/main/webapp/surplus-food-alert" />
       </map>
     </option>
   </component>

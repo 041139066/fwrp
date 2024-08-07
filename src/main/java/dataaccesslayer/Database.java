@@ -22,7 +22,7 @@ public class Database {
             Class.forName(driverString);
 
             // Establish connection if not already initialized
-            if (connection == null) {
+            if (connection == null || connection.isClosed()) {
                 Properties props = new Properties();
 
                 // Load database properties from configuration file
@@ -47,9 +47,24 @@ public class Database {
         } catch (ClassNotFoundException e) {
             System.out.println("MySQL JDBC driver not found.");
             e.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         return connection;
+    }
+
+    /**
+     * Closes the database connection.
+     */
+    public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

@@ -1,24 +1,17 @@
 @import url("base.css");
-.main {
-    flex: 1;
-}
 
-/* Main Container */
 .container {
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
     align-items: flex-start;
-    width: 100%;
-    max-width: 1000px;
-    margin: 20px auto;
-    padding: 20px;
+    margin: auto;
 }
 
 /* Left Section */
 .left-section {
     flex: 1;
-    padding: 20px;
-    color: #2c3e50;
+    padding: 24px;
+    color: var(--primary);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -26,9 +19,8 @@
 }
 
 .left-section h2 {
-    font-size: 1.75rem;
-    margin-bottom: 20px;
-    font-weight: 600;
+    text-align: left;
+    color: var(--primary);
 }
 
 .left-section p {
@@ -39,95 +31,13 @@
 /* Right Section */
 .right-section {
     flex: 1;
-    padding: 20px;
+    padding: 24px;
     background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
     backdrop-filter: blur(10px); /* Glass effect */
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.form-header {
-    margin-bottom: 20px;
-    text-align: center;
-    color: #2c3e50;
-}
-
-.form-field {
-    margin-bottom: 16px;
-}
-
-.form-field label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.form-field input,
-.form-field select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    font-size: 1rem;
-    background: rgba(255, 255, 255, 0.3); /* Semi-transparent white background */
-    backdrop-filter: blur(6px); /* Glass effect on inputs */
-    color: #333;
-    transition: all 0.3s ease;
-}
-
-.form-field input:focus,
-.form-field select:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
-    outline: none;
-}
-
-/* Autofill Styles */
-input:-webkit-autofill,
-select:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.4) inset;
-    box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.4) inset;
-    -webkit-text-fill-color: #333; /* Change the font color for autofilled text */
-}
-
-input:-webkit-autofill:focus,
-select:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.4) inset;
-    box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.4) inset;
-    -webkit-text-fill-color: #333; /* Change the font color for autofilled text */
-}
-
-.form-buttons {
-    text-align: center;
-}
-
-.form-buttons button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    background: #3498db;
-    color: #fff;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.form-buttons button:hover {
-    background: #2980b9;
-}
-
-.form-footer {
-    margin-top: 12px;
-    text-align: center;
-}
-
-.form-footer a {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.form-footer a:hover {
-    text-decoration: underline;
+.right-section h2 {
+    margin-top: 0;
 }

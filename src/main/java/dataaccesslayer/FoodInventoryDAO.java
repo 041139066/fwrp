@@ -1,106 +1,219 @@
 package dataaccesslayer;
 
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.*;
 import java.util.List;
+import java.util.ArrayList;
 
 import model.FoodInventory;
 
 public class FoodInventoryDAO {
 
     public List<FoodInventory> getAllFoodInventory() {
+        return getFoodInventoryList(0, 0);
+    }
+
+    public List<FoodInventory> getAllFoodInventoryByRetailerId(int retailerId) {
+        return getFoodInventoryList(1, retailerId);
+    }
+
+    public List<FoodInventory> getSurplusFoodInventoryByRetailerId(int retailerId) {
+        return getFoodInventoryList(2, retailerId);
+    }
+
+    public List<FoodInventory> getAllFoodInventoryForDonation() {
+        return getFoodInventoryList(3, 0);
+    }
+
+    public List<FoodInventory> getAllFoodInventoryForSale() {
+        return getFoodInventoryList(4, 0);
+    }
+
+    private List<FoodInventory> getFoodInventoryList(int type, int id) {
+        String[] sqls = {
+                "SELECT * FROM FoodInventory ORDER BY name", // all food inventory records
+                "SELECT * FROM FoodInventory WHERE retailer_id = ? ORDER BY name", // all food inventory records of the retailer
+                "SELECT * FROM FoodInventory WHERE expiration_date < NOW() + INTERVAL 7 DAY AND retailer_id = ? ORDER BY name", // all food inventory records of the retailer that are surplus, expiration date within 7 days form now
+                "SELECT * FROM FoodInventory WHERE status = 'donation' ORDER BY name",
+                "SELECT * FROM FoodInventory WHERE status IS NULL || status != 'donation' ORDER BY name",
+        };
         List<FoodInventory> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();
-            try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM foodinventory")) {
+            try (PreparedStatement stmt = con.prepareStatement(sqls[type])) {
+                if (id != 0) {
+                    stmt.setInt(1, id);
+                }
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        FoodInventory item = new FoodInventory();
-                        item.setId(rs.getInt("id"));
-                        item.setDescription(rs.getString("description"));
-                        item.setStandardPrice(rs.getDouble("standard_price"));
-                        item.setQuantity(rs.getInt("quantity"));
-                        item.setAverageRating(rs.getDouble("average_rating"));
-                        item.setLastModified(rs.getTimestamp("last_modified").toLocalDateTime());
-                        list.add(item);
+                        list.add(makeFoodInventory(rs));
                     }
                 }
             }
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<FoodInventory> getAllFoodInventoryByLocation(String city, String province) {
+        String sql =
+                "SELECT * FROM FoodInventory AS fi JOIN Users AS u ON fi.retailer_id = u.id WHERE u.city = ? AND u.province = ? ORDER BY fi.name";
+        List<FoodInventory> list = new ArrayList<>();
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setString(1, city);
+                stmt.setString(2, province);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(makeFoodInventory(rs));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
         return list;
     }
 
     public FoodInventory getFoodInventoryById(int id) {
-        FoodInventory inventory = null;
-        String sql = "SELECT * FROM FoodInventories WHERE id = ?";
-        try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    inventory = new FoodInventory();
-                    inventory.setId(rs.getInt("id"));
-                    inventory.setDescription(rs.getString("description"));
-                    inventory.setQuantity(rs.getInt("quantity"));
-                    inventory.setAverageRating(rs.getDouble("averageRating"));
-
-
+        FoodInventory foodInventory = null;
+        String sql = "SELECT * FROM FoodInventory WHERE id = ?";
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        foodInventory = makeFoodInventory(rs);
+                    }
                 }
             }
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
-        return inventory;
+        return foodInventory;
     }
 
-    public void createFoodInventory(FoodInventory inventory) {
-        String sql = "INSERT INTO FoodInventories (name, quantity, rating) VALUES (?, ?, ?)";
-        try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, inventory.getDescription());
-            pstmt.setInt(2, inventory.getQuantity());
-            pstmt.setDouble(3, inventory.getAverageRating());
-            pstmt.executeUpdate();
+
+    private FoodInventory makeFoodInventory(ResultSet rs) throws SQLException {
+        FoodInventory foodInventory = new FoodInventory();
+        foodInventory.setId(rs.getInt("id"));
+        foodInventory.setName(rs.getString("name"));
+        foodInventory.setPrice(rs.getDouble("price"));
+        foodInventory.setExpirationDate(rs.getTimestamp("expiration_date").toLocalDateTime());
+        foodInventory.setQuantity(rs.getInt("quantity"));
+        foodInventory.setAverageRating(rs.getDouble("average_rating"));
+        foodInventory.setStatus(rs.getString("status"));
+        foodInventory.setRetailerId(rs.getInt("retailer_id"));
+        return foodInventory;
+    }
+
+    public void addFoodInventory(FoodInventory item) throws SQLException {
+        String sql = "INSERT INTO FoodInventory (name, price, expiration_date, quantity, retailer_id) VALUES (?, ?, ?, ?, ?)";
+
+        Connection con = Database.getConnection();
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, item.getName());
+            stmt.setDouble(2, item.getPrice());
+            stmt.setTimestamp(3, Timestamp.valueOf(item.getExpirationDate()));
+            stmt.setInt(4, item.getQuantity());
+//                if (item.getStatus() == null) {
+//                    stmt.setNull(5, java.sql.Types.VARCHAR);
+//                } else {
+//                    stmt.setString(5, item.getStrStatus());
+//                }
+            stmt.setInt(5, item.getRetailerId());
+            stmt.executeUpdate();
+        }
+
+    }
+
+    public void deleteFoodInventory(int id) {
+        String sql = "DELETE FROM FoodInventory WHERE id = ?";
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setInt(1, id);
+                stmt.executeUpdate();
+            }
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public void updateFoodInventory(FoodInventory inventory) {
-        String sql = "UPDATE FoodInventories SET name = ?, quantity = ?, rating = ? WHERE id = ?";
-        try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, inventory.getDescription());
-            pstmt.setInt(2, inventory.getQuantity());
-            pstmt.setDouble(3, inventory.getAverageRating());
-            pstmt.setInt(4, inventory.getId());
-            pstmt.executeUpdate();
+    public void updateFoodInventory(FoodInventory item) {
+        String sql = "UPDATE FoodInventory SET name = ?, price= ?, expiration_date = ?, quantity = ? WHERE id = ?";
+        try {
+            Connection conn = Database.getConnection();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, item.getName());
+                stmt.setDouble(2, item.getPrice());
+                stmt.setTimestamp(3, Timestamp.valueOf(item.getExpirationDate()));
+                stmt.setInt(4, item.getQuantity());
+//                if (item.getStatus() == null) {
+//                    stmt.setNull(5, java.sql.Types.VARCHAR);
+//                } else {
+//                    stmt.setString(5, item.getStrStatus());
+//                }
+                stmt.setInt(5, item.getId());
+                stmt.executeUpdate();
+            }
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
     public void updateFoodInventoryQuantity(int id, int qty) {
-        String sql = "UPDATE FoodInventories SET quantity = ? WHERE id = ?";
-        try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, qty);
-            pstmt.setInt(2, id);
-            pstmt.executeUpdate();
+        String sql = "UPDATE FoodInventory SET quantity = ? WHERE id = ?";
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setInt(1, qty);
+                stmt.setInt(2, id);
+                stmt.executeUpdate();
+            }
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public void updateFoodInventoryRating(int id, double rating) {
-        String sql = "UPDATE FoodInventories SET rating = ? WHERE id = ?";
-        try (Connection conn = Database.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setDouble(1, rating);
-            pstmt.setInt(2, id);
-            pstmt.executeUpdate();
+    public void updateFoodInventoryAverageRating(int id, double rating) {
+        String sql = "UPDATE FoodInventory SET average_rating = ? WHERE id = ?";
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setDouble(1, rating);
+                stmt.setInt(2, id);
+                stmt.executeUpdate();
+            }
         } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void updateFoodInventoryStatus(int id, String status) {
+        String sql = "UPDATE FoodInventory SET status = ? WHERE id = ?";
+        try {
+            Connection con = Database.getConnection();
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                if (status == null || status.isEmpty()) {
+                    stmt.setNull(1, java.sql.Types.VARCHAR);
+                } else {
+                    stmt.setString(1, status);
+                }
+                stmt.setInt(2, id);
+                stmt.executeUpdate();
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,0 +1,37 @@
+@import url("base.css");
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+table{
+    text-align: center;
+}
+.form-buttons {
+    text-align: right;
+}
+
+#foodPreferences {
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-field {
+    margin-bottom: 24px;
+}
+
+.info-button {
+    align-self: center;
+    margin: 36px auto;
+    background-color: var(--primary);
+    transition: all 0.3s ease-in-out;
+}
+.info-button:hover, .info-button:active {
+    background-color: var(--primary-lighter);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.5);
+}
+
+
+

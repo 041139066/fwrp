@@ -1,0 +1,11 @@
+@import url("base.css");
+
+.container {
+    margin: auto;
+    text-align: center;
+}
+.table-form {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}

@@ -1,66 +1,78 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="java.util.List" %>
 <%@ page import="model.FoodInventory" %>
-<%@ page import="dataaccesslayer.FoodInventoryDAO" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Inventory</title>
-    <link rel="stylesheet" href="resources/css/main-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/resources/css/inventory.css">
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
-<nav>
-    <div class="nav-left">
-        <div><a href="food_inventory.jsp">Food Inventory</a></div>
-        <div><a href="food_items.jsp">Food Items</a></div>
-    </div>
-    <div class="nav-right">
-        <div><a href="logout.jsp" class="button button-logout">Log Out</a></div>
-    </div>
-</nav>
+<%@ include file="/utility/nav.jsp" %>
 
 <h1>Food Inventory</h1>
-<div class="container">
-    <a href="add_food_inventory.jsp" class="button button-add">Add New Inventory</a>
-
+<div class="container card">
+    <button class="button-primary" onclick="handleAdd()">Add New Inventory</button>
+    <%
+        List<FoodInventory> foodInventoryList = (List<FoodInventory>) request.getAttribute("foodInventoryList");
+        if (foodInventoryList == null) {
+    %>
+    <p>No food inventory items found.</p>
+    <%
+    } else {
+    %>
     <table>
         <thead>
         <tr>
             <th>ID</th>
-            <th>Description</th>
-            <th>Standard Price</th>
+            <th>Food</th>
+            <th>Price</th>
+            <th>Expiration Date</th>
+            <th>Surplus Status</th>
+            <th>Donation/Sale</th>
             <th>Quantity</th>
-            <th>Last Modified</th>
             <th>Average Rating</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <%
-            // Example: Fetch the list of food inventory items from DAO
-            FoodInventoryDAO dao = new FoodInventoryDAO();
-            List<FoodInventory> inventoryList = dao.getAllFoodInventory();
-
-            for (FoodInventory item : inventoryList) {
+            for (FoodInventory item : foodInventoryList) {
         %>
         <tr>
-            <td><%= item.getId() %>
-            </td>
-            <td><%= item.getDescription() %>
-            </td>
-            <td><%= item.getStandardPrice() %>
-            </td>
-            <td><%= item.getQuantity() %>
-            </td>
-            <td><%= item.getStrLastModified() %>
-            </td>
-            <td><%= item.getAverageRating() %>
+            <td>
+                <%= item.getId() %>
             </td>
             <td>
-                <a href="edit_food_inventory.jsp?id=<%= item.getId() %>" class="button button-edit">Edit</a>
-                <a href="delete_food_inventory.jsp?id=<%= item.getId() %>" class="button button-delete"
-                   onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                <%= item.getName() %>
+            </td>
+            <td>
+                <%= item.getFormattedPrice() %>
+            </td>
+            <td>
+                <%= item.getStrExpirationDate() %>
+            </td>
+            <td>
+                <%= item.isSurplus() ? "Yes" : "No" %>
+            </td>
+            <td>
+                <%= item.getStatus() != null ? item.getStrStatus() : "N/A" %>
+            </td>
+            <td>
+                <%= item.getQuantity() %>
+            </td>
+            <td>
+                <%= item.getAverageRating() %>
+            </td>
+            <td>
+                <button class="button-warning" onclick="handleEdit(<%= item.getId() %>);">Edit</button>
+                <button class="button-error" onclick="handleDelete(<%= item.getId() %>);">Delete</button>
             </td>
         </tr>
         <%
@@ -68,10 +80,31 @@
         %>
         </tbody>
     </table>
+    <%
+        }
+    %>
 </div>
 
-<footer>
-    &copy; 2024 Food Waste Reduction Platform. All rights reserved.
-</footer>
+<!-- Footer -->
+<%@ include file="/utility/footer.jsp" %>
+
+<script>
+
+    function handleAdd() {
+        window.location = "<%= request.getContextPath() %>/food-inventory/add";
+    }
+
+    function handleEdit(id) {
+        window.location = "<%= request.getContextPath() %>/food-inventory/edit?id=" + id;
+    }
+
+    function handleDelete(id) {
+        const isConfirmed = confirm("Do you want to delete this food inventory?");
+        if (isConfirmed) {
+            window.location = "<%= request.getContextPath() %>/food-inventory/delete?id=" + id;
+        }
+    }
+
+</script>
 </body>
 </html>
