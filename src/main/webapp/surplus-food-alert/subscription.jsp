@@ -280,7 +280,7 @@
 
     function handleSubscribe() {
         const isValid = validateForm();
-        if (true) {
+        if (isValid) {
             const data = {
                 // province: provinceSelect.val(),
                 // city: citySelect.val(),

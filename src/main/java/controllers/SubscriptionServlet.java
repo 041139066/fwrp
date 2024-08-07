@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import businesslayer.LocationService;
@@ -82,7 +81,7 @@ public class SubscriptionServlet extends HttpServlet {
             Gson gson = MyGson.getMyGson();
             response.setContentType("application/json");
             int code = 0;
-            String message = "";
+            String message;
             HttpSession session = request.getSession(false);
             User user = (User) session.getAttribute("user");
             int userId = user.getId();

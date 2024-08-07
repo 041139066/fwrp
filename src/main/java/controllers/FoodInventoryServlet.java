@@ -1,30 +1,27 @@
 package controllers;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import businesslayer.FoodInventoryManager;
 import businesslayer.RatingService;
 import businesslayer.SurplusFoodAlert;
-import com.google.gson.Gson;
+
 import model.FoodInventory;
-import model.Rating;
 import model.User;
-import model.constants.FoodStatus;
+
 import utilities.JsonResponse;
 import utilities.MyGson;
 
@@ -74,7 +71,6 @@ public class FoodInventoryServlet extends HttpServlet {
         FoodInventoryManager manager = new FoodInventoryManager();
         List<FoodInventory> list = isSurplus ? manager.getSurplusFoodInventoryByRetailerId(id) : manager.getAllFoodInventoryByRetailerId(id);
         request.setAttribute("foodInventoryList", list);
-        RatingService service = new RatingService();
         RequestDispatcher dispatcher = request.getRequestDispatcher(isSurplus ? "/retailer/surplus-food.jsp" : "/retailer/food-inventory.jsp");
         dispatcher.forward(request, response);
     }

@@ -22,7 +22,7 @@ public class UserManager {
     }
     public List<Subscriber> getSubscribers(UserType type, int retailerId){
         List<User> users = userDAO.getSubscribers(type, retailerId);
-        List<Subscriber> subscribers = new ArrayList<Subscriber>();
+        List<Subscriber> subscribers = new ArrayList<>();
         for(User user : users){
             List<Integer> foodPreferences = prefDAO.getFoodPreferencesByUserId(user.getId());
             if(user.getMethod() == MethodType.email){

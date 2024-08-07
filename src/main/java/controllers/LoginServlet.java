@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
             Gson gson = MyGson.getMyGson();
             response.setContentType("application/json");
             int code = 0;
-            String message = "";
+            String message;
             try {
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");

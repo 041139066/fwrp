@@ -47,7 +47,7 @@ public class RegisterServlet extends HttpServlet {
             Gson gson = MyGson.getMyGson();
             response.setContentType("application/json");
             int code = 0;
-            String message = "";
+            String message;
             try {
                 User user = new User();
                 user.setName(request.getParameter("name"));

@@ -4,15 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-import model.EmailSubscriber;
-import model.FoodInventory;
-import model.Subscriber;
-import model.constants.MethodType;
+import java.util.List;
+import java.util.ArrayList;
+
 import model.User;
 import model.constants.UserType;
+import model.constants.MethodType;
 
 public class UserDAO {
 
@@ -36,7 +34,7 @@ public class UserDAO {
     }
 
     public int updateSubscription(User user) throws SQLException {
-        int affectedRows = 0;
+        int affectedRows;
         String contact = "";
         if (user.getMethod() == MethodType.email) {
             contact = "contact_email = ?, ";

@@ -1,18 +1,16 @@
 package businesslayer;
 
-
-
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+
 import java.util.List;
 
-import dataaccesslayer.UserDAO;
 import model.FoodInventory;
 import model.Subscriber;
 import model.constants.FoodStatus;
 import model.constants.UserType;
 
-public class SurplusFoodAlert implements Publisher{
+public class SurplusFoodAlert implements Publisher {
     private final Map<FoodStatus, List<Subscriber>> subscribers;
 
     public SurplusFoodAlert(int retailerId) {
@@ -32,15 +30,7 @@ public class SurplusFoodAlert implements Publisher{
 
     @Override
     public void notifySubscribers(FoodInventory item) {
-        try{
-            subscribers.get(item.getStatus()).forEach(subscriber -> {
-                subscriber.update(item);
-            });
-        }catch(Exception e){
-            String message = e.getMessage();
-            e.printStackTrace();
-        }
-
+        subscribers.get(item.getStatus()).forEach(subscriber -> subscriber.update(item));
     }
 
 }

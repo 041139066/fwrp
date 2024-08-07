@@ -2,11 +2,8 @@ package validators;
 
 import java.util.List;
 import java.util.ArrayList;
-
-import dataaccesslayer.CityDAO;
-import model.City;
-import model.constants.MethodType;
 import model.User;
+import model.constants.MethodType;
 
 public class SubscriptionValidator {
 

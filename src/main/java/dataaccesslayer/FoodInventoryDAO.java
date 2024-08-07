@@ -1,12 +1,10 @@
 package dataaccesslayer;
 
-
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 import model.FoodInventory;
-import model.constants.FoodStatus;
 
 public class FoodInventoryDAO {
 

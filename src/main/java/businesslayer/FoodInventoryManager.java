@@ -1,11 +1,11 @@
 package businesslayer;
 
 import java.sql.SQLException;
+
 import java.util.List;
 
 import dataaccesslayer.FoodInventoryDAO;
 import model.FoodInventory;
-import model.constants.FoodStatus;
 
 public class FoodInventoryManager {
 

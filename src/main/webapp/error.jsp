@@ -1,3 +1,4 @@
+<%@ page import="java.util.Objects" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,11 +15,7 @@
         <p>
             <%
                 String errorMessage = (String) request.getAttribute("errorMessage");
-                if (errorMessage != null) {
-                    out.print(errorMessage);
-                } else {
-                    out.print("An unknown error occurred.");
-                }
+                out.print(Objects.requireNonNullElse(errorMessage, "An unknown error occurred."));
             %>
         </p>
     </div>

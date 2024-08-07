@@ -1,17 +1,16 @@
 package businesslayer;
 
-import dataaccesslayer.FoodInventoryDAO;
-import dataaccesslayer.FoodPreferencesDAO;
-import dataaccesslayer.UserDAO;
-import model.FoodInventory;
-import model.FoodPreference;
-import model.User;
-
 import java.sql.SQLException;
-import java.util.ArrayList;
+
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import dataaccesslayer.FoodPreferencesDAO;
+import model.FoodPreference;
+import dataaccesslayer.UserDAO;
+import model.User;
 
 public class SubscriptionService {
 
