@@ -14,7 +14,7 @@
 </head>
 <body>
 <h1>Edit Food Inventory</h1>
-<div class="container card">
+<div class="container card inventory-form">
     <form method="post" action="add">
         <div class="form-field">
             <label for="name">Food:</label>
@@ -22,29 +22,21 @@
         </div>
         <div class="form-field">
             <label for="price">Price:</label>
-            <input type="number" id="price" name="price" min = "0" step = "0.01" required>
+            <input type="number" id="price" name="price" min="0" step="0.01" required>
         </div>
         <div class="form-field">
             <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" name="quantity" min="0" step="1"  required>
+            <input type="number" id="quantity" name="quantity" min="0" step="1" required>
         </div>
         <div class="form-field">
             <label for="expiration-date">Expiration Date:</label>
             <input type="datetime-local" id="expiration-date" name="expirationDate" required>
         </div>
-<%--        <div class="form-field">--%>
-<%--            <label>Status: </label>--%>
-<%--            <input id="donation" type="radio" name="status">--%>
-<%--            <label for="donation" class="inline-label">For Donation</label>--%>
-<%--            <input id="sale" type="radio" name="status">--%>
-<%--            <label for="sale" class="inline-label">For Sale</label>--%>
-<%--        </div>--%>
         <div class="form-buttons">
-            <button type="submit" class="button-primary">Submit</button>
+            <button type="submit" class="button-regular">Submit</button>
+            <button type="button" class="button-info" onclick="window.history.back();">Cancel</button>
         </div>
     </form>
 </div>
-
-
 </body>
 </html>

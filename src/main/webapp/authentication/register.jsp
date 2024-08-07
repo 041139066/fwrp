@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Food Waste Reduction Platform</title>
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/resources/css/authentication.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
 <h1>Food Waste Reduction Platform</h1>
@@ -24,19 +24,19 @@
         <form id="register-form">
             <div class="form-field">
                 <label for="name">Username:</label>
-                <input type="text" id="name" name="name" onchange="handleNameChange()" required>
+                <input type="text" id="name" onchange="handleNameChange()" required>
                 <span class="error-message"
                       style="display: none">Please enter your name.</span>
             </div>
             <div class="form-field">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" onchange="handleEmailChange()" required>
+                <input type="email" id="email" onchange="handleEmailChange()" required>
                 <span class="error-message"
                       style="display: none">Please enter a valid email address: xxx@xxx.xx.</span>
             </div>
             <div class="form-field">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" onchange="handlePasswordChange()" required>
+                <input type="password" id="password" onchange="handlePasswordChange()" required>
                 <span class="error-message"
                       style="display: none">Please enter a valid password: at least 6 characters with both letters and digits.</span>
             </div>
@@ -88,9 +88,10 @@
     </div>
 </div>
 
-<script type="text/javascript" src="../resources/js/jquery-3.7.1.js"></script>
+<!-- Footer -->
+<%@ include file="/utility/footer.jsp" %>
 
-<script type="text/javascript">
+<script>
     const cities = ${requestScope.cities};
     let filteredCities = cities;
 
@@ -130,22 +131,6 @@
         validateType();
     }
 
-    function filterCityList(provinceId) {
-        citySelect.empty();
-        citySelect.append('<option value="">Select City</option>');
-        if (provinceId) {
-            filteredCities = cities.filter(city => city.provinceId === provinceId);
-            filteredCities.forEach(city =>
-                citySelect.append('<option value="' + city.city + '">' + city.city + '</option>')
-            );
-        } else {
-            filteredCities = cities;
-            filteredCities.forEach(city => {
-                citySelect.append('<option value="' + city.city + '">' + city.city + '</option>');
-            });
-        }
-    }
-
     function handleProvinceChange() {
         const provinceId = provinceSelect.val();
         filterCityList(provinceId);
@@ -159,6 +144,15 @@
             validateProvince();
         }
         validateCity();
+    }
+
+    function filterCityList(provinceId) {
+        citySelect.empty();
+        citySelect.append('<option value="">Select City</option>');
+        filteredCities = provinceId ? cities.filter(city => city.provinceId === provinceId) : cities;
+        filteredCities.forEach(city =>
+            citySelect.append('<option value="' + city.city + '">' + city.city + '</option>')
+        );
     }
 
     function handleSubmit() {
@@ -243,8 +237,5 @@
         return isValid;
     }
 </script>
-
-<!-- Footer -->
-<%@ include file="/utility/footer.jsp" %>
 </body>
 </html>
