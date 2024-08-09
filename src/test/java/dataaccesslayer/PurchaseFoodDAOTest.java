@@ -45,6 +45,7 @@ public class PurchaseFoodDAOTest {
         int foodInventoryId = 1;
         int need = 5;
         int userId = 1;
+        double cost = 10.0;
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
@@ -52,7 +53,7 @@ public class PurchaseFoodDAOTest {
         when(mockResultSet.getInt("quantity")).thenReturn(10);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
-        assertDoesNotThrow(() -> purchaseFoodDAO.purchaseFood(foodInventoryId, need, userId));
+        assertDoesNotThrow(() -> purchaseFoodDAO.purchaseFood(userId, foodInventoryId, need, cost));
 
         verify(mockPreparedStatement, atLeastOnce()).executeUpdate();
         verify(mockConnection).commit();
@@ -63,13 +64,14 @@ public class PurchaseFoodDAOTest {
         int foodInventoryId = 1;
         int need = 5;
         int userId = 1;
+        double cost = 10.0;
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt("quantity")).thenReturn(3);
 
-        assertThrows(RuntimeException.class, () -> purchaseFoodDAO.purchaseFood(foodInventoryId, need, userId));
+        assertThrows(RuntimeException.class, () -> purchaseFoodDAO.purchaseFood(userId, foodInventoryId, need, cost));
 
         verify(mockPreparedStatement, times(1)).executeQuery();
         verify(mockConnection, never()).commit();
@@ -80,12 +82,13 @@ public class PurchaseFoodDAOTest {
         int foodInventoryId = 1;
         int need = 5;
         int userId = 1;
+        double cost = 10.0;
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
 
-        assertThrows(RuntimeException.class, () -> purchaseFoodDAO.purchaseFood(foodInventoryId, need, userId));
+        assertThrows(RuntimeException.class, () -> purchaseFoodDAO.purchaseFood(userId, foodInventoryId, need, cost));
 
         verify(mockPreparedStatement, times(1)).executeQuery();
         verify(mockConnection, never()).commit();
@@ -103,6 +106,7 @@ public class PurchaseFoodDAOTest {
         when(mockResultSet.getInt("food_inventory_id")).thenReturn(1);
         when(mockResultSet.getString("name")).thenReturn("Test Food");
         when(mockResultSet.getInt("quantity")).thenReturn(5);
+        when(mockResultSet.getDouble("cost")).thenReturn(10.0);
         when(mockResultSet.getTimestamp("purchase_date")).thenReturn(Timestamp.valueOf("2022-01-01 10:00:00"));
 
         List<PurchasedFood> result = purchaseFoodDAO.getAllPurchasedFoodByConsumerId(consumerId);
@@ -115,6 +119,7 @@ public class PurchaseFoodDAOTest {
         assertEquals(1, purchasedFood.getFoodInventoryId());
         assertEquals("Test Food", purchasedFood.getFoodInventoryName());
         assertEquals(5, purchasedFood.getQuantity());
+        assertEquals(10.0, purchasedFood.getCost());
         assertEquals("2022-01-01T10:00", purchasedFood.getPurchaseDate().toString());
     }
 }
