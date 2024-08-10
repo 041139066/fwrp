@@ -10,8 +10,10 @@
     <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
-<%-- Nav Bar --%>
+
+<!-- Navigation Bar -->
 <%@ include file="/utility/nav.jsp" %>
+
 <h1>My Ratings</h1>
 <c:choose>
     <c:when test="${requestScope.ratingList == null || requestScope.ratingList.size() == 0}">

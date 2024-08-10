@@ -9,9 +9,19 @@ import java.util.List;
 
 import model.Province;
 
+/**
+ * Data Access Object (DAO) for managing province operations in the database.
+ * Provides methods to retrieve information about provinces.
+ */
 public class ProvinceDAO {
+
+    /**
+     * Retrieves all provinces from the database.
+     *
+     * @return A list of Province objects representing all provinces in the database.
+     */
     public List<Province> getAllProvinces() {
-        List<Province> list = new ArrayList<Province>();
+        List<Province> list = new ArrayList<>();
         try {
             Connection con = Database.getConnection();
             try (PreparedStatement stmt = con.prepareStatement("SELECT * FROM provinces")) {
@@ -30,4 +40,3 @@ public class ProvinceDAO {
         return list;
     }
 }
-

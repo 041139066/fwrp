@@ -20,8 +20,19 @@ import utilities.MyGson;
 import utilities.JsonResponse;
 import validators.SubscriptionValidator;
 
+/**
+ * Servlet for handling subscription-related requests.
+ */
 public class SubscriptionServlet extends HttpServlet {
 
+    /**
+     * Handles GET requests to display subscription details and manage activation/deactivation of subscriptions.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -44,7 +55,6 @@ public class SubscriptionServlet extends HttpServlet {
                 SubscriptionService subscriptionService = new SubscriptionService();
                 User subscription = subscriptionService.getSubscription(userId);
                 request.setAttribute("subscription", subscription);
-
 
                 FoodInventoryManager foodInventoryManager = new FoodInventoryManager();
                 List<FoodInventory> foodInventoryList = foodInventoryManager.getAllFoodInventoryByLocation(city, province);
@@ -76,6 +86,15 @@ public class SubscriptionServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Updates the subscription status (activate or deactivate) for the user.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @param status   true to activate the subscription, false to deactivate it
+     * @throws ServletException if the request for the update status could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the update status request
+     */
     private void updateStatus(HttpServletRequest request, HttpServletResponse response, boolean status) throws ServletException, IOException {
         try (PrintWriter out = response.getWriter()) {
             Gson gson = MyGson.getMyGson();
@@ -86,8 +105,8 @@ public class SubscriptionServlet extends HttpServlet {
             User user = (User) session.getAttribute("user");
             int userId = user.getId();
             SubscriptionService subscriptionService = new SubscriptionService();
-            int affectedRoes = subscriptionService.updateStatus(status, userId);
-            if (affectedRoes == 0) {
+            int affectedRows = subscriptionService.updateStatus(status, userId);
+            if (affectedRows == 0) {
                 code = 1;
                 message = status ? "No subscription activated." : "No subscription deactivated.";
             } else {
@@ -99,6 +118,14 @@ public class SubscriptionServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles POST requests for subscribing and updating subscriptions.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the POST could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String[] pathInfo = request.getPathInfo() != null ? request.getPathInfo().split("/") : new String[0];
@@ -116,6 +143,14 @@ public class SubscriptionServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Creates or updates a subscription based on the provided data.
+     *
+     * @param request   the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response  the HttpServletResponse object that contains the response the servlet returns to the client
+     * @param isCreate  true if creating a new subscription, false if updating an existing one
+     * @throws IOException if an input or output error is detected when the servlet handles the subscription request
+     */
     private void updateSubscription(HttpServletRequest request, HttpServletResponse response, boolean isCreate) throws IOException {
         try (PrintWriter out = response.getWriter()) {
             Gson gson = MyGson.getMyGson();
@@ -129,8 +164,6 @@ public class SubscriptionServlet extends HttpServlet {
 
             User subscription = new User();
             subscription.setId(userId);
-//            subscription.setCity(request.getParameter("city"));
-//            subscription.setProvince(request.getParameter("province"));
             subscription.setMethod(request.getParameter("method"));
             if ("email".equalsIgnoreCase(request.getParameter("method"))) {
                 subscription.setContactEmail(request.getParameter("contactEmail"));
@@ -159,6 +192,4 @@ public class SubscriptionServlet extends HttpServlet {
             out.flush();
         }
     }
-
-
 }

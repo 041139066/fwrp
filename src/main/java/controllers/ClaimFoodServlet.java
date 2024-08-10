@@ -17,10 +17,22 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Servlet for handling food claiming and donation-related actions.
+ * Manages POST and GET requests for claiming food and listing donation options.
+ */
 public class ClaimFoodServlet extends HttpServlet {
 
     private final DonationFoodManager manager = new DonationFoodManager();
 
+    /**
+     * Handles POST requests for claiming food or other actions.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the POST could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -37,6 +49,14 @@ public class ClaimFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles GET requests for listing donation food options or viewing claimed food.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -56,6 +76,14 @@ public class ClaimFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Claims a food item based on the provided ID and quantity.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the POST could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     private void claimFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         String need = request.getParameter("need");
@@ -72,6 +100,14 @@ public class ClaimFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Lists available food items for donation.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     private void listDonationFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             HttpSession session = request.getSession(false);
@@ -90,6 +126,14 @@ public class ClaimFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Lists food items that the current user has claimed.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     private void myClaimedFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             HttpSession session = request.getSession(false);
@@ -102,6 +146,5 @@ public class ClaimFoodServlet extends HttpServlet {
         } catch (ServletException | IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

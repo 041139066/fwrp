@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<!-- Nav Bar -->
+<!-- Navigation Bar -->
 <%@ include file="/utility/nav.jsp" %>
 
 <h1>Donation Food</h1>

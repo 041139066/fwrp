@@ -7,6 +7,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Utility class for managing database connections.
+ * Provides methods to retrieve and close database connections.
+ */
 public class Database {
     private static final String driverString = "com.mysql.cj.jdbc.Driver";
     private static Connection connection;
@@ -27,7 +31,9 @@ public class Database {
 
                 // Load database properties from configuration file
                 try (InputStream input = Database.class.getClassLoader().getResourceAsStream("properties.txt")) {
-                    System.out.println(input);
+                    if (input == null) {
+                        throw new IOException("Properties file not found");
+                    }
                     props.load(input);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -66,5 +72,4 @@ public class Database {
             }
         }
     }
-
 }

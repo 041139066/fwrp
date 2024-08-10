@@ -8,8 +8,21 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object (DAO) for managing food purchase operations in the database.
+ * Provides methods to handle food purchases and retrieve purchased food records.
+ */
 public class PurchaseFoodDAO {
 
+    /**
+     * Processes the purchase of food by updating the inventory and adding a purchase record.
+     *
+     * @param userId The unique identifier of the user making the purchase.
+     * @param foodInventoryId The unique identifier of the food inventory item being purchased.
+     * @param need The quantity of food being purchased.
+     * @param cost The total cost of the purchase.
+     * @throws RuntimeException If there is an error processing the purchase or if inventory is insufficient.
+     */
     public void purchaseFood(Integer userId, Integer foodInventoryId, Integer need, Double cost) {
         Connection con = null;
         PreparedStatement ps = null;
@@ -27,13 +40,13 @@ public class PurchaseFoodDAO {
                 int currentQuantity = rs.getInt("quantity");
                 if (currentQuantity >= need) {
 
-                    // update food inventory quantity
-                    ps = con.prepareStatement("UPDATE foodinventory SET quantity = quantity - ? WHERE id = ?");
+                    // Update food inventory quantity
+                    ps = con.prepareStatement("UPDATE FoodInventory SET quantity = quantity - ? WHERE id = ?");
                     ps.setInt(1, need);
                     ps.setInt(2, foodInventoryId);
                     ps.executeUpdate();
 
-                    // add purchase record
+                    // Add purchase record
                     ps = con.prepareStatement("INSERT INTO PurchasedFood (consumer_id, food_inventory_id, quantity, cost) VALUES (?, ?, ?, ?)");
                     ps.setInt(1, userId);
                     ps.setInt(2, foodInventoryId);
@@ -50,11 +63,13 @@ public class PurchaseFoodDAO {
             }
         } catch (SQLException e) {
             try {
-                con.rollback(); // Rollback transaction on error
+                if (con != null) {
+                    con.rollback(); // Rollback transaction on error
+                }
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            throw new RuntimeException("Error processing food claim", e);
+            throw new RuntimeException("Error processing food purchase", e);
         } finally {
             try {
                 if (rs != null) rs.close();
@@ -66,9 +81,15 @@ public class PurchaseFoodDAO {
         }
     }
 
+    /**
+     * Retrieves all purchased food records for a specific consumer.
+     *
+     * @param consumerId The unique identifier of the consumer.
+     * @return A list of PurchasedFood objects representing all purchased food records for the specified consumer.
+     */
     public List<PurchasedFood> getAllPurchasedFoodByConsumerId(int consumerId) {
         List<PurchasedFood> list = new ArrayList<>();
-        String sql = "SELECT pf.id, food_inventory_id, name, consumer_id, pf.quantity, pf.cost, pf.purchase_date " +
+        String sql = "SELECT pf.id, pf.food_inventory_id, fi.name, pf.consumer_id, pf.quantity, pf.cost, pf.purchase_date " +
                 "FROM PurchasedFood AS pf JOIN FoodInventory AS fi ON pf.food_inventory_id = fi.id " +
                 "WHERE pf.consumer_id = ? " +
                 "ORDER BY pf.purchase_date DESC";

@@ -25,8 +25,20 @@ import model.User;
 import utilities.JsonResponse;
 import utilities.MyGson;
 
+/**
+ * Servlet for managing food inventory operations.
+ * Handles both GET and POST requests for displaying, adding, updating, and deleting food inventory items.
+ */
 public class FoodInventoryServlet extends HttpServlet {
 
+    /**
+     * Handles GET requests for displaying food inventory information or forms.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -63,6 +75,16 @@ public class FoodInventoryServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Displays the list of food inventory items.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @param isSurplus boolean indicating whether to show surplus food items
+     * @throws SQLException if a database access error occurs
+     * @throws IOException  if an input or output error is detected
+     * @throws ServletException if the request for the GET could not be handled
+     */
     private void displayFoodInventoryList(HttpServletRequest request, HttpServletResponse response, boolean isSurplus)
             throws SQLException, IOException, ServletException {
         HttpSession session = request.getSession(false);
@@ -75,12 +97,30 @@ public class FoodInventoryServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    /**
+     * Displays the form for adding new food inventory items.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws SQLException if a database access error occurs
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException  if an input or output error is detected
+     */
     private void displayFoodInventoryAddForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("/retailer/add_food_inventory.jsp");
         dispatcher.forward(request, response);
     }
 
+    /**
+     * Displays the form for editing existing food inventory items.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws SQLException if a database access error occurs
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException  if an input or output error is detected
+     */
     private void displayFoodInventoryEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
         FoodInventoryManager manager = new FoodInventoryManager();
@@ -91,6 +131,14 @@ public class FoodInventoryServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    /**
+     * Handles POST requests for adding, updating, and updating the status of food inventory items.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the POST could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -124,6 +172,16 @@ public class FoodInventoryServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles adding or updating food inventory items.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @param isAdd    boolean indicating whether to add (true) or update (false) the food inventory item
+     * @throws SQLException if a database access error occurs
+     * @throws IOException  if an input or output error is detected
+     * @throws ServletException if the request for the POST could not be handled
+     */
     private void handleFoodInventory(HttpServletRequest request, HttpServletResponse response, boolean isAdd)
             throws SQLException, IOException, ServletException {
         try {
@@ -156,9 +214,17 @@ public class FoodInventoryServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e.getMessage());
         }
-
     }
 
+    /**
+     * Updates the status of food inventory items and notifies subscribers of surplus food.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws SQLException if a database access error occurs
+     * @throws IOException  if an input or output error is detected
+     * @throws ServletException if the request for the POST could not be handled
+     */
     private void updateFoodInventoryStatus(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         response.setContentType("application/json");
@@ -191,7 +257,12 @@ public class FoodInventoryServlet extends HttpServlet {
         }
     }
 
-
+    /**
+     * Converts a comma-separated string of integers to a list of integers.
+     *
+     * @param input the comma-separated string of integers
+     * @return a list of integers
+     */
     public static List<Integer> splitStringToIntList(String input) {
         if (input == null || input.isEmpty()) {
             return List.of(); // Return an empty list if input is null or empty
@@ -202,6 +273,14 @@ public class FoodInventoryServlet extends HttpServlet {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Deletes a food inventory item.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws SQLException if a database access error occurs
+     * @throws IOException  if an input or output error is detected
+     */
     private void deleteFoodInventory(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         FoodInventoryManager manager = new FoodInventoryManager();
