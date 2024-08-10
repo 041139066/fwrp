@@ -123,7 +123,6 @@
                 data: {ids: ids.join(","), status},
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Status updated successfully!');
                         window.location.reload();
                     } else {
                         alert('Failed to update status: ' + res?.message + '. Please try again.');

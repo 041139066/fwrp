@@ -63,7 +63,6 @@
                 },
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Delete successfully!');
                         window.location.reload();
                     } else {
                         alert('Failed to delete: ' + res?.message + '. Please try again.');

@@ -172,7 +172,6 @@
                 data,
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Register successfully!');
                         window.location = "<%= request.getContextPath() %>/login";
                     } else {
                         alert('Failed to register: ' + res?.message + '. Please try again.');

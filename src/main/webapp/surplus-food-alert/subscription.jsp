@@ -299,7 +299,6 @@
                 data,
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Subscribe successfully!');
                         window.location.reload();
                     } else {
                         alert('Failed to subscribe: ' + res?.message + '. Please try again.');
@@ -336,7 +335,6 @@
                 data,
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Subscription updated successfully!');
                         window.location.reload();
                     } else {
                         alert('Failed to update subscription: ' + res?.message + '. Please try again.');
@@ -357,7 +355,6 @@
             data: {consumerId: subscription.consumerId},
             success: function (res) {
                 if (res?.code === 0) {
-                    alert('Unsubscribe successfully!');
                     window.location.reload();
                 } else {
                     alert('Failed to unsubscribe: ' + res?.message + '. Please try again.');
@@ -377,7 +374,6 @@
             data: {consumerId: subscription.consumerId},
             success: function (res) {
                 if (res?.code === 0) {
-                    alert('Reactivate successfully!');
                     window.location.reload();
                 } else {
                     alert('Failed to reactivate: ' + res?.message + '. Please try again.');

@@ -63,7 +63,6 @@
                 },
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Login successfully!');
                         window.location = "<%= request.getContextPath() %>";
                     } else {
                         alert('Failed to login: ' + res?.message + '. Please try again.');
