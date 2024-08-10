@@ -1,29 +1,54 @@
 package model;
 
+/**
+ * The City class represents a city within a province.
+ * It includes the name of the city and the ID of the province to which it belongs.
+ */
 public class City {
     private String city;
     private String provinceId;
 
-    // Getter for city
+    /**
+     * Gets the name of the city.
+     *
+     * @return The name of the city.
+     */
     public String getCity() {
         return city;
     }
 
-    // Setter for city
+    /**
+     * Sets the name of the city.
+     *
+     * @param city The name of the city.
+     */
     public void setCity(String city) {
         this.city = city;
     }
 
-    // Getter for provinceId
+    /**
+     * Gets the ID of the province to which the city belongs.
+     *
+     * @return The ID of the province.
+     */
     public String getProvinceId() {
         return provinceId;
     }
 
-    // Setter for provinceId
+    /**
+     * Sets the ID of the province to which the city belongs.
+     *
+     * @param provinceId The ID of the province.
+     */
     public void setProvinceId(String provinceId) {
         this.provinceId = provinceId;
     }
 
+    /**
+     * Returns a string representation of the City instance.
+     *
+     * @return A string representation of the City instance.
+     */
     @Override
     public String toString() {
         return "City{" +
@@ -32,4 +57,3 @@ public class City {
                 '}';
     }
 }
-

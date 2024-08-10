@@ -115,26 +115,22 @@
             alert("Please select a food.");
             return;
         }
-        const isConfirmed = confirm("Are you sure to set the food for " + status + ".");
-        if (isConfirmed) {
-            $.ajax({
-                url: 'updateStatus',
-                type: 'POST',
-                data: {ids: ids.join(","), status},
-                success: function (res) {
-                    if (res?.code === 0) {
-                        alert('Status updated successfully!');
-                        window.location.reload();
-                    } else {
-                        alert('Failed to update status: ' + res?.message + '. Please try again.');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error:', status, error);
-                    alert('Failed to update status. Please try again.');
+        $.ajax({
+            url: 'updateStatus',
+            type: 'POST',
+            data: {ids: ids.join(","), status},
+            success: function (res) {
+                if (res?.code === 0) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to update status: ' + res?.message + '. Please try again.');
                 }
-            });
-        }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', status, error);
+                alert('Failed to update status. Please try again.');
+            }
+        });
     }
 
 </script>

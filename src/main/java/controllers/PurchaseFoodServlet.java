@@ -14,10 +14,21 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Servlet for handling food purchasing and transaction-related requests.
+ */
 public class PurchaseFoodServlet extends HttpServlet {
 
     private PurchaseFoodManager manager = new PurchaseFoodManager();
 
+    /**
+     * Handles POST requests for purchasing food or other actions.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the POST could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -35,6 +46,14 @@ public class PurchaseFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles GET requests to list available food and transactions.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -54,6 +73,14 @@ public class PurchaseFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles the purchase of food by a user.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the POST could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     private void purchaseFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         String need = request.getParameter("need");
@@ -70,6 +97,14 @@ public class PurchaseFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Lists all available food for sale and displays consumer ratings.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     private void listAvailableFood(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             HttpSession session = request.getSession(false);
@@ -88,6 +123,14 @@ public class PurchaseFoodServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Displays the transaction history for the logged-in user.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     private void transactions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             HttpSession session = request.getSession(false);
@@ -100,7 +143,5 @@ public class PurchaseFoodServlet extends HttpServlet {
         } catch (ServletException | IOException e) {
             throw new RuntimeException(e);
         }
-
     }
-
 }

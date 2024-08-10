@@ -17,55 +17,32 @@
 <!-- Container -->
 <div class="container card">
     <c:choose>
+        <%-- Inactive Subscription --%>
         <c:when test="${requestScope.subscription.subscription == false && requestScope.subscription.method != null}">
             <button class="button-primary info-button" onclick="handleReactivate()">Reactivate</button>
             <!-- Information Card -->
             <div class="info-card" style="display: none">
                 <h3>Subscription Information</h3>
-                    <%--                <p><strong>Province:</strong> <span id="info-province"></span></p>--%>
-                    <%--                <p><strong>City:</strong> <span id="info-city"></span></p>--%>
                 <p><strong>Communication Method:</strong> <span id="info-method"></span></p>
                 <p style="display:none"><strong>Email:</strong> <span id="info-email"></span></p>
                 <p style="display:none"><strong>Phone:</strong> <span id="info-phone"></span></p>
                 <p><strong>Food Preferences:</strong> <span id="info-food-preferences"></span></p>
             </div>
-
         </c:when>
         <c:otherwise>
             <h2>Subscription Form</h2>
             <form id="subscription-form">
                 <div class="form-buttons">
+                    <%-- Active Subscription --%>
                     <c:if test="${requestScope.subscription.method == null}">
                         <button class="button-primary" type="button" onclick="handleSubscribe()">Subscribe</button>
                     </c:if>
+                    <%-- New Subscription --%>
                     <c:if test="${requestScope.subscription.subscription == true}">
                         <button class="button-primary" type="button" onclick="handleUpdate()">Update</button>
                         <button class="button-primary" type="button" onclick="handleDeactivate()">Deactivate</button>
                     </c:if>
-
-
                 </div>
-                <!-- Location Selection -->
-                    <%--                <div class="row">--%>
-                    <%--                    <div class="form-field">--%>
-                    <%--                        <label for="province">Province:</label>--%>
-                    <%--                        <select id="province" name="province" onchange="handleProvinceChange()">--%>
-                    <%--                            <option value="">Select Province</option>--%>
-                    <%--                            <c:forEach var="province" items="${requestScope.provinces}">--%>
-                    <%--                                <option value="${province.id}">${province.province}</option>--%>
-                    <%--                            </c:forEach>--%>
-                    <%--                        </select>--%>
-                    <%--                        <span class="error-message" style="display: none">Please select a province.</span>--%>
-                    <%--                    </div>--%>
-                    <%--                    <div class="form-field">--%>
-                    <%--                        <label for="city">City:</label>--%>
-                    <%--                        <select id="city" name="city" onchange="handleCityChange()">--%>
-                    <%--                            <option value="">Select City</option>--%>
-                    <%--                            <!-- Options will be dynamically loaded based on selected province -->--%>
-                    <%--                        </select>--%>
-                    <%--                        <span class="error-message" style="display: none">Please select a city.</span>--%>
-                    <%--                    </div>--%>
-                    <%--                </div>--%>
                 <div class="row">
                     <!-- Subscription Method -->
                     <div class="form-field">
@@ -154,13 +131,9 @@
     const subscription = ${requestScope.subscription.toJson()};
     </c:otherwise>
     </c:choose>
-    <%--const cities = ${requestScope.cities};--%>
-    // let filteredCities = cities;
     let foodPreferences = ${requestScope.foodPreferences};
 
     const form = $('#subscription-form');
-    // const provinceSelect = $('#province');
-    // const citySelect = $('#city');
     const methodSelect = $('#method');
     const emailInput = $('#email');
     const phoneInput = $('#phone');
@@ -168,13 +141,9 @@
 
     function iniCreateForm() {
         emailInput.val(subscription.email);
-        // filterCityList(subscription.province);
     }
 
     function iniUpdateForm() {
-        // provinceSelect.val(subscription.province);
-        // filterCityList(subscription.province);
-        // citySelect.val(subscription.city);
         methodSelect.val(subscription.method);
         handleMethodChange();
         emailInput.val(subscription.contactEmail); // or user.email
@@ -183,8 +152,6 @@
     }
 
     function iniInfoCard() {
-        // $("#info-province").text(subscription.province);
-        // $("#info-city").text(subscription.city);
         $("#info-method").text(subscription.method.toUpperCase());
         subscription.method.toLowerCase() === "email" && $("#info-email").text(subscription.contactEmail).parent("p").show();
         subscription.method.toLowerCase() === "sms" && $("#info-phone").text(subscription.contactPhone).parent("p").show();
@@ -196,37 +163,6 @@
             $(".info-card").removeClass("active")
         })
     }
-
-    // function filterCityList(provinceId) {
-    //     citySelect.empty();
-    //     citySelect.append('<option value="">Select City</option>');
-    //     if (provinceId) {
-    //         filteredCities = cities.filter(city => city.provinceId === provinceId);
-    //         filteredCities.forEach(city =>
-    //             citySelect.append('<option value="' + city.city + '">' + city.city + '</option>')
-    //         );
-    //     } else {
-    //         filteredCities = cities;
-    //         filteredCities.forEach(city => {
-    //             citySelect.append('<option value="' + city.city + '">' + city.city + '</option>');
-    //         });
-    //     }
-    // }
-
-    // function handleProvinceChange() {
-    //     const provinceId = provinceSelect.val();
-    //     filterCityList(provinceId);
-    //     validateProvinceField();
-    // }
-    //
-    // function handleCityChange() {
-    //     const city = filteredCities.find(city => city.city === citySelect.val());
-    //     if (city && city.provinceId !== provinceSelect.val()) {
-    //         provinceSelect.val(city.provinceId);
-    //         validateProvinceField();
-    //     }
-    //     validateCityField();
-    // }
 
     function handleMethodChange() {
         const method = methodSelect.val();
@@ -276,14 +212,11 @@
         }
         updateFoodPreferences();
     }
-
-
+    // Subscribe
     function handleSubscribe() {
         const isValid = validateForm();
         if (isValid) {
             const data = {
-                // province: provinceSelect.val(),
-                // city: citySelect.val(),
                 method: methodSelect.val(),
                 foodPreferences: foodPreferences.map(food => food.id).join(',')
             }
@@ -299,7 +232,6 @@
                 data,
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Subscribe successfully!');
                         window.location.reload();
                     } else {
                         alert('Failed to subscribe: ' + res?.message + '. Please try again.');
@@ -313,14 +245,12 @@
         }
 
     }
-
+    // Update Subscription Information
     function handleUpdate() {
         const isValid = validateForm();
         if (isValid) {
             const data = {
                 consumerId: subscription.consumerId,
-                // province: provinceSelect.val(),
-                // city: citySelect.val(),
                 method: methodSelect.val(),
                 foodPreferences: foodPreferences.map(food => food.id).join(',')
             }
@@ -336,7 +266,6 @@
                 data,
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Subscription updated successfully!');
                         window.location.reload();
                     } else {
                         alert('Failed to update subscription: ' + res?.message + '. Please try again.');
@@ -349,7 +278,7 @@
             });
         }
     }
-
+    // Deactivate Subscription
     function handleDeactivate() {
         $.ajax({
             url: 'subscription/deactivate',
@@ -357,7 +286,6 @@
             data: {consumerId: subscription.consumerId},
             success: function (res) {
                 if (res?.code === 0) {
-                    alert('Unsubscribe successfully!');
                     window.location.reload();
                 } else {
                     alert('Failed to unsubscribe: ' + res?.message + '. Please try again.');
@@ -369,7 +297,7 @@
             }
         });
     }
-
+    // Reactivate Subscription
     function handleReactivate() {
         $.ajax({
             url: 'subscription/reactivate',
@@ -377,7 +305,6 @@
             data: {consumerId: subscription.consumerId},
             success: function (res) {
                 if (res?.code === 0) {
-                    alert('Reactivate successfully!');
                     window.location.reload();
                 } else {
                     alert('Failed to reactivate: ' + res?.message + '. Please try again.');
@@ -389,14 +316,6 @@
             }
         });
     }
-
-    // function validateProvinceField() {
-    //     return validateField(provinceSelect);
-    // }
-    //
-    // function validateCityField() {
-    //     return validateField(citySelect);
-    // }
 
     function validateMethodField() {
         return validateField(methodSelect);
@@ -421,22 +340,22 @@
     }
 
     function validateForm() {
-        // let isValid = validateProvinceField();
-        // isValid = validateCityField() && isValid;
         let isValid = validateMethodField();
+        // if communication method is email, then email address should not be empty
         if (methodSelect.val() === 'email') {
             isValid = validateEmailField() && isValid;
         }
+        // if communication method is sma, then phone number should not be empty
         if (methodSelect.val() === 'sms') {
             isValid = validatePhoneField() && isValid;
         }
         return isValid;
     }
-
+    // Clear Validation
     function clearValidate() {
         $('.error-message').hide();
     }
-
+    // Page Initialization
     $(document).ready(function () {
         subscription.subscription ? iniUpdateForm() : subscription.method ? iniInfoCard() : iniCreateForm();
     });

@@ -3,16 +3,19 @@
 <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 <nav>
     <div class="nav-left">
+        <%-- nav bar for retailers --%>
         <c:if test="${sessionScope.type == 'retailer'}">
             <div class="link"><a href="<%= request.getContextPath() %>/food-inventory">Food Inventory</a></div>
             <div class="link"><a href="<%= request.getContextPath() %>/food-inventory/surplus-food">Surplus Food</a></div>
         </c:if>
+        <%-- nav bar for charitable organizations --%>
         <c:if test="${sessionScope.type == 'charitable'}">
             <div class="link"><a href="<%= request.getContextPath() %>/claim-food">Food For Donation</a></div>
             <div class="link"><a href="<%= request.getContextPath() %>/claim-food?action=myClaimedFood">My Claimed Food</a></div>
             <div class="link"><a href="<%= request.getContextPath() %>/subscription">Surplus Food Alert</a></div>
             <div class="link"><a href="<%= request.getContextPath() %>/rating">My Food Ratings</a></div>
         </c:if>
+        <%-- nav bar for consumers --%>
         <c:if test="${sessionScope.type == 'consumer'}">
             <div class="link"><a href="<%= request.getContextPath() %>/purchase-food">Purchase Food</a></div>
             <div class="link"><a href="<%= request.getContextPath() %>/purchase-food?action=transactions">My Transactions</a></div>

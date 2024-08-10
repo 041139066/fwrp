@@ -133,7 +133,6 @@
                 ...options,
                 success: function (res) {
                     if (res?.code === 0) {
-                        alert('Rating ' + type + 'd successfully!');
                         window.location.reload();
                     } else {
                         alert('Failed to ' + type + ' rating: ' + res?.message + '. Please try again.');

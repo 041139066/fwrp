@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<!-- Nav Bar -->
+<!-- Navigation Bar -->
 <%@ include file="/utility/nav.jsp" %>
 
 <h1>Purchase Food</h1>
@@ -101,7 +101,6 @@
         const consumerRatingList = ${requestScope.consumerRatingList};
         const rating = consumerRatingList.find(itm => itm.foodInventoryId === foodInventory.id);
         rating ? openUpdateModal(rating) : openCreateModal(foodInventory);
-        console.log(consumerRatingList, rating);
     }
 </script>
 </body>

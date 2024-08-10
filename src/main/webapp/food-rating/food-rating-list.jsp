@@ -10,6 +10,8 @@
     <script src="<%= request.getContextPath() %>/resources/js/jquery-3.7.1.js"></script>
 </head>
 <body>
+
+<!-- Navigation Bar -->
 <%@ include file="/utility/nav.jsp" %>
 
 <h1>Ratings for ${requestScope.foodInventory.name}</h1>

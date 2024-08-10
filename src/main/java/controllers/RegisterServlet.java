@@ -7,6 +7,7 @@ import model.Province;
 import model.User;
 import utilities.MyGson;
 import utilities.JsonResponse;
+import utilities.PasswordHasher;
 
 import java.io.*;
 import java.util.List;
@@ -17,10 +18,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import utilities.PasswordHasher;
-
+/**
+ * Servlet for handling user registration requests.
+ */
 @WebServlet(name = "RegisterServlet", value = "/Register-servlet")
 public class RegisterServlet extends HttpServlet {
+
+    /**
+     * Handles GET requests to display the registration form.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the GET could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the GET request
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -40,6 +51,14 @@ public class RegisterServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Handles POST requests to register a new user.
+     *
+     * @param request  the HttpServletRequest object that contains the request the client made of the servlet
+     * @param response the HttpServletResponse object that contains the response the servlet returns to the client
+     * @throws ServletException if the request for the POST could not be handled
+     * @throws IOException      if an input or output error is detected when the servlet handles the POST request
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -69,6 +88,4 @@ public class RegisterServlet extends HttpServlet {
             out.flush();
         }
     }
-
-
 }

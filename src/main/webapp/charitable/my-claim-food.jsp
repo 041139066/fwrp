@@ -11,6 +11,7 @@
 </head>
 <body>
 
+<!-- Navigation Bar -->
 <%@ include file="/utility/nav.jsp" %>
 
 <h1>My Claimed Food</h1>
